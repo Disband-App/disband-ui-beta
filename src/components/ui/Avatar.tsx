@@ -51,7 +51,7 @@ export function Avatar({ profile, size = "md", className = "" }: AvatarProps) {
 
   const inner = (
     <div
-      className={`flex shrink-0 items-center justify-center overflow-hidden rounded-full font-bold ${SIZES[size]} ${ring ? "" : className}`}
+      className={`flex shrink-0 select-none items-center justify-center overflow-hidden rounded-full font-rounded font-semibold ${SIZES[size]} ${ring ? "" : className}`}
       style={accentStyle}
     >
       {remote ? (

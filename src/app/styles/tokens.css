@@ -1,0 +1,576 @@
+/* Design tokens.
+
+   The names components use (--bg-primary, --text-muted, --brand, …) are
+   unchanged from the old theme system so every existing surface keeps
+   working; what changed is what they mean. The layout is now a canvas with
+   floating panels on it, in the manner of iPadOS:
+
+     --bg-tertiary   the window canvas the panels sit on
+     --bg-secondary  sidebars and grouped cards
+     --bg-primary    the content pane (chat, friends, settings detail)
+     --bg-accent     text fields and filled controls
+
+   Everything below the palettes is derived from those, so a theme only has
+   to pick a handful of colours and the materials, bubbles, fills and
+   overlays follow. Skins (skins.css) override the same base names and get
+   the derived layer for free. */
+
+@font-face {
+  font-family: "Disband Inter";
+  src: url("/fonts/inter-latin-var.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root,
+[data-appearance="light"] {
+  /* SF Pro where the OS has it (Apple platforms), then Inter, which is the
+     closest free face in proportion and rhythm, then the platform UI font. */
+  --font-discord: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Disband Inter",
+    "Segoe UI Variable Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Disband Inter",
+    "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-rounded: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+    "Disband Inter", "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  /* iOS system colours, light variants. The dark block swaps them. */
+  --sys-blue: #007aff;
+  --sys-indigo: #5856d6;
+  --sys-purple: #af52de;
+  --sys-pink: #ff2d55;
+  --sys-red: #ff3b30;
+  --sys-orange: #ff9500;
+  --sys-yellow: #ffcc00;
+  --sys-green: #34c759;
+  --sys-mint: #00c7be;
+  --sys-teal: #30b0c7;
+  --sys-cyan: #32ade6;
+  --sys-brown: #a2845e;
+  --sys-gray: #8e8e93;
+
+  /* Motion. Real spring curves (damped harmonic oscillator, sampled into
+     linear()) rather than cubic-bezier approximations; the tails are what
+     make them read as physical. Durations are the settle times. */
+  --spring-snappy: linear(0, 0.0206, 0.0732, 0.1462, 0.2307, 0.32, 0.4092, 0.4948, 0.5746, 0.6472, 0.7119, 0.7685, 0.8173, 0.8587, 0.8932, 0.9216, 0.9446, 0.9629, 0.9772, 0.9882, 0.9963, 1.0022, 1.0062, 1.0088, 1.0102, 1.0109, 1.0109, 1.0105, 1.0098, 1.0089, 1.008, 1.007, 1.006, 1.0051, 1.0043, 1.0035, 1.0029, 1.0023, 1.0018, 1.0014, 1);
+  --spring-sheet: linear(0, 0.0276, 0.0969, 0.1914, 0.2983, 0.4081, 0.5142, 0.6124, 0.6999, 0.7756, 0.8392, 0.8913, 0.9327, 0.9646, 0.9884, 1.0053, 1.0167, 1.0236, 1.0272, 1.0282, 1.0274, 1.0255, 1.0228, 1.0198, 1.0167, 1.0137, 1.011, 1.0085, 1.0064, 1.0046, 1.0031, 1.0019, 1);
+  --spring-bouncy: linear(0, 0.0435, 0.1528, 0.2995, 0.4604, 0.6181, 0.7605, 0.8806, 0.975, 1.0435, 1.0882, 1.1124, 1.1202, 1.1158, 1.1032, 1.0859, 1.0666, 1.0475, 1.0302, 1.0155, 1.0039, 0.9954, 0.9898, 0.9866, 0.9856, 0.986, 0.9874, 0.9895, 0.9918, 0.9941, 0.9962, 0.998, 0.9994, 1.0005, 1.0012, 1.0016, 1.0017, 1.0017, 1.0015, 1.0013, 1);
+  --spring-smooth: linear(0, 0.0228, 0.0787, 0.153, 0.2358, 0.3204, 0.4026, 0.4797, 0.5505, 0.6141, 0.6706, 0.7202, 0.7634, 0.8006, 0.8325, 0.8598, 0.8829, 0.9025, 0.9189, 0.9327, 0.9443, 0.954, 0.962, 0.9687, 0.9742, 0.9788, 0.9826, 0.9857, 0.9883, 0.9904, 0.9922, 0.9936, 0.9948, 0.9957, 0.9965, 0.9972, 0.9977, 0.9981, 0.9985, 0.9988, 1);
+  /* UIKit's sheet presentation curve, for things that should not overshoot. */
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* ---------------------------------------------------------------------------
+   Derived layer. Declared before the palettes so a theme can still pin any
+   of these (Black pins the bubble and panel outline, for instance).
+
+   Custom properties inherit as computed values, so a derived token resolved
+   on <html> would not follow a nested element that re-themes itself (the
+   homepage draws small live previews in other themes). Re-declaring the
+   layer on every theming attribute keeps nested previews correct.
+   --------------------------------------------------------------------------- */
+
+:root,
+[data-theme],
+[data-accent],
+[data-appearance] {
+  --canvas: var(--bg-tertiary);
+  --bg-elevated: color-mix(in srgb, var(--bg-secondary) 94%, var(--tint-mix, #fff));
+
+  /* iOS fills: translucent greys that sit on any surface. */
+  --fill: color-mix(in srgb, var(--text-muted) 22%, transparent);
+  --fill-secondary: color-mix(in srgb, var(--text-muted) 16%, transparent);
+  --fill-tertiary: color-mix(in srgb, var(--text-muted) 11%, transparent);
+  --label-tertiary: color-mix(in srgb, var(--text-muted) 62%, transparent);
+
+  --hairline: color-mix(in srgb, var(--divider) 85%, transparent);
+  --panel-border: color-mix(in srgb, var(--text-normal) 5%, transparent);
+
+  /* Materials: what sits over scrolling content (bars, the composer, menus). */
+  --glass: color-mix(in srgb, var(--bg-primary) 72%, transparent);
+  --glass-thick: color-mix(in srgb, var(--bg-elevated) 90%, transparent);
+  --glass-border: color-mix(in srgb, var(--text-normal) 9%, transparent);
+
+  --bubble-in: color-mix(in srgb, var(--text-normal) 10%, var(--bg-primary));
+  --bubble-in-text: var(--text-normal);
+  --bubble-out: var(--brand);
+  --bubble-out-text: var(--brand-foreground, #fff);
+
+  --focus-ring: color-mix(in srgb, var(--brand) 50%, transparent);
+
+  --overlay-surface: var(--bg-elevated);
+  --overlay-panel: var(--bg-secondary);
+  --overlay-media: var(--bg-accent);
+  --overlay-scrim: var(--scrim);
+  --overlay-scrim-strong: var(--scrim-strong);
+
+  --super: #ffd60a;
+  --ping-bg: color-mix(in srgb, var(--sys-orange) 10%, transparent);
+  --ping-bg-hover: color-mix(in srgb, var(--sys-orange) 15%, transparent);
+  --ping-bar: var(--sys-orange);
+
+  --panel-radius: 18px;
+  --panel-gap: 8px;
+}
+
+/* ---------------------------------------------------------------------------
+   Palettes
+   --------------------------------------------------------------------------- */
+
+:root,
+[data-theme="dark"] {
+  --bg-tertiary: #0b0b0c;
+  --bg-secondary: #1c1c1e;
+  --bg-primary: #141416;
+  --bg-accent: #2c2c2e;
+  --interactive-hover: rgb(120 120 128 / 0.16);
+  --interactive-selected: rgb(120 120 128 / 0.28);
+  --brand: #0a84ff;
+  --brand-hover: #3395ff;
+  --brand-foreground: #ffffff;
+  --text-normal: #f5f5f7;
+  --text-muted: #98989f;
+  --text-link: #4da3ff;
+  --status-online: #30d158;
+  --status-idle: #ff9f0a;
+  --status-dnd: #ff453a;
+  --status-offline: #8e8e93;
+  --divider: #2f2f32;
+}
+
+[data-theme="midnight"] {
+  --bg-tertiary: #000000;
+  --bg-secondary: #000000;
+  --bg-primary: #000000;
+  --bg-accent: #1c1c1e;
+  --interactive-hover: rgb(120 120 128 / 0.16);
+  --interactive-selected: rgb(120 120 128 / 0.26);
+  --brand: #0a84ff;
+  --brand-hover: #3395ff;
+  --brand-foreground: #ffffff;
+  --text-normal: #f5f5f7;
+  --text-muted: #8e8e93;
+  --text-link: #4da3ff;
+  --status-online: #30d158;
+  --status-idle: #ff9f0a;
+  --status-dnd: #ff453a;
+  --status-offline: #8e8e93;
+  --divider: #232325;
+  /* Every surface is black, so panels are told apart by their outline. */
+  --panel-border: #1f1f21;
+  --bubble-in: #1c1c1e;
+}
+
+[data-theme="light"] {
+  --bg-tertiary: #e9e9ee;
+  --bg-secondary: #f7f7f9;
+  --bg-primary: #ffffff;
+  --bg-accent: #eeeef2;
+  --interactive-hover: rgb(120 120 128 / 0.1);
+  --interactive-selected: rgb(120 120 128 / 0.18);
+  --brand: #007aff;
+  --brand-hover: #0068d9;
+  --brand-foreground: #ffffff;
+  --text-normal: #1d1d1f;
+  --text-muted: #6e6e73;
+  --text-link: #0071e3;
+  --status-online: #1f9d45;
+  --status-idle: #e6900a;
+  --status-dnd: #e5352b;
+  --status-offline: #8e8e93;
+  --divider: #e0e0e5;
+}
+
+[data-theme="sunset"] {
+  --bg-tertiary: #120c0e;
+  --bg-secondary: #221a1d;
+  --bg-primary: #1a1316;
+  --bg-accent: #2e2427;
+  --interactive-hover: rgb(255 214 222 / 0.07);
+  --interactive-selected: rgb(255 214 222 / 0.13);
+  --brand: #ff375f;
+  --brand-hover: #ff5c7a;
+  --brand-foreground: #ffffff;
+  --text-normal: #f7ecee;
+  --text-muted: #b39a9f;
+  --text-link: #ffac4d;
+  --divider: #3a2d31;
+}
+
+[data-theme="ocean"] {
+  --bg-tertiary: #06121a;
+  --bg-secondary: #10212c;
+  --bg-primary: #0b1a23;
+  --bg-accent: #183040;
+  --interactive-hover: rgb(170 220 240 / 0.07);
+  --interactive-selected: rgb(170 220 240 / 0.13);
+  --brand: #40c8e0;
+  --brand-hover: #66d4e8;
+  --brand-foreground: #04161d;
+  --text-normal: #e6f3f8;
+  --text-muted: #8fafbf;
+  --text-link: #64d2ff;
+  --divider: #1f3847;
+}
+
+[data-theme="rose-gold"] {
+  --bg-tertiary: #140e0f;
+  --bg-secondary: #261b1d;
+  --bg-primary: #1d1517;
+  --bg-accent: #33262a;
+  --interactive-hover: rgb(255 220 228 / 0.07);
+  --interactive-selected: rgb(255 220 228 / 0.13);
+  --brand: #f4a7b9;
+  --brand-hover: #f7bcca;
+  --brand-foreground: #2a1419;
+  --text-normal: #fceff2;
+  --text-muted: #c4a5ad;
+  --text-link: #f5c77e;
+  --divider: #3f2e33;
+}
+
+[data-theme="plasma"] {
+  --bg-tertiary: #0b0714;
+  --bg-secondary: #1b1229;
+  --bg-primary: #140d20;
+  --bg-accent: #281b3b;
+  --interactive-hover: rgb(220 200 255 / 0.07);
+  --interactive-selected: rgb(220 200 255 / 0.14);
+  --brand: #bf5af2;
+  --brand-hover: #cc7af5;
+  --brand-foreground: #ffffff;
+  --text-normal: #f1e8ff;
+  --text-muted: #ae9cc9;
+  --text-link: #7fd8ff;
+  --divider: #33244a;
+}
+
+[data-theme="nord"] {
+  --bg-tertiary: #1f242d;
+  --bg-secondary: #2e3440;
+  --bg-primary: #272c36;
+  --bg-accent: #3b4252;
+  --interactive-hover: rgb(216 222 233 / 0.07);
+  --interactive-selected: rgb(216 222 233 / 0.13);
+  --brand: #88c0d0;
+  --brand-hover: #9acbd9;
+  --brand-foreground: #1b2530;
+  --text-normal: #eceff4;
+  --text-muted: #aeb6c4;
+  --text-link: #8fbcbb;
+  --status-online: #a3be8c;
+  --status-idle: #ebcb8b;
+  --status-dnd: #bf616a;
+  --divider: #3f4757;
+}
+
+[data-theme="graphite"] {
+  --bg-tertiary: #0e0e0f;
+  --bg-secondary: #1f1f21;
+  --bg-primary: #18181a;
+  --bg-accent: #2c2c2f;
+  --interactive-hover: rgb(200 200 205 / 0.07);
+  --interactive-selected: rgb(200 200 205 / 0.14);
+  --brand: #aeaeb2;
+  --brand-hover: #c7c7cc;
+  --brand-foreground: #111113;
+  --text-normal: #f2f2f3;
+  --text-muted: #a1a1a6;
+  --text-link: #d1d1d6;
+  --divider: #333336;
+}
+
+[data-theme="forest"] {
+  --bg-tertiary: #08110d;
+  --bg-secondary: #13211a;
+  --bg-primary: #0e1914;
+  --bg-accent: #1b2d24;
+  --interactive-hover: rgb(190 240 210 / 0.07);
+  --interactive-selected: rgb(190 240 210 / 0.13);
+  --brand: #30d158;
+  --brand-hover: #4adb6e;
+  --brand-foreground: #04150b;
+  --text-normal: #e7f4ec;
+  --text-muted: #9db9a8;
+  --text-link: #7fdfa0;
+  --divider: #243a2f;
+}
+
+[data-theme="cobalt"] {
+  --bg-tertiary: #070c1a;
+  --bg-secondary: #111a33;
+  --bg-primary: #0c1428;
+  --bg-accent: #1a2545;
+  --interactive-hover: rgb(190 205 255 / 0.07);
+  --interactive-selected: rgb(190 205 255 / 0.14);
+  --brand: #5e8bff;
+  --brand-hover: #7c9fff;
+  --brand-foreground: #ffffff;
+  --text-normal: #edf2ff;
+  --text-muted: #9faed3;
+  --text-link: #8caeff;
+  --divider: #22305a;
+}
+
+[data-theme="ember"] {
+  --bg-tertiary: #140c08;
+  --bg-secondary: #251913;
+  --bg-primary: #1c130e;
+  --bg-accent: #33231a;
+  --interactive-hover: rgb(255 225 200 / 0.07);
+  --interactive-selected: rgb(255 225 200 / 0.13);
+  --brand: #ff9f0a;
+  --brand-hover: #ffb340;
+  --brand-foreground: #1f1205;
+  --text-normal: #fff1e6;
+  --text-muted: #c9ae9c;
+  --text-link: #ffb86b;
+  --divider: #3e2c21;
+}
+
+[data-theme="parchment"] {
+  --bg-tertiary: #e9e3d6;
+  --bg-secondary: #f6f1e6;
+  --bg-primary: #fcf9f2;
+  --bg-accent: #efe9dc;
+  --interactive-hover: rgb(110 90 60 / 0.08);
+  --interactive-selected: rgb(110 90 60 / 0.15);
+  --brand: #8a6538;
+  --brand-hover: #76552e;
+  --brand-foreground: #ffffff;
+  --text-normal: #2e2a23;
+  --text-muted: #6f6556;
+  --text-link: #7a5a2f;
+  --status-online: #2f8a4a;
+  --status-idle: #b0791a;
+  --status-dnd: #b6392e;
+  --divider: #ddd4c2;
+}
+
+[data-theme="porcelain"] {
+  --bg-tertiary: #e3e9f0;
+  --bg-secondary: #f3f6fa;
+  --bg-primary: #fbfcfe;
+  --bg-accent: #e9eef4;
+  --interactive-hover: rgb(60 90 130 / 0.08);
+  --interactive-selected: rgb(60 90 130 / 0.14);
+  --brand: #3478f6;
+  --brand-hover: #1f63e0;
+  --brand-foreground: #ffffff;
+  --text-normal: #1b2735;
+  --text-muted: #5a6878;
+  --text-link: #2463d9;
+  --status-online: #1f9d45;
+  --status-idle: #e6900a;
+  --status-dnd: #e5352b;
+  --divider: #d5dde7;
+}
+
+[data-theme="orchid"] {
+  --bg-tertiary: #120d16;
+  --bg-secondary: #241b2b;
+  --bg-primary: #1b1421;
+  --bg-accent: #302438;
+  --interactive-hover: rgb(240 220 255 / 0.07);
+  --interactive-selected: rgb(240 220 255 / 0.13);
+  --brand: #da8fff;
+  --brand-hover: #e3a8ff;
+  --brand-foreground: #22112d;
+  --text-normal: #f8eeff;
+  --text-muted: #bca7cb;
+  --text-link: #f0b7ff;
+  --divider: #3a2c44;
+}
+
+[data-theme="copper"] {
+  --bg-tertiary: #0c1316;
+  --bg-secondary: #1a262c;
+  --bg-primary: #141e23;
+  --bg-accent: #233239;
+  --interactive-hover: rgb(210 230 240 / 0.07);
+  --interactive-selected: rgb(210 230 240 / 0.13);
+  --brand: #e6a26b;
+  --brand-hover: #edb787;
+  --brand-foreground: #1e130a;
+  --text-normal: #eef4f7;
+  --text-muted: #a2b4be;
+  --text-link: #f0be8f;
+  --divider: #2a3a42;
+}
+
+/* ---------------------------------------------------------------------------
+   Appearance (set on <html> by ThemeProvider from the resolved theme)
+   --------------------------------------------------------------------------- */
+
+[data-appearance="dark"],
+:root:not([data-appearance]) {
+  --sys-blue: #0a84ff;
+  --sys-indigo: #5e5ce6;
+  --sys-purple: #bf5af2;
+  --sys-pink: #ff375f;
+  --sys-red: #ff453a;
+  --sys-orange: #ff9f0a;
+  --sys-yellow: #ffd60a;
+  --sys-green: #30d158;
+  --sys-mint: #63e6e2;
+  --sys-teal: #40c8e0;
+  --sys-cyan: #64d2ff;
+  --sys-brown: #ac8e68;
+  --sys-gray: #98989d;
+
+  --tint-mix: #ffffff;
+  --shade: 0 0 0;
+  --monogram-top: #7c7c84;
+  --monogram-bottom: #56565c;
+  --elev-1: 0 1px 2px rgb(0 0 0 / 0.4);
+  --elev-2: 0 4px 14px rgb(0 0 0 / 0.35), 0 1px 3px rgb(0 0 0 / 0.3);
+  --elev-3: 0 12px 32px rgb(0 0 0 / 0.45), 0 2px 8px rgb(0 0 0 / 0.3);
+  --elev-4: 0 24px 64px rgb(0 0 0 / 0.55), 0 4px 16px rgb(0 0 0 / 0.35);
+  --glass-highlight: rgb(255 255 255 / 0.07);
+  --scrim: rgb(0 0 0 / 0.5);
+  --scrim-strong: rgb(0 0 0 / 0.72);
+}
+
+[data-appearance="light"] {
+  --tint-mix: #000000;
+  --shade: 60 60 67;
+  --monogram-top: #a5a9b5;
+  --monogram-bottom: #858a96;
+  --elev-1: 0 1px 2px rgb(0 0 0 / 0.06);
+  --elev-2: 0 4px 14px rgb(0 0 0 / 0.07), 0 1px 3px rgb(0 0 0 / 0.06);
+  --elev-3: 0 12px 32px rgb(0 0 0 / 0.1), 0 2px 8px rgb(0 0 0 / 0.06);
+  --elev-4: 0 24px 64px rgb(0 0 0 / 0.16), 0 4px 16px rgb(0 0 0 / 0.08);
+  --glass-highlight: rgb(255 255 255 / 0.7);
+  --scrim: rgb(0 0 0 / 0.28);
+  --scrim-strong: rgb(0 0 0 / 0.5);
+}
+
+[data-appearance="light"] {
+  --bg-elevated: #ffffff;
+  --glass: color-mix(in srgb, var(--bg-primary) 74%, transparent);
+  --glass-thick: color-mix(in srgb, #ffffff 90%, transparent);
+  --bubble-in: color-mix(in srgb, var(--text-normal) 8%, var(--bg-primary));
+  --panel-border: color-mix(in srgb, var(--text-normal) 6%, transparent);
+  --super: #9a6b00;
+}
+
+/* ---------------------------------------------------------------------------
+   Accent colour (Settings > Appearance). Overrides the theme's own accent,
+   and stands aside whenever a skin is active, since skins are complete looks.
+   --------------------------------------------------------------------------- */
+
+[data-accent]:not([data-skin]) {
+  --brand-hover: color-mix(in srgb, var(--brand) 84%, var(--tint-mix, #fff));
+  --brand-foreground: #ffffff;
+  --text-link: var(--brand);
+}
+[data-accent="blue"]:not([data-skin]) { --brand: var(--sys-blue); }
+[data-accent="indigo"]:not([data-skin]) { --brand: var(--sys-indigo); }
+[data-accent="purple"]:not([data-skin]) { --brand: var(--sys-purple); }
+[data-accent="pink"]:not([data-skin]) { --brand: var(--sys-pink); }
+[data-accent="red"]:not([data-skin]) { --brand: var(--sys-red); }
+[data-accent="orange"]:not([data-skin]) { --brand: var(--sys-orange); }
+[data-accent="yellow"]:not([data-skin]) { --brand: var(--sys-yellow); --brand-foreground: #1d1d1f; }
+[data-accent="green"]:not([data-skin]) { --brand: var(--sys-green); }
+[data-accent="mint"]:not([data-skin]) { --brand: var(--sys-mint); }
+[data-accent="teal"]:not([data-skin]) { --brand: var(--sys-teal); }
+[data-accent="graphite"]:not([data-skin]) { --brand: var(--sys-gray); }
+/* Light accents that would put white text under the WCAG floor get dark
+   text instead, as the system does for yellow. */
+[data-appearance="dark"][data-accent="mint"]:not([data-skin]),
+[data-appearance="dark"][data-accent="teal"]:not([data-skin]),
+[data-appearance="dark"] [data-accent="mint"],
+[data-appearance="dark"] [data-accent="teal"] {
+  --brand-foreground: #06201f;
+}
+/* Yellow and mint are unreadable as link text on light surfaces. */
+[data-appearance="light"][data-accent="yellow"]:not([data-skin]),
+[data-appearance="light"][data-accent="mint"]:not([data-skin]),
+[data-appearance="light"] [data-accent="yellow"],
+[data-appearance="light"] [data-accent="mint"] {
+  --text-link: color-mix(in srgb, var(--brand) 60%, #000);
+}
+
+/* ---------------------------------------------------------------------------
+   Tailwind bridge
+   --------------------------------------------------------------------------- */
+
+@theme inline {
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-secondary: var(--bg-secondary);
+  --color-bg-tertiary: var(--bg-tertiary);
+  --color-bg-accent: var(--bg-accent);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-canvas: var(--canvas);
+  --color-interactive-hover: var(--interactive-hover);
+  --color-interactive-selected: var(--interactive-selected);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-text-normal: var(--text-normal);
+  --color-text-muted: var(--text-muted);
+  --color-text-link: var(--text-link);
+  --color-label-tertiary: var(--label-tertiary);
+  --color-status-online: var(--status-online);
+  --color-status-idle: var(--status-idle);
+  --color-status-dnd: var(--status-dnd);
+  --color-status-offline: var(--status-offline);
+  --color-divider: var(--divider);
+  --color-hairline: var(--hairline);
+  --color-fill: var(--fill);
+  --color-fill-secondary: var(--fill-secondary);
+  --color-fill-tertiary: var(--fill-tertiary);
+  --color-glass: var(--glass);
+  --color-glass-thick: var(--glass-thick);
+  --color-glass-border: var(--glass-border);
+  --color-bubble-in: var(--bubble-in);
+  --color-bubble-in-text: var(--bubble-in-text);
+  --color-bubble-out: var(--bubble-out);
+  --color-bubble-out-text: var(--bubble-out-text);
+  --color-super: var(--super);
+  --color-overlay-surface: var(--overlay-surface);
+  --color-overlay-panel: var(--overlay-panel);
+  --color-overlay-media: var(--overlay-media);
+  --color-overlay-scrim: var(--overlay-scrim);
+  --color-overlay-scrim-strong: var(--overlay-scrim-strong);
+  --color-sys-blue: var(--sys-blue);
+  --color-sys-indigo: var(--sys-indigo);
+  --color-sys-purple: var(--sys-purple);
+  --color-sys-pink: var(--sys-pink);
+  --color-sys-red: var(--sys-red);
+  --color-sys-orange: var(--sys-orange);
+  --color-sys-yellow: var(--sys-yellow);
+  --color-sys-green: var(--sys-green);
+  --color-sys-mint: var(--sys-mint);
+  --color-sys-teal: var(--sys-teal);
+  --color-sys-cyan: var(--sys-cyan);
+  --color-sys-gray: var(--sys-gray);
+
+  /* Continuous-corner scale. Larger than stock Tailwind: iOS rounds
+     everything, and a 6px button reads as web, not as a control. */
+  --radius-xs: var(--skin-radius-sm, 4px);
+  --radius-sm: var(--skin-radius-sm, 6px);
+  --radius-md: var(--skin-radius-md, 9px);
+  --radius-lg: var(--skin-radius-lg, 12px);
+  --radius-xl: var(--skin-radius-xl, 16px);
+  --radius-2xl: var(--skin-radius-2xl, 20px);
+  --radius-3xl: var(--skin-radius-3xl, 28px);
+  --radius-4xl: var(--skin-radius-3xl, 36px);
+  --radius-panel: var(--skin-radius-2xl, var(--panel-radius));
+
+  --shadow-elev-1: var(--elev-1);
+  --shadow-elev-2: var(--elev-2);
+  --shadow-elev-3: var(--elev-3);
+  --shadow-elev-4: var(--elev-4);
+
+  --ease-spring: var(--spring-snappy);
+  --ease-bouncy: var(--spring-bouncy);
+  --ease-smooth: var(--spring-smooth);
+  --ease-ios: var(--ease-ios);
+
+  --font-sans: var(--skin-font, var(--font-discord));
+  --font-display: var(--skin-font, var(--font-display));
+  --font-rounded: var(--skin-font, var(--font-rounded));
+  --font-mono: var(--font-mono);
+}

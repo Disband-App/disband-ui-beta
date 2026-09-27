@@ -81,34 +81,60 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1e1f22",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#e9e9ee" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0b0c" },
+  ],
   width: "device-width",
   initialScale: 1,
-  colorScheme: "dark",
+  viewportFit: "cover",
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" data-theme="dark" data-appearance="dark" suppressHydrationWarning>
       <head>
         <meta name="referrer" content="no-referrer" />
         <Script id="theme-init" strategy="beforeInteractive">
           {`
 (function () {
+  var root = document.documentElement;
+  var themes = ${JSON.stringify(THEMES.map(t=>({id:t.id,mode:t.mode||"dark"}))).replace(/</g,"\\u003c")};
+  var mq = null;
+  try { mq = window.matchMedia('(prefers-color-scheme: dark)'); } catch (e) {}
+  function apply(choice) {
+    var id = choice === 'auto' ? (mq && !mq.matches ? 'light' : 'dark') : choice;
+    var t = themes.find(function (x) { return x.id === id; }) || { id: 'dark', mode: 'dark' };
+    root.setAttribute('data-theme', t.id);
+    root.setAttribute('data-appearance', t.mode);
+    root.style.colorScheme = t.mode;
+  }
+  var choice = 'auto';
   try {
     var stored = localStorage.getItem('disband:theme');
-    var themes = ${JSON.stringify(THEMES.map(t=>({id:t.id,mode:t.mode||"dark"}))).replace(/</g,"\\u003c")};
-    var valid = themes.map(function(t){return t.id;});
-    var theme = valid.indexOf(stored) !== -1 ? stored : 'dark';
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.style.colorScheme = themes.find(function(t){return t.id===theme;}).mode;
+    if (stored === 'auto' || themes.some(function (x) { return x.id === stored; })) choice = stored;
+  } catch (e) {}
+  apply(choice);
+  /* Pages without the app's ThemeProvider (marketing, legal) still follow
+     the OS live while on Automatic. The provider re-applies on its own. */
+  if (mq && mq.addEventListener) {
+    mq.addEventListener('change', function () {
+      var current = 'auto';
+      try { current = localStorage.getItem('disband:theme') || 'auto'; } catch (e) {}
+      if (current === 'auto') apply('auto');
+    });
+  }
+  try {
+    var accent = localStorage.getItem('disband:accent');
+    if (accent && accent !== 'theme' && /^[a-z]+$/.test(accent)) root.setAttribute('data-accent', accent);
   } catch (e) {}
   try {
     var motion = localStorage.getItem('disband:motion');
     if (motion === 'reduced' || motion === 'full') {
-      document.documentElement.setAttribute('data-motion', motion);
+      root.setAttribute('data-motion', motion);
     }
   } catch (e) {}
 })();
@@ -117,7 +143,6 @@ export default function RootLayout({
       </head>
       <body>
         {children}
-        {}
       </body>
     </html>
   );

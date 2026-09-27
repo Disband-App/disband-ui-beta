@@ -103,7 +103,7 @@ function MobileNotice() {
       <button
         type="button"
         onClick={() => void copyLink()}
-        className="rounded-md border border-divider px-4 py-2 text-sm font-medium text-text-normal transition-colors hover:bg-interactive-hover"
+        className="btn btn-gray"
       >
         {copied ? "Copied" : "Copy page link"}
       </button>
@@ -159,14 +159,14 @@ function ActivationScreen({
           <button
             type="button"
             onClick={onRetry}
-            className="rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+            className="btn btn-filled"
           >
             Check again
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="rounded bg-bg-accent px-4 py-2 text-sm font-semibold hover:bg-interactive-hover"
+            className="btn btn-gray"
           >
             Close
           </button>
@@ -230,7 +230,7 @@ function ActivationScreen({
       <button
         type="button"
         onClick={onClose}
-        className="mt-5 w-full rounded-lg bg-brand py-2.5 text-sm font-bold text-white hover:bg-brand-hover"
+        className="btn btn-filled mt-5 w-full"
       >
         Start using Disband Aero
       </button>
@@ -286,7 +286,7 @@ export function SubscriptionModal({ open, onClose, userId }: SubscriptionModalPr
         role="dialog"
         aria-modal="true"
         aria-label="Disband Aero subscription"
-        className="modal-pop mx-4 flex max-h-[90vh] w-full max-w-xl flex-col overflow-y-auto rounded-2xl bg-overlay-panel shadow-2xl"
+        className="modal-pop mx-4 flex max-h-[90vh] w-full max-w-xl flex-col overflow-y-auto rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-6 pt-5 pb-2">

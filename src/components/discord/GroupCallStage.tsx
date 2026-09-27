@@ -70,15 +70,15 @@ function ParticipantTile({
         </div>
       )}
 
-      <span className="absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-black/60 px-2 py-1 text-[13px] font-medium text-white backdrop-blur-sm">
+      <span className="absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[12.5px] font-semibold text-white backdrop-blur-sm">
         <span className="truncate">{label}</span>
         {ringing && (
-          <span className="shrink-0 animate-pulse rounded bg-status-online/25 px-1 text-[10px] font-bold uppercase tracking-wide text-status-online">
+          <span className="shrink-0 animate-pulse rounded bg-status-online/25 px-1 text-[10px] uppercase font-semibold tracking-[0.04em] text-status-online">
             Ringing
           </span>
         )}
         {isScreen && (
-          <span className="shrink-0 rounded bg-status-online/25 px-1 text-[10px] font-bold uppercase tracking-wide text-status-online">
+          <span className="shrink-0 rounded bg-status-online/25 px-1 text-[10px] uppercase font-semibold tracking-[0.04em] text-status-online">
             Live
           </span>
         )}
@@ -180,7 +180,7 @@ export function GroupCallStage({
     <div className="flex shrink-0 flex-col overflow-hidden bg-black" style={{ height: callHeight }}>
      <div className="flex min-h-0 flex-1 flex-col items-center px-6 pt-3">
       {}
-      <p className="text-xs font-bold uppercase tracking-widest text-white/30">
+      <p className="text-xs uppercase font-semibold tracking-[0.04em] text-white/30">
         Group Call
       </p>
       <h2 className="mt-1 text-lg font-semibold text-white">{groupName}</h2>

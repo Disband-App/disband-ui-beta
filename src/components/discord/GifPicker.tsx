@@ -19,7 +19,7 @@ function GifThumb({ gif, onSelect }: {
   if (!thumb || !full) return null;
 
   return (
-    <div className="overflow-hidden rounded hover:ring-2 hover:ring-brand">
+    <div className="overflow-hidden rounded-[10px] transition-transform duration-300 ease-spring hover:scale-[1.03] hover:ring-2 hover:ring-brand">
       <button
         type="button"
         onClick={() => { onSelect(full); }}
@@ -129,21 +129,25 @@ export function GifPicker({ onSelect, disabled }: GifPickerProps) {
       ? createPortal(
           <div
             id="gif-picker-panel"
-            className="fixed z-[100] flex max-h-[min(20rem,50vh)] flex-col overflow-hidden rounded-lg border border-divider bg-bg-secondary shadow-2xl"
+            className="glass-thick popover-pop fixed z-[100] flex max-h-[min(22rem,55vh)] flex-col overflow-hidden rounded-[18px]"
             style={{
               left: panelPos.left,
               bottom: panelPos.bottom,
               width: panelPos.width,
+              ["--popover-origin" as string]: "bottom right",
             }}
           >
-            <div className="flex shrink-0 items-center gap-2 border-b border-divider p-2">
-              <input
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search KLIPY"
-                className="min-w-0 flex-1 rounded bg-bg-accent px-2 py-1.5 text-sm text-text-normal outline-none focus:ring-1 focus:ring-brand"
-              />
-              <button type="button" onClick={() => setOpen(false)} className="text-text-muted hover:text-text-normal">
+            <div className="flex shrink-0 items-center gap-2 p-2 pb-1">
+              <label className="search-field min-w-0 flex-1">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden className="shrink-0"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Search KLIPY"
+                  autoFocus
+                />
+              </label>
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close" className="tool-btn h-8 w-8">
                 <IconClose size={16} />
               </button>
             </div>
@@ -186,9 +190,10 @@ export function GifPicker({ onSelect, disabled }: GifPickerProps) {
             return next;
           });
         }}
-        className="flex h-8 items-center rounded px-2 text-xs font-bold uppercase tracking-wide text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+        data-active={open ? "true" : undefined}
+        className="tool-btn h-8 w-auto px-1.5 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        GIF
+        <span className="rounded-[5px] px-1 text-[10.5px] font-bold leading-[16px] tracking-wide ring-[1.5px] ring-current">GIF</span>
       </button>
       {panel}
     </div>

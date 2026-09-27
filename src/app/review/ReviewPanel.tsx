@@ -29,7 +29,7 @@ function Stars({ value, onPick, size = "md" }: { value: number; onPick?: (n: num
           aria-label={`${n} star${n === 1 ? "" : "s"}`}
           onClick={() => onPick?.(n)}
           className={`${cls} leading-none transition-transform ${onPick ? "cursor-pointer hover:scale-110" : "cursor-default"} ${
-            n <= value ? "text-[#fee75c]" : "text-white/15"
+            n <= value ? "text-[#fee75c]" : "text-fill-secondary"
           }`}
         >
           ★
@@ -95,7 +95,7 @@ function ReviewForm({
   return (
     <div className="space-y-4">
       <Stars value={stars} onPick={setStars} />
-      <label className="flex cursor-pointer items-center gap-2 text-sm text-[#9aa0a8]">
+      <label className="flex cursor-pointer items-center gap-2 text-sm text-text-muted">
         <input
           type="checkbox"
           checked={anonymous}
@@ -110,7 +110,7 @@ function ReviewForm({
           onChange={(e) => setAlias(e.target.value)}
           maxLength={32}
           placeholder="Alias (optional — shown with your review)"
-          className="w-full rounded-md border border-white/10 bg-[#1e1f22] px-3 py-2 text-sm text-white outline-none placeholder:text-[#6e727a] focus:border-brand"
+          className="field"
         />
       )}
       <textarea
@@ -119,7 +119,7 @@ function ReviewForm({
         maxLength={2000}
         rows={4}
         placeholder="What do you like? What should we fix? (optional)"
-        className="w-full resize-y rounded-md border border-white/10 bg-[#1e1f22] px-3 py-2 text-sm text-white outline-none placeholder:text-[#6e727a] focus:border-brand"
+        className="field resize-y"
       />
       {error && <p className="text-[13px] text-status-dnd">{error}</p>}
       <div className="flex gap-2">
@@ -127,7 +127,7 @@ function ReviewForm({
           type="button"
           disabled={saving}
           onClick={() => void submit()}
-          className="flex-1 rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="btn btn-filled flex-1"
         >
           {saving ? "Saving…" : initial ? "Update review" : "Post review"}
         </button>
@@ -136,7 +136,7 @@ function ReviewForm({
             type="button"
             disabled={saving}
             onClick={() => void remove()}
-            className="rounded-md border border-white/10 px-4 py-2.5 text-sm text-[#9aa0a8] transition-colors hover:text-white disabled:opacity-50"
+            className="btn btn-gray"
           >
             Delete
           </button>
@@ -194,50 +194,50 @@ export function ReviewPanel() {
     <div className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
+          <h1 className="large-title text-[34px] sm:text-[40px]">
             Reviews
           </h1>
-          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-[#9aa0a8]">
+          <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-text-muted">
             The real rating of Disband — straight from the people using it.
           </p>
         </div>
         <button
           type="button"
           onClick={() => setPopupOpen(true)}
-          className="shrink-0 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-brand/25 transition-all hover:scale-[1.03] hover:opacity-90 active:scale-[0.98]"
+          className="btn btn-filled shrink-0"
         >
           {mine ? "Edit your review" : "Write a review"}
         </button>
       </div>
 
-      <div className="mt-8 flex flex-col gap-6 rounded-xl border border-white/[0.08] bg-gradient-to-br from-white/[0.04] to-transparent p-6 sm:flex-row sm:items-center">
+      <div className="mt-8 flex flex-col gap-6 rounded-[20px] bg-bg-primary p-6 shadow-elev-1 sm:flex-row sm:items-center">
         {count === 0 ? (
-          <p className="text-sm text-[#9aa0a8]">No reviews yet — yours could be the first.</p>
+          <p className="text-sm text-text-muted">No reviews yet — yours could be the first.</p>
         ) : (
           <>
             <div className="text-center sm:min-w-[120px]">
-              <p className="bg-gradient-to-b from-white to-white/60 bg-clip-text text-6xl font-bold tabular-nums text-transparent">
+              <p className="font-rounded text-6xl font-bold tabular-nums text-text-normal">
                 {avg.toFixed(1)}
               </p>
               <div className="mt-2 flex justify-center">
                 <Stars value={Math.round(avg)} size="sm" />
               </div>
-              <p className="mt-1.5 text-[13px] text-[#9aa0a8]">
+              <p className="mt-1.5 text-[13px] text-text-muted">
                 {count} review{count === 1 ? "" : "s"}
               </p>
             </div>
             <div className="min-w-0 flex-1 space-y-1.5">
               {dist.map((d) => (
                 <div key={d.stars} className="flex items-center gap-2.5">
-                  <span className="w-3 shrink-0 text-right text-xs tabular-nums text-[#9aa0a8]">{d.stars}</span>
+                  <span className="w-3 shrink-0 text-right text-xs tabular-nums text-text-muted">{d.stars}</span>
                   <span className="text-xs text-[#fee75c]">★</span>
-                  <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-white/[0.07]">
+                  <div className="h-2 min-w-0 flex-1 overflow-hidden rounded-full bg-fill-tertiary">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-brand to-[#fee75c] transition-[width]"
                       style={{ width: count ? `${Math.round((d.count / count) * 100)}%` : "0%" }}
                     />
                   </div>
-                  <span className="w-8 shrink-0 text-xs tabular-nums text-[#6e727a]">{d.count}</span>
+                  <span className="w-8 shrink-0 text-xs tabular-nums text-text-muted">{d.count}</span>
                 </div>
               ))}
             </div>
@@ -247,9 +247,9 @@ export function ReviewPanel() {
 
       <div className="mt-10 space-y-3">
         {loading ? (
-          <p className="text-sm text-[#6e727a]">Loading reviews…</p>
+          <p className="text-sm text-text-muted">Loading reviews…</p>
         ) : reviews.length === 0 ? (
-          <p className="text-sm text-[#6e727a]">Nothing here yet.</p>
+          <p className="text-sm text-text-muted">Nothing here yet.</p>
         ) : (
           reviews.map((r) => {
             const label = r.anonymous
@@ -260,14 +260,14 @@ export function ReviewPanel() {
               <article
                 key={r.id}
                 className={`rounded-xl border p-4 transition-colors ${
-                  isMine ? "border-brand/40 bg-brand/[0.05]" : "border-white/[0.06] bg-white/[0.015]"
+                  isMine ? "border-brand/40 bg-brand/[0.06]" : "border-transparent bg-bg-primary shadow-elev-1"
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">
-                  <p className="truncate text-sm font-semibold text-white">
+                  <p className="truncate text-sm font-semibold text-text-normal">
                     {label}
                     {isMine && (
-                      <span className="ml-2 rounded bg-brand/20 px-1.5 py-0.5 text-[10px] font-bold uppercase text-brand">
+                      <span className="ml-2 rounded bg-brand/20 px-1.5 py-0.5 text-[10px] uppercase font-semibold tracking-[0.04em] text-brand">
                         You
                       </span>
                     )}
@@ -275,9 +275,9 @@ export function ReviewPanel() {
                   <Stars value={r.stars} size="sm" />
                 </div>
                 {r.body && (
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[#c4c9ce]">{r.body}</p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-text-normal">{r.body}</p>
                 )}
-                <p className="mt-2 text-xs text-[#6e727a]">
+                <p className="mt-2 text-xs text-text-muted">
                   {new Date(r.created_at).toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })}
                 </p>
               </article>
@@ -292,24 +292,24 @@ export function ReviewPanel() {
           onClick={() => setPopupOpen(false)}
         >
           <div
-            className="modal-pop w-full max-w-md rounded-2xl border border-white/10 bg-[#1e1f22] p-6 shadow-2xl"
+            className="modal-pop w-full max-w-md rounded-[22px] bg-bg-elevated p-6 shadow-elev-4 ring-1 ring-glass-border"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="title-2">
                 {mine ? "Edit your review" : "Write a review"}
               </h2>
               <button
                 type="button"
                 onClick={() => setPopupOpen(false)}
                 aria-label="Close"
-                className="rounded-md p-1.5 text-[#9aa0a8] transition-colors hover:bg-white/10 hover:text-white"
+                className="rounded-md p-1.5 text-text-muted transition-colors hover:bg-fill-tertiary hover:text-text-normal"
               >
                 ✕
               </button>
             </div>
             {!userId ? (
-              <p className="text-sm leading-relaxed text-[#9aa0a8]">
+              <p className="text-sm leading-relaxed text-text-muted">
                 You need an account to leave a review (keeps the spam out).{" "}
                 <Link href="/login" className="font-medium text-brand hover:underline">
                   Log in

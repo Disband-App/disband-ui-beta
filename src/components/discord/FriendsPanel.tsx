@@ -4,7 +4,8 @@ import { useMemo, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
 import { Avatar } from "@/components/ui/Avatar";
 import { displayName } from "@/lib/utils";
-import { IconFriends, IconSearch, IconClose } from "@/components/icons";
+import { IconFriends, IconSearch, IconClose, IconUserPlus, IconCheck } from "@/components/icons";
+import { Segmented } from "@/components/ui/Segmented";
 import type { Profile, UserStatus } from "@/lib/supabase/types";
 import type { PresenceMap } from "@/lib/presence";
 import { activeStatusNote } from "@/lib/presence";
@@ -31,7 +32,7 @@ function StatusAvatar({ profile, presence }: { profile: Profile; presence: Prese
     <div className="relative shrink-0">
       <Avatar profile={profile} size="md" />
       <span
-        className={`absolute -bottom-0.5 -right-0.5 h-[13px] w-[13px] rounded-full border-[3px] border-bg-primary ${
+        className={`absolute -bottom-0.5 -right-0.5 h-[14px] w-[14px] rounded-full border-[2.5px] border-bg-secondary ${
           STATUS_DOT[live]
         }`}
       />
@@ -57,7 +58,7 @@ function RowAction({
         e.stopPropagation();
         onClick(e);
       }}
-      className="flex h-9 w-9 items-center justify-center rounded-full bg-bg-tertiary text-text-muted transition-colors hover:bg-interactive-selected hover:text-text-normal"
+      className="press flex h-9 w-9 items-center justify-center rounded-full bg-fill-tertiary text-brand transition-colors hover:bg-fill-secondary"
     >
       {children}
     </button>
@@ -170,40 +171,10 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
           : `All friends — ${visible.length}`;
 
   return (
-    <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-bg-primary">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-black/20 px-4 shadow-sm">
-        <IconFriends size={22} className="shrink-0 text-text-muted" />
-        <h1 className="shrink-0 text-[15px] font-semibold text-text-normal">My Friends</h1>
-
-        <span className="mx-1 h-6 w-px shrink-0 bg-divider" />
-
-        <nav className="flex items-center gap-1 overflow-x-auto">
-          {(["online", "all", "pending", "blocked"] as const).map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => {
-                setTab(t);
-                setAddOpen(false);
-              }}
-              className={`shrink-0 rounded px-2.5 py-1 text-sm capitalize transition-colors ${
-                tab === t && !addOpen
-                  ? "bg-interactive-selected text-text-normal"
-                  : "text-text-muted hover:bg-interactive-hover hover:text-text-normal"
-              }`}
-            >
-              {t}
-              {t === "pending" && pendingCount > 0 && (
-                <span
-                  key={pendingCount}
-                  className="badge-pop ml-1.5 rounded-full bg-status-dnd px-1.5 text-[10px] font-bold text-white"
-                >
-                  {pendingCount > 99 ? "99+" : pendingCount}
-                </span>
-              )}
-            </button>
-          ))}
-
+    <main className="view-enter flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-bg-primary">
+      <header className="shrink-0 px-6 pb-3 pt-5">
+        <div className="flex items-center gap-3">
+          <h1 className="large-title min-w-0 flex-1 truncate">Friends</h1>
           <button
             type="button"
             onClick={() => {
@@ -211,84 +182,105 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
               setAddError(null);
               setAddSuccess(null);
             }}
-            className={`ml-1 shrink-0 rounded px-2.5 py-1 text-sm font-medium transition-colors ${
-              addOpen
-                ? "bg-brand-hover text-white"
-                : "bg-brand text-white hover:bg-brand-hover"
-            }`}
+            aria-expanded={addOpen}
+            className={`btn btn-sm ${addOpen ? "btn-gray" : "btn-filled"}`}
           >
-            Add Friend
+            {addOpen ? <IconClose size={15} strokeWidth={2.4} /> : <IconUserPlus size={15} strokeWidth={2.2} />}
+            {addOpen ? "Done" : "Add friend"}
           </button>
-        </nav>
+        </div>
+
+        {!addOpen && (
+          <Segmented
+            className="mt-4 max-w-md"
+            ariaLabel="Filter friends"
+            value={tab}
+            onChange={(t) => setTab(t)}
+            options={(["online", "all", "pending", "blocked"] as const).map((t) => ({
+              id: t,
+              label: (
+                <>
+                  <span className="capitalize">{t}</span>
+                  {t === "pending" && pendingCount > 0 && (
+                    <span key={pendingCount} className="count-badge badge-pop h-4 min-w-4 px-1 text-[10px]">
+                      {pendingCount > 99 ? "99+" : pendingCount}
+                    </span>
+                  )}
+                </>
+              ),
+            }))}
+          />
+        )}
       </header>
 
       {addOpen && (
-        <div className="shrink-0 border-b border-black/20 px-6 py-5">
-          <h2 className="text-[15px] font-semibold text-text-normal">Add a friend</h2>
-          <p className="mt-1 text-sm text-text-muted">
-            You can add friends by their Disband username.
-          </p>
-          <form onSubmit={submitAdd} className="mt-3 flex max-w-xl gap-2">
-            <input
-              autoFocus
-              value={addValue}
-              onChange={(e) => {
-                setAddValue(e.target.value);
-                setAddError(null);
-                setAddSuccess(null);
-              }}
-              placeholder="Enter a username"
-              className="min-w-0 flex-1 rounded-md border border-divider bg-bg-tertiary px-3.5 py-2.5 text-sm text-text-normal outline-none transition-colors placeholder:text-text-muted focus:border-brand/60"
-            />
-            <button
-              type="submit"
-              disabled={!addValue.trim() || sending}
-              className="shrink-0 rounded-md bg-brand px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {sending ? "Sending…" : "Send request"}
-            </button>
-          </form>
-          {addError && <p className="mt-2 text-sm text-status-dnd">{addError}</p>}
-          {addSuccess && <p className="mt-2 text-sm text-status-online">{addSuccess}</p>}
+        <div className="view-enter shrink-0 px-6 pb-5">
+          <div className="max-w-xl rounded-[18px] bg-bg-secondary p-5 shadow-[0_0_0_1px_var(--panel-border)]">
+            <h2 className="text-[16px] font-semibold text-text-normal">Add a friend</h2>
+            <p className="mt-1 text-[13.5px] text-text-muted">
+              Find people by their Disband username.
+            </p>
+            <form onSubmit={submitAdd} className="mt-4 flex gap-2">
+              <label className="field flex min-w-0 flex-1 items-center gap-1 py-0">
+                <span className="text-text-muted">@</span>
+                <input
+                  autoFocus
+                  value={addValue}
+                  onChange={(e) => {
+                    setAddValue(e.target.value);
+                    setAddError(null);
+                    setAddSuccess(null);
+                  }}
+                  placeholder="username"
+                  className="min-w-0 flex-1 bg-transparent py-2 outline-none"
+                />
+              </label>
+              <button
+                type="submit"
+                disabled={!addValue.trim() || sending}
+                className="btn btn-filled h-10 shrink-0"
+              >
+                {sending ? "Sending…" : "Send request"}
+              </button>
+            </form>
+            {addError && <p className="shake mt-2.5 text-[13px] text-status-dnd">{addError}</p>}
+            {addSuccess && <p className="mt-2.5 flex items-center gap-1.5 text-[13px] text-status-online"><IconCheck size={14} strokeWidth={2.6} />{addSuccess}</p>}
+          </div>
         </div>
       )}
 
       {!addOpen && (
-        <div className="shrink-0 px-6 pb-2 pt-4">
-          <div className="relative">
-            <IconSearch
-              size={16}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
-            />
+        <div className="shrink-0 px-6 pb-1">
+          <label className="search-field max-w-md">
+            <IconSearch size={15} className="shrink-0" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={tab === "online" ? "Search online friends" : "Search friends"}
-              className="w-full rounded-md bg-bg-tertiary py-2.5 pl-9 pr-9 text-sm text-text-normal outline-none placeholder:text-text-muted"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-normal"
+                className="flex h-4 w-4 items-center justify-center rounded-full bg-text-muted/60 text-bg-primary"
               >
-                <IconClose size={16} />
+                <IconClose size={10} strokeWidth={3} />
               </button>
             )}
-          </div>
+          </label>
         </div>
       )}
 
       {!addOpen && (
         <div key={tab} className="view-enter min-h-0 flex-1 overflow-y-auto px-6 pb-6">
-          <p className="sticky top-0 z-10 bg-bg-primary py-3 text-xs font-bold uppercase tracking-wide text-text-muted">
+          <p className="section-label sticky top-0 z-10 bg-bg-primary/90 px-4 pb-2 pt-4 backdrop-blur">
             {heading}
           </p>
 
           {tab === "pending" ? (
             visiblePendingIncoming.length === 0 && visiblePendingOutgoing.length === 0 ? (
-              <p className="py-10 text-sm text-text-muted">
+              <p className="px-4 py-10 text-center text-[13.5px] text-text-muted">
                 {query.trim()
                   ? `No pending requests match “${query.trim()}”.`
                   : "There are no pending friend requests."}
@@ -303,17 +295,17 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
             )
           ) : tab === "blocked" ? (
             visibleBlocked.length === 0 ? (
-              <p className="py-10 text-sm text-text-muted">
+              <p className="px-4 py-10 text-center text-[13.5px] text-text-muted">
                 {query.trim()
                   ? `No blocked users match “${query.trim()}”.`
                   : "You haven’t blocked anyone."}
               </p>
             ) : (
-              <ul className="border-t border-divider">
+              <ul className="list-group" style={{ ["--row-inset" as string]: "68px" }}>
                 {visibleBlocked.map((person) => (
                   <li
                     key={person.id}
-                    className="flex items-center gap-3 border-b border-divider py-2.5"
+                    className="list-row"
                   >
                     <Avatar profile={person} size="md" className="opacity-60" />
                     <div className="min-w-0 flex-1">
@@ -325,7 +317,7 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
                     <button
                       type="button"
                       onClick={() => void unblockUser(person.id)}
-                      className="shrink-0 rounded-md border border-divider px-3 py-1.5 text-[13px] font-medium text-text-normal transition-colors hover:border-text-muted hover:bg-interactive-hover"
+                      className="btn btn-gray btn-sm shrink-0"
                     >
                       Unblock
                     </button>
@@ -341,9 +333,9 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
               onAdd={() => setAddOpen(true)}
             />
           ) : (
-            <ul className="border-t border-divider">
-              {visible.map((friend) => (
-                <li key={friend.id}>
+            <ul className="list-group stagger" style={{ ["--row-inset" as string]: "68px" }}>
+              {visible.map((friend, i) => (
+                <li key={friend.id} className="list-row p-0" style={{ ["--i" as string]: Math.min(i, 10) }}>
                   <div
                     role="button"
                     tabIndex={0}
@@ -358,7 +350,7 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
                       e.preventDefault();
                       onFriendContext(friend, e.clientX, e.clientY);
                     }}
-                    className="group -mx-3 flex cursor-pointer items-center gap-3 rounded-lg border-b border-divider px-3 py-2.5 transition-colors hover:bg-interactive-hover"
+                    className="group flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 transition-colors hover:bg-interactive-hover active:bg-interactive-selected"
                   >
                     <StatusAvatar profile={friend} presence={presenceMap} />
                     <div className="min-w-0 flex-1">
@@ -371,17 +363,19 @@ export function FriendsPanel({ onOpenProfile, onFriendContext }: FriendsPanelPro
                         )}
                       </p>
                       {(friend.pronouns || activeStatusNote(friend)) && (
-                        <p className="truncate text-[12px] text-text-muted/80">
-                          <span className="font-medium text-brand">{friend.pronouns}</span>
+                        <p className="truncate text-[12.5px] text-text-muted">
+                          <span className="font-medium text-text-normal/80">{friend.pronouns}</span>
                           {friend.pronouns && activeStatusNote(friend) && (
                             <span className="mx-1 text-text-muted/40">·</span>
                           )}
-                          <span className="italic">{activeStatusNote(friend)}</span>
+                          <span>{activeStatusNote(friend)}</span>
                         </p>
                       )}
-                      <p className="truncate text-[13px] text-text-muted">
-                        {STATUS_LABEL[presenceMap.get(friend.id) ?? "offline"]}
-                      </p>
+                      {!activeStatusNote(friend) && !friend.pronouns && (
+                        <p className="truncate text-[12.5px] text-text-muted">
+                          {STATUS_LABEL[presenceMap.get(friend.id) ?? "offline"]}
+                        </p>
+                      )}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       <RowAction label="Message" onClick={() => void openDmWithFriend(friend.id)}>
@@ -424,31 +418,31 @@ function EmptyState({
 }) {
   if (query) {
     return (
-      <p className="py-10 text-sm text-text-muted">
+      <p className="px-4 py-10 text-center text-[13.5px] text-text-muted">
         No friends match &ldquo;{query}&rdquo;.
       </p>
     );
   }
   if (totalFriends === 0) {
     return (
-      <div className="py-12">
-        <IconFriends size={48} className="mb-4 text-text-muted" />
-        <h2 className="text-lg font-semibold text-text-normal">No friends yet</h2>
-        <p className="mt-1 max-w-sm text-sm text-text-muted">
+      <div className="flex flex-col items-center py-12 text-center">
+        <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-fill-tertiary text-text-muted"><IconFriends size={30} /></span>
+        <h2 className="title-2">No friends yet</h2>
+        <p className="mt-1 max-w-sm text-[13.5px] text-text-muted">
           Add someone by their username to start sending messages and calls.
         </p>
         <button
           type="button"
           onClick={onAdd}
-          className="mt-4 rounded-md bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
+          className="btn btn-filled mt-5"
         >
-          Add Friend
+          Add a friend
         </button>
       </div>
     );
   }
   return (
-    <p className="py-10 text-sm text-text-muted">
+    <p className="px-4 py-10 text-center text-[13.5px] text-text-muted">
       {tab === "online"
         ? "Nobody's online right now."
         : "No friends to show."}
@@ -470,16 +464,16 @@ function PendingList({
   const { presenceMap } = useApp();
   if (incoming.length === 0 && outgoing.length === 0) {
     return (
-      <p className="py-10 text-sm text-text-muted">There are no pending friend requests.</p>
+      <p className="px-4 py-10 text-center text-[13.5px] text-text-muted">No pending requests.</p>
     );
   }
 
   return (
-    <ul className="border-t border-divider">
+    <ul className="list-group" style={{ ["--row-inset" as string]: "68px" }}>
       {incoming.map((f) => (
         <li
           key={f.id}
-          className="flex items-center gap-3 border-b border-divider py-2.5"
+          className="list-row"
         >
           {f.requester && <StatusAvatar profile={f.requester} presence={presenceMap} />}
           <div className="min-w-0 flex-1">
@@ -490,17 +484,15 @@ function PendingList({
             >
               {f.requester ? displayName(f.requester) : "Unknown user"}
             </button>
-            <p className="text-[13px] text-text-muted">Incoming friend request</p>
+            <p className="text-[12.5px] text-text-muted">Wants to be friends</p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <RowAction label="Accept" onClick={() => void onRespond(f.id, true)}>
-              <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
-            </RowAction>
-            <RowAction label="Ignore" onClick={() => void onRespond(f.id, false)}>
-              <IconClose size={18} />
-            </RowAction>
+            <button type="button" onClick={() => void onRespond(f.id, false)} className="btn btn-gray btn-sm">
+              Ignore
+            </button>
+            <button type="button" onClick={() => void onRespond(f.id, true)} className="btn btn-filled btn-sm">
+              Accept
+            </button>
           </div>
         </li>
       ))}
@@ -508,19 +500,19 @@ function PendingList({
       {outgoing.map((f) => (
         <li
           key={f.id}
-          className="flex items-center gap-3 border-b border-divider py-2.5"
+          className="list-row"
         >
           {f.addressee && <StatusAvatar profile={f.addressee} presence={presenceMap} />}
           <div className="min-w-0 flex-1">
             <p className="truncate text-[15px] font-semibold text-text-normal">
               {f.addressee ? displayName(f.addressee) : "…"}
             </p>
-            <p className="text-[13px] text-text-muted">Outgoing friend request</p>
+            <p className="text-[12.5px] text-text-muted">Request sent</p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <RowAction label="Cancel request" onClick={() => void onRespond(f.id, false)}>
-              <IconClose size={18} />
-            </RowAction>
+            <button type="button" onClick={() => void onRespond(f.id, false)} className="btn btn-gray btn-sm">
+              Cancel
+            </button>
           </div>
         </li>
       ))}
@@ -543,22 +535,22 @@ export function ActiveNowPanel() {
   }, [friends, dmListEntries, presenceMap]);
 
   return (
-    <aside className="hidden w-[22rem] shrink-0 flex-col overflow-hidden border-l border-black/20 bg-bg-primary xl:flex">
-      <div className="flex h-12 shrink-0 items-center px-6">
-        <h2 className="text-[17px] font-semibold text-text-normal">Active Now</h2>
+    <aside className="hidden w-[300px] shrink-0 flex-col overflow-hidden border-l border-hairline xl:flex">
+      <div className="flex shrink-0 items-center px-5 pb-2 pt-6">
+        <h2 className="title-2">Active now</h2>
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto px-6 pb-6">
+      <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-6">
         {active.length === 0 ? (
-          <div className="pt-2">
-            <p className="text-[15px] font-semibold text-text-normal">It&rsquo;s quiet for now</p>
-            <p className="mt-1 text-sm leading-relaxed text-text-muted">
-              When a friend starts an activity or comes online, you&rsquo;ll see them here.
+          <div className="mx-2 mt-2 rounded-[16px] bg-fill-tertiary p-4">
+            <p className="text-[14px] font-semibold text-text-normal">It&rsquo;s quiet for now</p>
+            <p className="mt-1 text-[13px] leading-relaxed text-text-muted">
+              When friends come online, they&rsquo;ll show up here.
             </p>
           </div>
         ) : (
-          <ul className="space-y-1 pt-1">
-            {active.map((f) => (
-              <li key={f.id} className="flex items-center gap-3 rounded-lg px-2 py-2">
+          <ul className="stagger space-y-0.5 pt-1">
+            {active.map((f, i) => (
+              <li key={f.id} style={{ ["--i" as string]: i }} className="flex items-center gap-3 rounded-[12px] px-2 py-2 transition-colors hover:bg-interactive-hover">
                 <StatusAvatar profile={f} presence={presenceMap} />
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-text-normal">

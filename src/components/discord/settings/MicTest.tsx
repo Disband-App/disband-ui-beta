@@ -72,7 +72,7 @@ export function MicTest({ deviceId }: { deviceId: string }) {
         <button
           type="button"
           onClick={() => (running ? stop() : void start())}
-          className="shrink-0 rounded-md border border-divider px-3 py-1.5 text-[13px] font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+          className="btn btn-gray btn-sm shrink-0"
         >
           {running ? "Stop test" : "Test mic"}
         </button>

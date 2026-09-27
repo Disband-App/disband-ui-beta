@@ -90,19 +90,10 @@ export function Tooltip({ label, children, side = "right", as: Trigger = "div" }
         && createPortal(
           <div
             role="tooltip"
-            className="tooltip-content pointer-events-none fixed max-w-xs rounded-md bg-overlay-surface px-3 py-1.5 text-sm font-semibold text-text-normal shadow-lg"
+            className="tooltip-content glass-thick pointer-events-none fixed max-w-xs rounded-[10px] px-2.5 py-1.5 text-[12.5px] font-medium leading-snug text-text-normal"
             style={{ top: pos.top, left: pos.left, transform, zIndex: OVERLAY_Z.tooltip }}
           >
             {label}
-            {side === "right" && (
-              <span className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-overlay-surface" />
-            )}
-            {side === "left" && (
-              <span className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-overlay-surface" />
-            )}
-            {side === "top" && (
-              <span className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-overlay-surface" />
-            )}
           </div>,
           document.body,
         )}

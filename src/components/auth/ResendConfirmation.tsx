@@ -66,14 +66,14 @@ export function ResendConfirmation({
     <form onSubmit={send} className="space-y-2 text-left">
       {!lockEmail && (
         <label className="block">
-          <span className="mb-1 block text-xs font-bold uppercase text-text-muted">Email</span>
+          <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Email</span>
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className="w-full rounded-md bg-bg-accent px-3 py-2.5 text-sm text-text-normal outline-none focus:ring-2 focus:ring-brand"
+            className="field w-full text-[14px]"
           />
         </label>
       )}
@@ -81,7 +81,7 @@ export function ResendConfirmation({
       <button
         type="submit"
         disabled={state === "sending" || !email.trim()}
-        className="w-full rounded-md border border-divider bg-bg-accent py-2.5 text-sm font-semibold text-text-normal transition-colors hover:bg-interactive-hover disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn btn-gray w-full"
       >
         {state === "sending" ? "Sending…" : "Send a new confirmation email"}
       </button>

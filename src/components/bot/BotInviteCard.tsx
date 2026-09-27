@@ -22,9 +22,9 @@ interface InviteData {
 }
 
 const STATUS_COPY: Record<InviteData["status"], { label: string; tone: string }> = {
-  pending: { label: "Waiting for approval", tone: "text-[#f0b232]" },
+  pending: { label: "Waiting for approval", tone: "text-status-idle" },
   approved: { label: "Approved — the bot has joined", tone: "text-status-online" },
-  declined: { label: "Declined", tone: "text-[#f04747]" },
+  declined: { label: "Declined", tone: "text-status-dnd" },
   expired: { label: "Expired", tone: "text-text-muted" },
 };
 
@@ -114,7 +114,7 @@ export function BotInviteCard({ code }: { code: string }) {
             </p>
             <Link
               href="/home"
-              className="mt-6 inline-block rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+              className="btn btn-filled mt-6"
             >
               Back to Disband
             </Link>
@@ -122,10 +122,10 @@ export function BotInviteCard({ code }: { code: string }) {
         ) : (
           <div className="w-full max-w-md overflow-hidden rounded-xl bg-bg-primary shadow-2xl">
             <div className="border-b border-divider px-6 py-5 text-center">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-text-muted">
+              <p className="text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
                 Bot invite
               </p>
-              <h1 className="mt-1 text-xl font-bold text-text-normal">Join {invite.server.name}?</h1>
+              <h1 className="title-2 mt-1 text-text-normal">Join {invite.server.name}?</h1>
               {status && <p className={`mt-2 text-sm font-medium ${status.tone}`}>{status.label}</p>}
             </div>
 
@@ -149,7 +149,7 @@ export function BotInviteCard({ code }: { code: string }) {
               </div>
 
               <div className="mt-6">
-                <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-text-muted">
+                <p className="mb-2 text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
                   {invite.scopes.length === 1 ? "1 permission requested" : `${invite.scopes.length} permissions requested`}
                 </p>
                 <div className="space-y-2">
@@ -188,7 +188,7 @@ export function BotInviteCard({ code }: { code: string }) {
                       type="button"
                       onClick={() => void act("decline")}
                       disabled={busy}
-                      className="flex items-center justify-center gap-1.5 rounded-md border border-divider px-4 py-2 text-sm font-semibold text-text-normal transition-colors hover:bg-interactive-hover disabled:opacity-60"
+                      className="btn btn-gray"
                     >
                       <IconClose size={15} />
                       Decline
@@ -197,7 +197,7 @@ export function BotInviteCard({ code }: { code: string }) {
                       type="button"
                       onClick={() => void act("approve")}
                       disabled={busy}
-                      className="flex flex-1 items-center justify-center gap-1.5 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-60"
+                      className="btn btn-filled flex-1"
                     >
                       <span aria-hidden>✓</span>
                       {busy ? "Working…" : `Add to ${invite.server.name}`}
@@ -206,7 +206,7 @@ export function BotInviteCard({ code }: { code: string }) {
                 ) : (
                   <Link
                     href="/login"
-                    className="block w-full rounded-md bg-brand px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                    className="btn btn-filled w-full"
                   >
                     Sign in to approve
                   </Link>
@@ -214,7 +214,7 @@ export function BotInviteCard({ code }: { code: string }) {
               ) : (
                 <Link
                   href="/home"
-                  className="block w-full rounded-md bg-brand px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+                  className="btn btn-filled w-full"
                 >
                   Back to Disband
                 </Link>

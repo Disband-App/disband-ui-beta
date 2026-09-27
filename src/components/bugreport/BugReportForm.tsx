@@ -15,11 +15,9 @@ interface AttachmentDraft {
   error: string | null;
 }
 
-const inputClass =
-  "w-full rounded-lg border border-white/10 bg-[#2b2d31] px-3.5 py-2.5 text-[15px] text-[#dbdee1] " +
-  "outline-none transition-colors placeholder:text-[#72767d] focus:border-[#00a8fc]/60";
+const inputClass = "field";
 
-const labelClass = "mb-1.5 block text-[13px] font-semibold text-[#b5bac1]";
+const labelClass = "mb-1.5 block px-1 text-[13px] font-medium text-text-muted";
 
 let nextId = 0;
 
@@ -121,15 +119,15 @@ export function BugReportForm() {
 
   if (done) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-[#23a55a]/30 bg-[#2b2d31] p-8 text-center">
-        <span className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#23a55a]/15 text-[#23a55a]">
+      <div className="mx-auto max-w-2xl rounded-2xl border border-status-online/30 bg-bg-secondary p-8 text-center">
+        <span className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-status-online/15 text-status-online">
           <IconBounty size={32} />
         </span>
-        <h2 className="text-xl font-bold text-white">Bug report sent</h2>
-        <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-[#b5bac1]">
+        <h2 className="title-2">Bug report sent</h2>
+        <p className="mx-auto mt-2 max-w-md text-[15px] leading-relaxed text-text-muted">
           Thanks for helping make Disband better. Our team has been emailed the details.
           If we fix your bug, your account gets the{" "}
-          <span className="font-semibold text-[#43b581]">Bug Bounty Hunter</span> badge.
+          <span className="font-semibold text-status-online">Bug Bounty Hunter</span> badge.
         </p>
         <button
           type="button"
@@ -140,7 +138,7 @@ export function BugReportForm() {
             setSteps("");
             setAttachments([]);
           }}
-          className="mt-6 rounded-lg bg-[#5865f2] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4752c4]"
+          className="btn btn-filled mt-6"
         >
           Report another bug
         </button>
@@ -155,16 +153,16 @@ export function BugReportForm() {
 
   return (
     <form onSubmit={(e) => void submit(e)} className="mx-auto max-w-2xl space-y-5">
-      <div className="flex items-start gap-3 rounded-2xl border border-[#43b581]/25 bg-[#43b581]/[0.07] p-4">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#43b581]/15 text-[#43b581]">
+      <div className="flex items-start gap-3 rounded-2xl border border-status-online/25 bg-status-online/[0.07] p-4">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-status-online/15 text-status-online">
           <IconBounty size={20} />
         </span>
         <div>
-          <p className="text-[14px] font-semibold text-[#43b581]">Bug Bounty</p>
-          <p className="mt-0.5 text-[13px] leading-relaxed text-[#b5bac1]">
+          <p className="text-[14px] font-semibold text-status-online">Bug Bounty</p>
+          <p className="mt-0.5 text-[13px] leading-relaxed text-text-muted">
             Find a bug, tell us how to reproduce it, and if we fix it you&apos;ll earn the
             Bug Bounty Hunter badge on your profile. Reports go straight to{" "}
-            <a href={`mailto:${BUG_REPORT_EMAIL}`} className="text-[#00a8fc] hover:underline">
+            <a href={`mailto:${BUG_REPORT_EMAIL}`} className="text-text-link hover:underline">
               {BUG_REPORT_EMAIL}
             </a>
             .
@@ -206,7 +204,7 @@ export function BugReportForm() {
           className={`${inputClass} resize-none`}
           placeholder="What happened? What did you expect to happen instead?"
         />
-        <span className="mt-1 block text-right text-[11px] text-[#72767d]">
+        <span className="mt-1 block text-right text-[11px] text-text-muted">
           {description.length}/{BUG_REPORT_LIMITS.descriptionMax}
         </span>
       </label>
@@ -230,7 +228,7 @@ export function BugReportForm() {
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={attachments.length >= BUG_REPORT_LIMITS.attachmentsMax}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-white/15 bg-[#2b2d31] px-4 py-3 text-sm font-semibold text-[#b5bac1] transition-colors hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex w-full items-center justify-center gap-2 rounded-[14px] border-[1.5px] border-dashed border-divider bg-fill-tertiary px-4 py-3 text-sm font-semibold text-brand transition-colors hover:bg-fill-tertiary disabled:cursor-not-allowed disabled:opacity-50"
         >
           <IconUpload size={16} />
           {attachments.length > 0
@@ -240,19 +238,19 @@ export function BugReportForm() {
         {attachments.length > 0 && (
           <ul className="mt-2 space-y-1.5">
             {attachments.map((a) => (
-              <li key={a.id} className="flex items-center gap-2 rounded-lg bg-[#2b2d31] px-3 py-2 text-sm">
-                <span className="min-w-0 flex-1 truncate text-[#dbdee1]">{a.name}</span>
+              <li key={a.id} className="flex items-center gap-2 rounded-lg bg-bg-secondary px-3 py-2 text-sm">
+                <span className="min-w-0 flex-1 truncate text-text-normal">{a.name}</span>
                 {a.error ? (
-                  <span className="shrink-0 text-[12px] text-[#f23f43]">{a.error}</span>
+                  <span className="shrink-0 text-[12px] text-status-dnd">{a.error}</span>
                 ) : a.url ? (
-                  <span className="shrink-0 text-[12px] text-[#43b581]">Uploaded ✓</span>
+                  <span className="shrink-0 text-[12px] text-status-online">Uploaded ✓</span>
                 ) : (
-                  <span className="shrink-0 text-[12px] text-[#949ba4]">Uploading…</span>
+                  <span className="shrink-0 text-[12px] text-text-muted">Uploading…</span>
                 )}
                 <button
                   type="button"
                   onClick={() => setAttachments((prev) => prev.filter((x) => x.id !== a.id))}
-                  className="shrink-0 text-[#72767d] hover:text-white"
+                  className="shrink-0 text-text-muted hover:text-text-normal"
                   aria-label={`Remove ${a.name}`}
                 >
                   <IconClose size={16} />
@@ -263,16 +261,16 @@ export function BugReportForm() {
         )}
       </div>
 
-      {error && <p className="text-sm text-[#f23f43]">{error}</p>}
+      {error && <p className="text-sm text-status-dnd">{error}</p>}
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-[12px] text-[#72767d]">
+        <p className="text-[12px] text-text-muted">
           We only use your email to follow up about this report.
         </p>
         <button
           type="submit"
           disabled={!ready || submitting}
-          className="rounded-lg bg-[#5865f2] px-6 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4752c4] disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn btn-filled btn-lg"
         >
           {submitting ? "Submitting…" : "Submit bug report"}
         </button>

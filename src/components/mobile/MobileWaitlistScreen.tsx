@@ -21,7 +21,7 @@ export function MobileWaitlistScreen() {
           <div className="mx-auto mb-5 flex justify-center">
             <Logo adaptive size={72} className="h-18 w-18" priority />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="title-2">
             Disband is available on the Apple App Store
           </h1>
           <p className="mt-3 text-[15px] leading-relaxed text-text-muted">
@@ -33,7 +33,7 @@ export function MobileWaitlistScreen() {
         <div className="mt-8 space-y-3">
           <a
             href={APP_STORE_URL}
-            className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand py-4 text-[16px] font-semibold text-white shadow-lg transition-opacity hover:opacity-90"
+            className="btn btn-filled w-full"
           >
             <AppleLogo />
             Get it on the App Store

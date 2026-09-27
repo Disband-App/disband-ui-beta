@@ -50,9 +50,10 @@ export function UserPanel({ onOpenSettings, onOpenProfile, onContextMenu }: User
   }, []);
 
   return (
+    <div className="shrink-0 p-2 pt-1">
     <div
       ref={panelRef}
-      className="flex h-[52px] shrink-0 items-center gap-1 border-t border-divider bg-bg-tertiary px-2"
+      className="flex h-[54px] items-center gap-0.5 rounded-[14px] bg-fill-tertiary pl-1.5 pr-1"
       onContextMenu={onContextMenu}
     >
       {popupOpen && (
@@ -67,32 +68,23 @@ export function UserPanel({ onOpenSettings, onOpenProfile, onContextMenu }: User
         type="button"
         onClick={handleAvatarClick}
         title="View your profile"
-        className="flex min-w-0 flex-1 items-center gap-2 rounded p-1 text-left transition-all duration-150 ease-in-out hover:bg-interactive-hover"
+        aria-expanded={popupOpen}
+        className="press flex min-w-0 flex-1 items-center gap-2.5 rounded-[10px] p-1 text-left transition-colors hover:bg-interactive-hover"
       >
         <div className="relative shrink-0">
-          <Avatar profile={profile ?? { display_name: name }} size="sm" />
+          <Avatar profile={profile ?? { display_name: name }} size="sm" className="h-9 w-9" />
           <span
-            className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[3px] border-bg-tertiary ${STATUS_BG[status]}`}
+            className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[2.5px] border-bg-secondary ${STATUS_BG[status]}`}
           />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <p className="truncate text-sm font-semibold leading-tight text-text-normal">{name}</p>
+            <p className="truncate text-[13.5px] font-semibold leading-tight text-text-normal">{name}</p>
             <SubscriptionBadge plan={plan} tooltip />
           </div>
-          {liveNote ? (
-            <span
-              title="Click to edit your status"
-              className="mt-0.5 flex max-w-full items-center gap-1 rounded-full bg-bg-primary/60 py-px pl-1.5 pr-2 ring-1 ring-divider"
-            >
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-text-muted">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-              </svg>
-              <span className="truncate text-[11px] leading-tight text-text-normal">{liveNote}</span>
-            </span>
-          ) : (
-            <p className="truncate text-xs leading-tight text-text-muted">{statusLabelText}</p>
-          )}
+          <p title={liveNote ? "Click to edit your status" : undefined} className="mt-0.5 truncate text-[12px] leading-tight text-text-muted">
+            {liveNote ?? statusLabelText}
+          </p>
         </div>
       </button>
 
@@ -101,12 +93,11 @@ export function UserPanel({ onOpenSettings, onOpenProfile, onContextMenu }: User
         <button
           type="button"
           aria-pressed={micMuted}
+          aria-label={micMuted ? "Unmute" : "Mute"}
           onClick={() => setMicMuted(!micMuted)}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded transition-all duration-150 ease-in-out hover:bg-interactive-hover ${
-            micMuted ? "text-status-dnd" : "text-text-muted hover:text-text-normal"
-          }`}
+          className={`tool-btn h-8 w-8 ${micMuted ? "bg-status-dnd/14 text-status-dnd hover:bg-status-dnd/20 hover:text-status-dnd" : ""}`}
         >
-          {micMuted ? <IconMicOff size={20} /> : <IconMic size={20} />}
+          {micMuted ? <IconMicOff size={18} /> : <IconMic size={18} />}
         </button>
       </Tooltip>
 
@@ -114,29 +105,29 @@ export function UserPanel({ onOpenSettings, onOpenProfile, onContextMenu }: User
         <button
           type="button"
           aria-pressed={deafened}
+          aria-label={deafened ? "Undeafen" : "Deafen"}
           onClick={() => {
             const next = !deafened;
             setDeafened(next);
             if (next) setMicMuted(true);
           }}
-          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded transition-all duration-150 ease-in-out hover:bg-interactive-hover ${
-            deafened ? "text-status-dnd" : "text-text-muted hover:text-text-normal"
-          }`}
+          className={`tool-btn h-8 w-8 ${deafened ? "bg-status-dnd/14 text-status-dnd hover:bg-status-dnd/20 hover:text-status-dnd" : ""}`}
         >
-          {deafened ? <IconHeadphonesOff size={20} /> : <IconHeadphones size={20} />}
+          {deafened ? <IconHeadphonesOff size={18} /> : <IconHeadphones size={18} />}
         </button>
       </Tooltip>
 
-
-      <Tooltip label="User Settings" side="top">
+      <Tooltip label="Settings" side="top">
         <button
           type="button"
+          aria-label="Settings"
           onClick={onOpenSettings}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded text-text-muted transition-all duration-150 ease-in-out hover:bg-interactive-hover hover:text-text-normal"
+          className="tool-btn h-8 w-8 [&_svg]:transition-transform [&_svg]:duration-700 [&_svg]:ease-spring hover:[&_svg]:rotate-90"
         >
-          <IconSettings size={20} />
+          <IconSettings size={18} />
         </button>
       </Tooltip>
+    </div>
     </div>
   );
 }

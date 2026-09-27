@@ -239,9 +239,9 @@ export function OfficialBroadcastPanel() {
         </p>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-divider bg-bg-secondary p-4">
+      <div className="rounded-[14px] bg-fill-tertiary space-y-3 p-4">
         <div>
-          <span className="text-xs font-bold uppercase text-text-muted">Who is this for</span>
+          <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Who is this for</span>
           <div className="mt-1 flex flex-wrap gap-2">
             <button
               type="button"
@@ -266,7 +266,7 @@ export function OfficialBroadcastPanel() {
 
         {audience === "user" && (
           <div>
-            <span className="text-xs font-bold uppercase text-text-muted">Account</span>
+            <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Account</span>
             {recipient ? (
               <div className="mt-1 flex items-center gap-2 rounded bg-bg-accent px-3 py-2">
                 <div className="min-w-0 flex-1">
@@ -276,7 +276,7 @@ export function OfficialBroadcastPanel() {
                 <button
                   type="button"
                   onClick={() => { setRecipient(null); setQuery(""); }}
-                  className="shrink-0 rounded border border-divider px-2 py-1 text-xs hover:bg-interactive-hover"
+                  className="btn btn-gray btn-sm shrink-0"
                 >
                   Change
                 </button>
@@ -288,7 +288,7 @@ export function OfficialBroadcastPanel() {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); void resolve(); } }}
                   placeholder="Username or user id..."
-                  className="flex-1 rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                  className="field flex-1 text-[14px]"
                 />
                 <button
                   type="button"
@@ -305,7 +305,7 @@ export function OfficialBroadcastPanel() {
 
         {templates.length > 0 && (
           <div>
-            <span className="text-xs font-bold uppercase text-text-muted">Start from a template</span>
+            <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Start from a template</span>
             <div className="mt-1 flex flex-wrap gap-2">
               {templates.map((t) => (
                 <button
@@ -323,36 +323,36 @@ export function OfficialBroadcastPanel() {
         )}
 
         <div>
-          <span className="text-xs font-bold uppercase text-text-muted">Title</span>
+          <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Title</span>
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={120}
             placeholder="What is this about?"
-            className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+            className="field mt-1 w-full text-[14px]"
           />
         </div>
 
         <div>
-          <span className="text-xs font-bold uppercase text-text-muted">Message</span>
+          <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Message</span>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             maxLength={1000}
             rows={4}
             placeholder="Say what happened and what to do next. Do not quote the content that triggered a moderation action."
-            className="mt-1 w-full resize-y rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+            className="field mt-1 w-full resize-y text-[14px]"
           />
           <p className="mt-1 text-xs text-text-muted">{body.length}/1000</p>
         </div>
 
         <div>
-          <span className="text-xs font-bold uppercase text-text-muted">Link (optional)</span>
+          <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Link (optional)</span>
           <input
             value={link}
             onChange={(e) => setLink(e.target.value)}
             placeholder="/settings or https://disband.dev/..."
-            className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+            className="field mt-1 w-full text-[14px]"
           />
           <p className="mt-1 text-xs text-text-muted">
             In-app routes and disband.dev links only.
@@ -377,14 +377,14 @@ export function OfficialBroadcastPanel() {
         </label>
 
         <div>
-          <span className="text-xs font-bold uppercase text-text-muted">Owner password</span>
+          <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Owner password</span>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="off"
             placeholder="Required to send"
-            className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+            className="field mt-1 w-full text-[14px]"
           />
         </div>
 
@@ -395,15 +395,15 @@ export function OfficialBroadcastPanel() {
           type="button"
           disabled={busy || !title.trim() || !body.trim() || (audience === "user" && !recipient)}
           onClick={() => void send()}
-          className="w-full rounded bg-brand px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn btn-filled w-full"
         >
           {busy ? "Sending..." : audience === "everyone" ? `Send to everyone` : "Send"}
         </button>
       </div>
 
       {history.length > 0 && (
-        <div className="rounded-lg border border-divider bg-bg-secondary">
-          <p className="border-b border-divider px-4 py-2 text-xs font-bold uppercase text-text-muted">
+        <div className="rounded-[14px] bg-fill-tertiary">
+          <p className="border-b border-divider px-4 py-2 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">
             What has been sent
           </p>
           <ul className="divide-y divide-divider">
@@ -440,7 +440,7 @@ export function OfficialBroadcastPanel() {
                         type="button"
                         disabled={busy}
                         onClick={() => void refreshDelivery(entry)}
-                        className="shrink-0 rounded border border-divider px-2 py-1 text-xs hover:bg-interactive-hover disabled:opacity-50"
+                        className="btn btn-gray btn-sm shrink-0"
                       >
                         Check email
                       </button>

@@ -34,39 +34,42 @@ export function GroupMemberList({
           e.preventDefault();
           onMemberContext?.(m, e.clientX, e.clientY);
         }}
-        className="flex w-full items-center gap-2 rounded px-2 py-1.5 text-left hover:bg-interactive-hover"
+        className="nav-row gap-2.5 px-2.5 py-[5px]"
       >
-        <div className="relative">
+        <div className="relative shrink-0">
           <Avatar profile={m} size="sm" />
           {inVoice && (
-            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-bg-secondary bg-status-online" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[2.5px] border-bg-primary bg-status-online" />
           )}
         </div>
-        <span className="truncate text-sm text-text-normal">
-          {displayName(m)}
-          {m.id === ownerId && <span className="ml-1 text-[10px] text-text-muted">owner</span>}
-          {m.id === currentUserId && <span className="ml-1 text-[10px] text-brand">you</span>}
+        <span className="flex min-w-0 flex-1 items-center gap-1.5">
+          <span className="truncate text-[14px] font-medium text-text-normal">{displayName(m)}</span>
+          {m.id === ownerId && <span className="pill shrink-0 bg-fill-tertiary px-1.5 py-0 text-[10px] text-text-muted">Owner</span>}
+          {m.id === currentUserId && <span className="pill shrink-0 bg-brand/15 px-1.5 py-0 text-[10px] text-brand">You</span>}
         </span>
-        {inVoice && <span className="ml-auto text-[10px] font-semibold text-status-online">In call</span>}
+        {inVoice && <span className="ml-auto shrink-0 text-[11px] font-semibold text-status-online">In call</span>}
       </button>
     );
   }
 
   return (
-
-    <aside className="flex w-60 shrink-0 flex-col overflow-y-auto bg-bg-secondary">
-      <div className="p-4">
+    <aside className="flex min-h-0 w-[248px] shrink-0 flex-col">
+      <div className="flex h-[58px] shrink-0 items-center gap-2 px-5 hairline-b">
+        <h2 className="text-[15px] font-semibold tracking-[-0.01em]">People</h2>
+        <span className="pill bg-fill-tertiary text-text-muted">{members.length}</span>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto px-2.5 pb-4 pt-1">
         {inCall.length > 0 && (
-          <section className="mb-4">
-            <p className="mb-1 px-2 text-xs font-bold uppercase text-status-online">
-              In Voice — {inCall.length}
+          <section className="mb-2">
+            <p className="section-label px-2.5 pb-1.5 pt-4 text-[11.5px] text-status-online">
+              In voice · {inCall.length}
             </p>
             {inCall.map((m) => <Row key={m.id} m={m} />)}
           </section>
         )}
         <section>
-          <p className="mb-1 px-2 text-xs font-bold uppercase text-text-muted">
-            Members — {members.length}
+          <p className="section-label px-2.5 pb-1.5 pt-4 text-[11.5px]">
+            Members
           </p>
           {notInCall.map((m) => <Row key={m.id} m={m} />)}
         </section>

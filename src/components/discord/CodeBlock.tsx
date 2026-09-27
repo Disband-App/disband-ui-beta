@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Highlight, themes } from "prism-react-renderer";
+import { useAppearance } from "@/lib/theme/appearance";
 
 /**
  * A fenced code block in a sent message: highlighted, with the language
@@ -13,6 +14,7 @@ import { Highlight, themes } from "prism-react-renderer";
  */
 export function CodeBlock({ code, language }: { code: string; language: string }) {
   const [copied, setCopied] = useState(false);
+  const appearance = useAppearance();
 
   // Prism's grammar names differ from what people type at the fence.
   const lang = ALIASES[language.toLowerCase()] ?? language.toLowerCase() ?? "";
@@ -29,10 +31,10 @@ export function CodeBlock({ code, language }: { code: string; language: string }
   };
 
   return (
-    <div className="group/code relative my-1.5">
+    <div className="code-block group/code relative my-1.5">
       <div className="pointer-events-none absolute right-2 top-2 flex items-center gap-2">
         {language && (
-          <span className="rounded bg-black/30 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
+          <span className="rounded-full bg-fill-secondary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-muted">
             {language}
           </span>
         )}
@@ -41,19 +43,19 @@ export function CodeBlock({ code, language }: { code: string; language: string }
           onClick={() => void copy()}
           // Hidden until the block is hovered or the button is focused, so it
           // does not sit on top of the code while you are reading.
-          className="pointer-events-auto rounded bg-black/40 px-2 py-0.5 text-[11px] font-semibold text-text-muted opacity-0 transition-opacity hover:text-text-normal focus:opacity-100 group-hover/code:opacity-100"
+          className="glass-thick pointer-events-auto rounded-full px-2.5 py-0.5 text-[11px] font-semibold text-text-normal opacity-0 transition-opacity focus:opacity-100 group-hover/code:opacity-100"
           aria-label={copied ? "Copied" : "Copy code"}
         >
           {copied ? "Copied" : "Copy"}
         </button>
       </div>
 
-      <Highlight code={code.replace(/\n$/, "")} language={lang} theme={themes.vsDark}>
+      <Highlight code={code.replace(/\n$/, "")} language={lang} theme={appearance === "light" ? themes.github : themes.vsDark}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
-            className={`${className} overflow-x-auto rounded-md p-3 font-mono text-[13px] leading-relaxed`}
-            // The theme brings its own background, which is what makes the
-            // highlighting legible regardless of the app's current theme.
+            className={`${className} overflow-x-auto rounded-[12px] p-3 font-mono text-[13px] leading-relaxed`}
+            // The token colours come from a light or dark Prism theme picked
+            // to match the app; the block itself sits on the app's own fill.
             style={{ ...style, background: "var(--bg-accent)" }}
           >
             <code>

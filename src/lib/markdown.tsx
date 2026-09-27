@@ -50,7 +50,7 @@ function renderInlineTokens(
       }
       const user = members.find((x) => x.username?.toLowerCase() === uname.toLowerCase());
       const label = user?.username ?? (uname.toLowerCase() === "everyone" ? "everyone" : uname);
-      const chipClass = "rounded bg-brand/20 px-0.5 font-medium text-[#dee0fc] hover:bg-brand/40";
+      const chipClass = "md-chip";
 
       if (user && onMentionClick) {
         out.push(
@@ -79,8 +79,7 @@ function renderInlineTokens(
     if (token.startsWith("#")) {
       const name = token.slice(1).toLowerCase();
       const channel = channels?.find((c) => c.name.toLowerCase() === name);
-      const chipClass =
-        "rounded bg-brand/20 px-0.5 font-medium text-[#dee0fc] hover:bg-brand/40";
+      const chipClass = "md-chip";
 
       if (channel && onChannelClick) {
         out.push(
@@ -110,7 +109,7 @@ function renderInlineTokens(
       out.push(
         <code
           key={key}
-          className="rounded bg-bg-accent px-1.5 py-0.5 font-mono text-[0.875em] text-text-normal"
+          className="md-code"
         >
           {token.slice(1, -1)}
         </code>,
@@ -170,7 +169,7 @@ function renderInlineTokens(
           href={linkFor(token)}
           target="_blank"
           rel="noopener noreferrer"
-          className="break-all text-brand hover:underline"
+          className="md-link"
         >
           {token}
         </a>,
@@ -191,9 +190,9 @@ function headerLevel(line: string): number {
 }
 
 const HEADING_CLASS: Record<number, string> = {
-  1: "mb-1 mt-2 block text-[24px] font-bold leading-tight text-text-normal first:mt-0",
-  2: "mb-1 mt-2 block text-[20px] font-bold leading-tight text-text-normal first:mt-0",
-  3: "mb-0.5 mt-1.5 block text-[16px] font-bold leading-snug text-text-normal first:mt-0",
+  1: "mb-1 mt-2 block font-display text-[22px] font-bold leading-tight tracking-[-0.02em] first:mt-0",
+  2: "mb-1 mt-2 block font-display text-[19px] font-bold leading-tight tracking-[-0.015em] first:mt-0",
+  3: "mb-0.5 mt-1.5 block text-[16px] font-semibold leading-snug first:mt-0",
 };
 
 export function renderMarkdown(

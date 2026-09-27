@@ -35,7 +35,7 @@ export function RootRedirect() {
   }, [router]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#1e1f22] text-[#949ba4]">
+    <div className="flex min-h-screen items-center justify-center bg-bg-tertiary text-text-muted">
       Loading…
     </div>
   );

@@ -94,7 +94,7 @@ import type {
   PinnedSourceType,
 } from "@/lib/supabase/types";
 
-interface AppContextValue {
+export interface AppContextValue {
   ready: boolean;
 
   hydrated: boolean;
@@ -301,7 +301,9 @@ interface AppContextValue {
   platformUnbanUser: (opts: { userId: string; password: string }) => Promise<string | null>;
 }
 
-const AppContext = createContext<AppContextValue | null>(null);
+// Exported for the design preview (/design-preview), which mounts the real
+// app shell on mock data. Nothing else should provide this context directly.
+export const AppContext = createContext<AppContextValue | null>(null);
 
 function uploadErrorMessage(err: unknown): string {
   if (err instanceof Error && err.message) return err.message;

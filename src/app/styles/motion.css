@@ -1,0 +1,373 @@
+/* Motion.
+
+   Every class sets the animation longhands separately. A spring is a
+   linear() easing, and a browser that doesn't know linear() drops only the
+   timing-function declaration and falls back to `ease` — with the shorthand
+   it would drop the whole animation. Enter animations use fill-mode `both`
+   so the first frame applies before the element paints. */
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sheet-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.965); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: scale(0.86); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes popover-in {
+  from { opacity: 0; transform: translateY(6px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes view-slide-in {
+  from { opacity: 0; transform: translateX(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.92); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pop-in {
+  0% { opacity: 0; transform: scale(0.4); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes island-in {
+  from { opacity: 0; transform: translateY(-14px) scale(0.6, 0.5); filter: blur(4px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes spinner-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes shimmer {
+  from { background-position: 150% 0; }
+  to { background-position: -50% 0; }
+}
+
+@keyframes typing-dot {
+  0%, 60%, 100% { opacity: 0.35; transform: scale(0.82); }
+  30% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ring-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-online) 45%, transparent); }
+  70% { box-shadow: 0 0 0 16px color-mix(in srgb, var(--status-online) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-online) 0%, transparent); }
+}
+
+@keyframes speaking-glow {
+  0%, 100% { box-shadow: 0 0 0 2px var(--status-online), 0 0 0 0 color-mix(in srgb, var(--status-online) 40%, transparent); }
+  50% { box-shadow: 0 0 0 2px var(--status-online), 0 0 0 6px color-mix(in srgb, var(--status-online) 0%, transparent); }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes loading-bar-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+
+@keyframes role-gradient-pan {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes divider-draw {
+  from { opacity: 0; transform: scaleX(0.4); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes wiggle-x {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(2px); }
+}
+
+/* --- Presentation ------------------------------------------------------- */
+
+/* Scrim behind sheets and menus. */
+.overlay-fade {
+  animation-name: fade-in;
+  animation-duration: 0.28s;
+  animation-timing-function: var(--ease-ios);
+  animation-fill-mode: both;
+}
+
+/* Modal sheets (was the old modal-pop; same name so every modal gets it). */
+.modal-pop {
+  animation-name: sheet-in;
+  animation-duration: 0.46s;
+  animation-timing-function: var(--spring-sheet);
+  animation-fill-mode: both;
+}
+
+/* Bottom sheet on phone widths. */
+.sheet-up {
+  animation-name: sheet-up;
+  animation-duration: 0.5s;
+  animation-timing-function: var(--ease-ios);
+  animation-fill-mode: both;
+}
+
+/* Context menus grow out of the pointer: set --menu-origin inline. */
+.menu-pop {
+  transform-origin: var(--menu-origin, top left);
+  animation-name: menu-in;
+  animation-duration: 0.44s;
+  animation-timing-function: var(--spring-snappy);
+  animation-fill-mode: both;
+}
+
+.popover-pop {
+  transform-origin: var(--popover-origin, bottom center);
+  animation-name: popover-in;
+  animation-duration: 0.36s;
+  animation-timing-function: var(--spring-snappy);
+  animation-fill-mode: both;
+}
+
+/* Opacity-only on purpose: tooltip position comes from an inline transform
+   (centering per side), and an animation that writes `transform` would
+   override it when the fill mode holds the end frame. */
+.tooltip-content {
+  animation-name: fade-in;
+  animation-duration: 0.14s;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+/* Dynamic-Island style notices dropping from the top edge. */
+.island-in {
+  transform-origin: top center;
+  animation-name: island-in;
+  animation-duration: 0.7s;
+  animation-timing-function: var(--spring-bouncy);
+  animation-fill-mode: both;
+}
+
+/* --- Content ------------------------------------------------------------ */
+
+/* View swap: plays when a keyed container remounts (channel switch,
+   settings/panel tabs), never on data updates. */
+.view-enter {
+  animation-name: view-in;
+  animation-duration: 0.42s;
+  animation-timing-function: var(--spring-smooth);
+  animation-fill-mode: both;
+}
+
+.view-slide {
+  animation-name: view-slide-in;
+  animation-duration: 0.44s;
+  animation-timing-function: var(--spring-smooth);
+  animation-fill-mode: both;
+}
+
+/* Fresh chat message: own optimistic sends only (message.sending), so
+   history loads and paginates never flash the whole list. The origin is set
+   per side so an outgoing bubble grows out of the composer's corner. */
+.msg-enter {
+  transform-origin: var(--bubble-origin, bottom left);
+  animation-name: bubble-in;
+  animation-duration: 0.62s;
+  animation-timing-function: var(--spring-bouncy);
+  animation-fill-mode: both;
+}
+
+/* New-messages divider draws itself in. */
+.divider-in {
+  animation-name: divider-draw;
+  animation-duration: 0.4s;
+  animation-timing-function: var(--spring-smooth);
+  animation-fill-mode: both;
+}
+
+/* Unread count pills pop when the count changes (remounted via key). */
+.badge-pop {
+  animation-name: pop-in;
+  animation-duration: 0.6s;
+  animation-timing-function: var(--spring-bouncy);
+  animation-fill-mode: both;
+}
+
+.avatar-pop {
+  animation-name: pop-in;
+  animation-duration: 0.6s;
+  animation-timing-function: var(--spring-bouncy);
+  animation-fill-mode: both;
+}
+
+.avatar-leave {
+  transition: opacity 0.3s var(--ease-ios), transform 0.3s var(--ease-ios);
+  transform: scale(0.6);
+}
+
+.call-enter {
+  animation-name: sheet-in;
+  animation-duration: 0.5s;
+  animation-timing-function: var(--spring-sheet);
+  animation-fill-mode: both;
+}
+
+.call-ring {
+  animation: ring-pulse 1.6s ease-out infinite;
+}
+
+.speaking-ring {
+  animation: speaking-glow 1.4s ease-in-out infinite;
+}
+
+.shake {
+  animation: wiggle-x 0.42s ease-in-out;
+}
+
+/* Staggered lists: children set --i (0, 1, 2…) inline. */
+.stagger > * {
+  animation-name: rise-in;
+  animation-duration: 0.6s;
+  animation-timing-function: var(--spring-smooth);
+  animation-fill-mode: both;
+  animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.loading-bar {
+  animation: loading-bar-slide 1.1s ease-in-out infinite;
+}
+
+.animate-role-gradient {
+  animation: role-gradient-pan 3s ease-in-out infinite;
+}
+
+/* --- Marketing ---------------------------------------------------------- */
+
+.marketing-fade-up {
+  animation-name: rise-in;
+  animation-duration: 0.9s;
+  animation-timing-function: var(--spring-smooth);
+  animation-fill-mode: both;
+}
+
+.marketing-delay-1 { animation-delay: 0.08s; }
+.marketing-delay-2 { animation-delay: 0.16s; }
+.marketing-delay-3 { animation-delay: 0.26s; }
+
+.marketing-float,
+.marketing-glow {
+  animation: float-y 7s ease-in-out infinite;
+}
+
+/* Scroll reveal. Hidden only once the observer has armed the page
+   (data-reveal on <html>), so content never stays invisible without JS. */
+:root[data-reveal] .reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s var(--ease-ios),
+    transform 0.9s var(--spring-smooth);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+
+:root[data-reveal] .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Reduced motion ------------------------------------------------------
+   One rule instead of a per-class list: everything finishes on its first
+   frame. Fill modes carry the end state, so enter animations that start
+   invisible still end visible. Settings > Appearance > Animations can force
+   either path regardless of the OS (data-motion on <html>). */
+
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) *,
+  :root:not([data-motion="full"]) *::before,
+  :root:not([data-motion="full"]) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0s !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:root[data-motion="reduced"] *,
+:root[data-motion="reduced"] *::before,
+:root[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  animation-delay: 0s !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0s !important;
+  scroll-behavior: auto !important;
+}
+
+/* An indeterminate bar that stops dead mid-travel reads as broken; show it
+   full and dimmed instead. Same for the activity spinner. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-motion="full"]) .loading-bar {
+    width: 100%;
+    opacity: 0.5;
+  }
+}
+:root[data-motion="reduced"] .loading-bar {
+  width: 100%;
+  opacity: 0.5;
+}
+
+/* Phone navigation drawer sliding in from the leading edge. */
+@keyframes drawer-in {
+  from { transform: translateX(-100%); }
+  to { transform: none; }
+}
+
+.drawer-in {
+  animation-name: drawer-in;
+  animation-duration: 0.5s;
+  animation-timing-function: var(--ease-ios);
+  animation-fill-mode: both;
+}
+
+/* Level meter bars in a voice pill. */
+@keyframes voice-level {
+  0%, 100% { height: 5px; }
+  30% { height: 16px; }
+  60% { height: 9px; }
+}
+
+.voice-bar {
+  height: 5px;
+  animation: voice-level 1.1s ease-in-out infinite;
+}

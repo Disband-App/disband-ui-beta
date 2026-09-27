@@ -17,6 +17,7 @@ import { ReactionPicker } from "./MessageReactions";
 import { IconHash, IconShield } from "@/components/icons";
 import { useTypingPresence } from "@/hooks/useTypingPresence";
 import { TypingIndicator } from "./TypingIndicator";
+import { Avatar } from "@/components/ui/Avatar";
 import { useApp } from "@/contexts/AppContext";
 import type { MessageSendOptions, MessageContext, MessageReaction, ReplyPreview } from "@/lib/messages";
 import type { ChannelLite } from "@/lib/markdown";
@@ -36,13 +37,48 @@ import type { Profile, ServerRole } from "@/lib/supabase/types";
 function NewMessagesDivider({ animate = true }: { animate?: boolean }) {
   return (
     <div
-      className={`${animate ? "divider-in " : ""}relative my-3 flex items-center px-4`}
+      className={`${animate ? "divider-in " : ""}relative my-3 flex items-center gap-3 px-6`}
       role="separator"
       aria-label="New messages"
     >
-      <div className="h-px flex-1 bg-status-dnd" />
-      <span className="ml-2 shrink-0 rounded bg-status-dnd px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
-        New
+      <div className="h-px flex-1 bg-status-dnd/40" />
+      <span className="shrink-0 rounded-full bg-status-dnd/12 px-2.5 py-0.5 text-[11px] font-semibold text-status-dnd">
+        New messages
+      </span>
+      <div className="h-px flex-1 bg-status-dnd/40" />
+    </div>
+  );
+}
+
+// Messages shows a centred stamp when a conversation picks back up after a
+// pause; an hour is its threshold, and every new day gets one.
+const STAMP_GAP_MS = 60 * 60 * 1000;
+
+function needsStamp(prev: { created_at: string } | undefined, msg: { created_at: string }): boolean {
+  if (!prev) return true;
+  const a = new Date(prev.created_at);
+  const b = new Date(msg.created_at);
+  return a.toDateString() !== b.toDateString() || b.getTime() - a.getTime() >= STAMP_GAP_MS;
+}
+
+function TimeStamp({ iso }: { iso: string }) {
+  const d = new Date(iso);
+  const now = new Date();
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const time = d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+  const day =
+    d.toDateString() === now.toDateString()
+      ? "Today"
+      : d.toDateString() === yesterday.toDateString()
+        ? "Yesterday"
+        : now.getTime() - d.getTime() < 6 * 86_400_000
+          ? d.toLocaleDateString(undefined, { weekday: "long" })
+          : d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: d.getFullYear() === now.getFullYear() ? undefined : "numeric" });
+  return (
+    <div className="chat-stamp" role="separator">
+      <span>
+        <b>{day}</b> {time}
       </span>
     </div>
   );
@@ -68,8 +104,12 @@ interface ChatCanvasProps {
   getAuthorColor?: (authorId: string) => string | null | undefined;
   headerExtra?: React.ReactNode;
   headerTrailing?: React.ReactNode;
+  /** Sits before the title — the sidebar button on phone widths. */
+  headerLeading?: React.ReactNode;
   callPanel?: React.ReactNode;
   channelIcon?: React.ReactNode;
+  /** A person to show in the bar and the conversation header instead of an icon (DMs). */
+  channelAvatar?: Profile | null;
 
   introText?: string;
 
@@ -112,8 +152,10 @@ export const ChatCanvas = forwardRef<ChatCanvasHandle, ChatCanvasProps>(function
     getAuthorColor,
     headerExtra,
     headerTrailing,
+    headerLeading,
     callPanel,
     channelIcon,
+    channelAvatar,
     introText,
     placeholder,
     composerLockedReason,
@@ -454,17 +496,28 @@ export const ChatCanvas = forwardRef<ChatCanvasHandle, ChatCanvasProps>(function
   }
 
   return (
-    <main className="view-enter flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-bg-primary">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-black/20 px-4 shadow-sm">
-        {channelIcon ?? <IconHash size={24} className="text-text-muted" />}
-        <h1 className="min-w-0 flex-1 truncate text-[15px] font-semibold">{channelName}</h1>
+    <main className="view-enter relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-bg-primary">
+      {/* Navigation bar: glass over the history, which scrolls beneath it. */}
+      <header className={`bar-material absolute inset-x-0 top-0 z-20 flex h-[58px] shrink-0 items-center gap-2.5 pr-3 ${headerLeading ? "pl-2.5" : "pl-4"}`}>
+        {headerLeading}
+        {channelAvatar ? (
+          <Avatar profile={channelAvatar} size="sm" />
+        ) : (
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fill-tertiary text-text-muted [&_svg]:h-[18px] [&_svg]:w-[18px]">
+            {channelIcon ?? <IconHash size={18} strokeWidth={2} />}
+          </span>
+        )}
+        <h1 className="min-w-0 flex-1 truncate text-[16px] font-semibold tracking-[-0.012em]">{channelName}</h1>
         {headerExtra}
         {headerTrailing}
       </header>
 
-      {callPanel && <div className="shrink-0">{callPanel}</div>}
+      {callPanel && <div className="relative z-10 shrink-0 pt-[58px]">{callPanel}</div>}
 
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-4">
+      <div
+        ref={scrollRef}
+        className={`min-h-0 flex-1 overflow-y-auto overscroll-contain pb-3 ${callPanel ? "pt-3" : "pt-[70px]"}`}
+      >
         <div ref={contentRef}>
           {loading && messages.length === 0 ? (
             <MessageSkeleton />
@@ -475,34 +528,46 @@ export const ChatCanvas = forwardRef<ChatCanvasHandle, ChatCanvasProps>(function
                   <button
                     type="button"
                     onClick={() => void requestLoadMore()}
-                    className="rounded-full bg-bg-accent px-4 py-1.5 text-xs font-medium text-text-muted hover:bg-interactive-hover hover:text-text-normal"
+                    className="btn btn-gray btn-sm"
                   >
                     Load earlier messages
                   </button>
                 </div>
               )}
 
-              {/* Welcome banner only at true history start: while older
+              {/* Conversation header only at true history start: while older
                   messages can still load, this sits mid-history. */}
               {!hasMore && (
-              <div className="mb-4 flex items-center px-4">
-                <div className="h-px flex-1 bg-divider" />
-                <span className="mx-4 text-xs font-semibold text-text-muted">
-                  {introText ?? `Welcome to #${channelName}`}
-                </span>
-                <div className="h-px flex-1 bg-divider" />
-              </div>
+                <div className="flex flex-col items-center px-6 pb-4 pt-6 text-center">
+                  {channelAvatar ? (
+                    <Avatar profile={channelAvatar} size="lg" />
+                  ) : (
+                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-fill-tertiary text-text-muted [&_svg]:h-7 [&_svg]:w-7">
+                      {channelIcon ?? <IconHash size={28} strokeWidth={2} />}
+                    </span>
+                  )}
+                  <p className="title-2 mt-3">{messageContext === "channel" ? `#${channelName}` : channelName}</p>
+                  <p className="mt-1 max-w-sm text-[13px] text-text-muted">
+                    {introText ?? (messageContext === "channel"
+                      ? `This is the start of #${channelName}.`
+                      : `This is the beginning of your conversation.`)}
+                  </p>
+                </div>
               )}
 
               {enriched.map((msg, i) => {
             const prev = enriched[i - 1];
-            const grouped = shouldGroupMessages(prev, msg, currentUserId, currentUserName);
+            const next = enriched[i + 1];
+            const stamp = needsStamp(prev, msg);
+            const grouped = !stamp && shouldGroupMessages(prev, msg, currentUserId, currentUserName);
+            const nextGrouped = !!next && !needsStamp(msg, next) && shouldGroupMessages(msg, next, currentUserId, currentUserName);
             const showHeader = !grouped;
             const msgReactions = reactions.filter(
               (r) => r.context_type === messageContext && r.message_id === msg.id,
             );
             return (
               <div key={msg.id}>
+                {stamp && <TimeStamp iso={msg.created_at} />}
                 {newMessagesDividerId === msg.id && (
                   <NewMessagesDivider animate={!(currentUserId && msg.author_id === currentUserId)} />
                 )}
@@ -510,6 +575,8 @@ export const ChatCanvas = forwardRef<ChatCanvasHandle, ChatCanvasProps>(function
                   message={msg}
                   showHeader={showHeader}
                   compact={grouped}
+                  lastInGroup={!nextGrouped || newMessagesDividerId === next?.id}
+                  direct={messageContext === "dm" || messageContext === "notes"}
                   currentUserId={currentUserId}
                   currentUserName={currentUserName}
                   authorColor={msg.author_id ? getAuthorColor?.(msg.author_id) : null}
@@ -563,20 +630,20 @@ export const ChatCanvas = forwardRef<ChatCanvasHandle, ChatCanvasProps>(function
         onClose={() => setPicker(null)}
       />
 
-      <div className="shrink-0">
+      <div className="relative shrink-0">
         <TypingIndicator
           typers={typers}
           members={renderMembers}
           groupContext={messageContext === "channel" || messageContext === "group"}
         />
         {composerLockedReason ? (
-          <div className="mx-4 mb-4 flex items-center gap-2 rounded-lg border border-divider bg-bg-secondary px-4 py-3">
-            <IconShield size={15} className="shrink-0 text-text-muted" />
-            <p className="text-[14px] text-text-muted">{composerLockedReason}</p>
+          <div className="mx-4 mb-4 flex items-center gap-2.5 rounded-[18px] bg-fill-tertiary px-4 py-3">
+            <IconShield size={16} className="shrink-0 text-text-muted" />
+            <p className="text-[13.5px] text-text-muted">{composerLockedReason}</p>
           </div>
         ) : (
         <ChatInput
-          placeholder={placeholder ?? `Message #${channelName}`}
+          placeholder={placeholder ?? (messageContext === "channel" ? `Message #${channelName}` : "Message")}
           members={members}
           roles={roles}
           channels={channels}

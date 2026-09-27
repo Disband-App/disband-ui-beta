@@ -44,13 +44,13 @@ function StatusDot({ state }: { state: CheckState }) {
 
 function StatusCard({ check }: { check: StatusCheck }) {
   return (
-    <div className="flex items-center gap-4 rounded-lg bg-[#2b2d31] px-5 py-4 ring-1 ring-white/5">
+    <div className="flex items-center gap-4 rounded-[16px] bg-bg-primary px-5 py-4 shadow-elev-1">
       <StatusDot state={check.state} />
       <div className="min-w-0 flex-1">
-        <p className="font-semibold text-white">{check.name}</p>
-        <p className="text-xs text-[#949ba4]">{check.description}</p>
+        <p className="font-semibold text-text-normal">{check.name}</p>
+        <p className="text-xs text-text-muted">{check.description}</p>
       </div>
-      <span className="text-xs tabular-nums text-[#949ba4]">
+      <span className="text-xs tabular-nums text-text-muted">
         {check.state === "checking"
           ? "Checking..."
           : check.state === "up"
@@ -89,11 +89,11 @@ export default function StatusPage() {
   const checking = checks.some((c) => c.state === "checking");
 
   return (
-    <div className="min-h-screen bg-[#1e1f22] text-[#dbdee1]">
+    <div className="min-h-screen bg-bg-tertiary text-text-normal">
       <MarketingNav />
       <main className="mx-auto max-w-xl px-6 pb-16 pt-24">
-        <h1 className="text-3xl font-bold text-white">Disband Status</h1>
-        <p className="mt-2 text-sm text-[#949ba4]">
+        <h1 className="large-title text-[34px] sm:text-[40px]">Disband Status</h1>
+        <p className="mt-2 text-sm text-text-muted">
           Real-time checks across Disband services
         </p>
 
@@ -103,9 +103,9 @@ export default function StatusPage() {
           ))}
         </div>
 
-        <div className="mt-6 flex items-center justify-between text-xs text-[#949ba4]">
+        <div className="mt-6 flex items-center justify-between text-xs text-text-muted">
           {!checking && (
-            <span className={allUp ? "text-green-400" : anyDown ? "text-red-400" : ""}>
+            <span className={allUp ? "font-medium text-status-online" : anyDown ? "font-medium text-status-dnd" : ""}>
               {allUp ? "All systems operational" : anyDown ? "Some systems degraded" : ""}
             </span>
           )}
@@ -116,13 +116,13 @@ export default function StatusPage() {
           <button
             type="button"
             onClick={() => void runChecks()}
-            className="rounded bg-[#2b2d31] px-3 py-1 text-xs text-white transition-colors hover:bg-[#383a40]"
+            className="btn btn-gray btn-sm"
           >
             Refresh
           </button>
         </div>
 
-        <p className="mt-12 text-center text-xs text-[#949ba4]">
+        <p className="mt-12 text-center text-xs text-text-muted">
           Checks run automatically every 30 seconds. If you are experiencing issues not shown here,
           please{" "}
           <a href="/bug-report" className="text-brand underline underline-offset-2">

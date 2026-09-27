@@ -64,7 +64,7 @@ export function GiftModal({ onClose, onPurchased }: {
       onClick={onClose}
     >
       <div
-        className="modal-pop relative w-full max-w-[440px] rounded-2xl bg-bg-secondary shadow-2xl"
+        className="modal-pop relative w-full max-w-[440px] rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -106,14 +106,14 @@ export function GiftModal({ onClose, onPurchased }: {
               </div>
             </div>
 
-            <label htmlFor="gift-length" className="mb-2 block text-[11px] font-bold uppercase tracking-wide text-text-muted">
+            <label htmlFor="gift-length" className="mb-2 block text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
               Length
             </label>
             <select
               id="gift-length"
               value={months}
               onChange={(e) => setMonths(Number(e.target.value) as GiftMonths)}
-              className="mb-5 w-full rounded-lg border border-divider bg-bg-tertiary px-3 py-2.5 text-[15px] text-text-normal outline-none focus:border-brand"
+              className="field mb-5 w-full"
             >
               {GIFT_MONTHS.map((m) => (
                 <option key={m} value={m}>

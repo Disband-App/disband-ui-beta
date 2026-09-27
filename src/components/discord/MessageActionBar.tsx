@@ -3,8 +3,10 @@
 import { useMemo } from "react";
 import type { ChatMessageData } from "./ChatMessage";
 import type { ReplyPreview } from "@/lib/messages";
+import { IconForward, IconMore, IconReply, IconSmile } from "@/components/icons";
 
-const QUICK_EMOJIS = ["\u{1f44d}", "\u{2764}\u{fe0f}", "\u{1f602}", "\u{1f62e}", "\u{1f622}"];
+// The iOS tapback set, in its order.
+const QUICK_EMOJIS = ["\u{2764}\u{fe0f}", "\u{1f44d}", "\u{1f44e}", "\u{1f602}", "\u{203c}\u{fe0f}", "\u{2753}"];
 
 interface MessageActionBarProps {
   message: ChatMessageData;
@@ -13,6 +15,8 @@ interface MessageActionBarProps {
   onToggleReaction?: (emoji: string) => void;
   onOpenReactionPicker?: () => void;
   onMoreActions?: (e: React.MouseEvent) => void;
+  /** Where the bar anchors: "end" (right edge) or "start" (left edge). */
+  align?: "start" | "end";
 }
 
 export function MessageActionBar({
@@ -22,6 +26,7 @@ export function MessageActionBar({
   onToggleReaction,
   onOpenReactionPicker,
   onMoreActions,
+  align = "end",
 }: MessageActionBarProps) {
   const replyPreview: ReplyPreview | null = useMemo(() => {
     if (!message.id) return null;
@@ -36,9 +41,14 @@ export function MessageActionBar({
     };
   }, [message]);
 
+  const btn =
+    "flex h-7 w-7 items-center justify-center rounded-full text-text-muted transition-[transform,background-color,color] duration-300 ease-spring hover:bg-interactive-hover hover:text-text-normal active:scale-90";
+
   return (
     <div
-      className="absolute -top-4 right-0 z-10 flex items-center gap-0.5 rounded-lg border border-divider bg-bg-secondary px-0.5 py-0.5 opacity-0 shadow-lg transition-opacity duration-100 group-hover:opacity-100 group-focus-within:opacity-100 focus-within:opacity-100"
+      className={`glass-thick pointer-events-none absolute -top-5 z-10 flex translate-y-1 scale-95 items-center gap-0.5 rounded-full p-[3px] opacity-0 transition-[opacity,transform] duration-300 ease-spring group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:scale-100 group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:scale-100 group-focus-within:opacity-100 ${
+        align === "end" ? "right-0 origin-bottom-right" : "left-0 origin-bottom-left"
+      }`}
       onClick={(e) => e.stopPropagation()}
     >
       {QUICK_EMOJIS.map((emoji) => (
@@ -46,64 +56,27 @@ export function MessageActionBar({
           key={emoji}
           type="button"
           onClick={() => onToggleReaction?.(emoji)}
-          className="flex h-7 w-7 items-center justify-center rounded text-base leading-none transition-all hover:bg-interactive-hover active:scale-90"
+          className="flex h-7 w-7 items-center justify-center rounded-full text-[15px] leading-none transition-transform duration-300 ease-bouncy hover:scale-[1.3] active:scale-90"
           title={emoji}
+          aria-label={`React ${emoji}`}
         >
           {emoji}
         </button>
       ))}
 
-      <div className="mx-0.5 h-4 w-px bg-divider" />
+      <div className="mx-0.5 h-4 w-px bg-hairline" />
 
-      <button
-        type="button"
-        onClick={onOpenReactionPicker}
-        className="flex h-7 w-7 items-center justify-center rounded text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal active:scale-90"
-        title="Add Reaction"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="10" />
-          <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-          <line x1="9" y1="9" x2="9.01" y2="9" />
-          <line x1="15" y1="9" x2="15.01" y2="9" />
-        </svg>
+      <button type="button" onClick={onOpenReactionPicker} className={btn} title="Add Reaction" aria-label="Add reaction">
+        <IconSmile size={16} strokeWidth={2} />
       </button>
-
-      <button
-        type="button"
-        onClick={() => onReply?.(replyPreview!)}
-        className="flex h-7 w-7 items-center justify-center rounded text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal active:scale-90"
-        title="Reply"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="9 17 4 12 9 7" />
-          <path d="M20 18v-2a4 4 0 0 0-4-4H4" />
-        </svg>
+      <button type="button" onClick={() => onReply?.(replyPreview!)} className={btn} title="Reply" aria-label="Reply">
+        <IconReply size={16} strokeWidth={2} />
       </button>
-
-      <button
-        type="button"
-        onClick={onForward}
-        className="flex h-7 w-7 items-center justify-center rounded text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal active:scale-90"
-        title="Forward"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
+      <button type="button" onClick={onForward} className={btn} title="Forward" aria-label="Forward">
+        <IconForward size={16} strokeWidth={2} />
       </button>
-
-      <button
-        type="button"
-        onClick={onMoreActions}
-        className="flex h-7 w-7 items-center justify-center rounded text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal active:scale-90"
-        title="More"
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="5" r="1" />
-          <circle cx="12" cy="12" r="1" />
-          <circle cx="12" cy="19" r="1" />
-        </svg>
+      <button type="button" onClick={onMoreActions} className={btn} title="More" aria-label="More actions">
+        <IconMore size={16} strokeWidth={2} />
       </button>
     </div>
   );

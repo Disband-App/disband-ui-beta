@@ -11,13 +11,13 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#1e1f22] text-[#dbdee1]">
+    <div className="min-h-screen bg-canvas text-text-normal">
       <MarketingNav />
       <main className="mx-auto max-w-3xl px-6 pb-16 pt-24">
-        <h1 className="text-3xl font-bold text-white">Terms of Service</h1>
-        <p className="mt-2 text-sm text-[#949ba4]">Last updated: September 2026</p>
+        <h1 className="large-title text-[34px] sm:text-[40px]">Terms of Service</h1>
+        <p className="mt-2 text-sm text-text-muted">Last updated: September 2026</p>
 
-        <div className="mt-8 space-y-6 text-[15px] leading-relaxed text-[#b5bac1]">
+        <div className="mt-8 space-y-6 text-[15px] leading-relaxed text-text-muted">
           <p>
             By creating an account, downloading, accessing, or using Disband (the &quot;Service&quot;),
             you agree to these Terms of Service (the &quot;Terms&quot;). If you do not agree to these
@@ -25,7 +25,7 @@ export default function TermsPage() {
             these Terms constitutes acceptance of those changes.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">1. The Service</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">1. The Service</h2>
           <p>
             Disband provides spaces and channels, direct messages, group chats, and voice and video
             calling across desktop, mobile, and the web. The Service is provided as-is, may evolve
@@ -34,12 +34,12 @@ export default function TermsPage() {
             ownership of Disband, its software, branding, or infrastructure.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">2. Your account</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">2. Your account</h2>
           <p>
             You are responsible for everything done through your account. You must keep your password
             and login credentials private, and you should sign out on shared devices. If you believe
             your account has been compromised, change your password immediately and contact us at{" "}
-            <a href="mailto:legal@disband.dev" className="text-[#00a8fc] hover:underline">
+            <a href="mailto:legal@disband.dev" className="text-text-link hover:underline">
               legal@disband.dev
             </a>
             . One person may operate more than one account, but each account must have a genuine,
@@ -47,7 +47,7 @@ export default function TermsPage() {
             or artificially inflate activity.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">3. Acceptable use</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">3. Acceptable use</h2>
           <p>
             You may not use the Service to: harass, threaten, or bully others; distribute malware,
             viruses, or harmful code; send spam, scams, or phishing; impersonate other people or
@@ -57,7 +57,7 @@ export default function TermsPage() {
             rules — including permanent suspension, at our discretion and without notice.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">4. No illegal modifications</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">4. No illegal modifications</h2>
           <p>
             You must not modify, reverse engineer, decompile, disassemble, tamper with, or attempt to
             defeat any part of Disband — including its client software, spaces, configuration,
@@ -73,7 +73,7 @@ export default function TermsPage() {
             faith through our documented channels is welcome and is not a violation of this section.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">5. Encryption &amp; privacy</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">5. Encryption &amp; privacy</h2>
           <p>
             Disband provides end-to-end encrypted messaging. You are responsible for safeguarding your
             account credentials. We design our systems so that encrypted conversation content is not
@@ -82,7 +82,7 @@ export default function TermsPage() {
             rights, and no modification of the Service may be used to bypass that encryption.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">6. Content you post</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">6. Content you post</h2>
           <p>
             You retain ownership of the content you post, send, or upload. You grant Disband a
             worldwide, non-exclusive, royalty-free license to store, transmit, display, and process
@@ -92,7 +92,7 @@ export default function TermsPage() {
             content in accordance with our policies and legal obligations.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">7. Moderation, suspensions, and termination</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">7. Moderation, suspensions, and termination</h2>
           <p>
             We take action against accounts and communities that violate these Terms. Measures range
             from warnings, content removal, and temporary suspension to{" "}
@@ -106,7 +106,7 @@ export default function TermsPage() {
             account at any time; some information may be retained where required by law.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">8. Billing and paid plans</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">8. Billing and paid plans</h2>
           <p>
             Paid plans are billed on a recurring basis and renew automatically until cancelled.
             Promotion codes and payments are subject to the terms shown at check-in, and cancellation
@@ -116,7 +116,7 @@ export default function TermsPage() {
             portion, in our discretion and to the extent permitted by law.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">9. Service availability</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">9. Service availability</h2>
           <p>
             We strive for high availability but do not guarantee uninterrupted service. The Service
             may be unavailable for maintenance, upgrades, or reasons outside our control, and features
@@ -124,7 +124,7 @@ export default function TermsPage() {
             online service.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">10. Limitation of liability</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">10. Limitation of liability</h2>
           <p>
             Disband is provided &quot;as is&quot; and &quot;as available&quot; to the maximum extent
             permitted by law. We do not warrant that the Service will be error-free, secure, or wholly
@@ -136,7 +136,7 @@ export default function TermsPage() {
             claim or (b) twenty-five dollars ($25).
           </p>
 
-          <h2 className="text-lg font-semibold text-white">11. Indemnity</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">11. Indemnity</h2>
           <p>
             You agree to indemnify and hold harmless Disband and its operators, affiliates, and staff
             from any claims, damages, liabilities, and expenses (including reasonable legal fees)
@@ -145,7 +145,7 @@ export default function TermsPage() {
             unauthorized modifications you make to the Service.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">12. Changes to these Terms</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">12. Changes to these Terms</h2>
           <p>
             We may update these Terms from time to time. When we make material changes, we will update
             the &quot;Last updated&quot; date above and, where practical, notify you in the app or by
@@ -153,7 +153,7 @@ export default function TermsPage() {
             Terms. If you do not agree, you should stop using the Service and delete your account.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">13. Governing law and disputes</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">13. Governing law and disputes</h2>
           <p>
             These Terms are governed by the laws of the jurisdiction in which Disband operates
             (United States), without regard to conflict-of-law principles. You agree that any dispute
@@ -161,7 +161,7 @@ export default function TermsPage() {
             federal or state courts, and you consent to the personal jurisdiction of those courts.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">14. Severability and waiver</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">14. Severability and waiver</h2>
           <p>
             If any provision of these Terms is found to be unenforceable, that provision will be
             enforced to the maximum extent permissible, and the remaining provisions will remain in
@@ -169,16 +169,16 @@ export default function TermsPage() {
             provision or of our right to enforce it later.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">15. Contact</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">15. Contact</h2>
           <p>
             Questions about these Terms or reports of abuse or security issues can be sent to:{" "}
-            <a href="mailto:legal@disband.dev" className="text-[#00a8fc] hover:underline">
+            <a href="mailto:legal@disband.dev" className="text-text-link hover:underline">
               legal@disband.dev
             </a>
           </p>
         </div>
 
-        <Link href="/home" className="mt-10 inline-block text-sm text-brand hover:underline">
+        <Link href="/home" className="mt-10 inline-flex items-center gap-1 text-[15px] text-text-link hover:underline">
           ← Back to home
         </Link>
       </main>

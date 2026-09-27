@@ -96,64 +96,65 @@ export function NotificationBell() {
       ? createPortal(
           <div
             ref={panelRef}
-            className="fixed z-[120] max-h-[60vh] w-[min(20rem,calc(100vw-16px))] overflow-y-auto rounded-lg bg-bg-secondary shadow-xl ring-1 ring-divider"
-            style={{ top: pos.top, right: pos.right }}
+            role="dialog"
+            aria-label="Notifications"
+            className="glass-thick popover-pop fixed z-[120] flex max-h-[min(70vh,560px)] w-[min(22rem,calc(100vw-16px))] flex-col overflow-hidden rounded-[18px]"
+            style={{ top: pos.top, right: pos.right, ["--popover-origin" as string]: "top right" }}
           >
-            <div className="sticky top-0 flex items-center justify-between border-b border-divider bg-bg-secondary px-3 py-2">
-              <p className="text-sm font-bold text-text-normal">Notifications</p>
+            <div className="flex shrink-0 items-center justify-between px-4 pb-2 pt-3.5">
+              <p className="title-2 text-[19px]">Notifications</p>
               {notifications.some((n) => !n.read) && (
                 <button
                   type="button"
                   onClick={() => void markNotificationsRead()}
-                  className="text-xs font-medium text-brand hover:underline"
+                  className="btn btn-plain btn-sm -mr-2"
                 >
                   Mark all read
                 </button>
               )}
             </div>
             {navError && (
-              <p role="alert" className="border-b border-divider bg-status-dnd/10 px-3 py-2 text-xs text-status-dnd">
+              <p role="alert" className="mx-3 mb-2 rounded-[10px] bg-status-dnd/12 px-3 py-2 text-[12.5px] text-status-dnd">
                 {navError}
               </p>
             )}
             {notifications.length === 0 ? (
-              <p className="px-4 py-6 text-center text-[13px] text-text-muted">
-                Nothing here yet — mentions and replies will land here.
-              </p>
+              <div className="flex flex-col items-center px-6 pb-8 pt-6 text-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-fill-tertiary text-text-muted">
+                  <IconBell size={22} />
+                </span>
+                <p className="mt-3 text-[14px] font-semibold text-text-normal">You&rsquo;re all caught up</p>
+                <p className="mt-1 text-[13px] text-text-muted">Mentions and replies will show up here.</p>
+              </div>
             ) : (
-              <ul>
-                {notifications.map((n) => (
-                  <li key={n.id}>
+              <ul className="stagger min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+                {notifications.map((n, i) => (
+                  <li key={n.id} style={{ ["--i" as string]: Math.min(i, 8) }}>
                     <button
                       type="button"
                       onClick={() => void handleItemClick(n)}
-                      className={`flex w-full items-start gap-2.5 border-b border-divider/50 px-3 py-2.5 text-left transition-colors hover:bg-interactive-hover ${
-                        n.read ? "opacity-70" : ""
+                      className={`flex w-full items-start gap-3 rounded-[12px] px-2.5 py-2.5 text-left transition-colors hover:bg-interactive-hover ${
+                        n.read ? "opacity-65" : ""
                       }`}
                     >
                       <span
-                        className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+                        className={`mt-[7px] h-2 w-2 shrink-0 rounded-full ${
                           n.read ? "bg-transparent" : "bg-brand"
                         }`}
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="block line-clamp-2 text-[13px] font-semibold leading-snug text-text-normal">
-                          {n.title}
+                        <span className="flex items-baseline gap-2">
+                          <span className="line-clamp-2 min-w-0 flex-1 text-[13.5px] font-semibold leading-snug text-text-normal">
+                            {n.title}
+                          </span>
+                          <span className="shrink-0 text-[11.5px] text-text-muted">{timeAgo(n.created_at)}</span>
                         </span>
                         {n.body && (
                           <span className="mt-0.5 block line-clamp-3 text-[13px] leading-snug text-text-muted">
                             {n.body}
                           </span>
                         )}
-                        <span className="mt-0.5 block text-[11px] text-text-muted/70">
-                          {timeAgo(n.created_at)}
-                        </span>
                       </span>
-                      {!n.seen_at && (
-                        <span className="mt-1 shrink-0 rounded bg-status-dnd/15 px-1.5 py-0.5 text-[10px] font-bold text-status-dnd">
-                          NEW
-                        </span>
-                      )}
                     </button>
                   </li>
                 ))}
@@ -173,13 +174,12 @@ export function NotificationBell() {
         title="Notifications"
         aria-label={unseen > 0 ? `${unseen} unread notifications` : "Notifications"}
         aria-expanded={open}
-        className={`relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all hover:bg-interactive-hover ${
-          open ? "text-text-normal" : "text-text-muted hover:text-text-normal"
-        }`}
+        data-active={open ? "true" : undefined}
+        className="tool-btn relative"
       >
         <IconBell size={18} />
         {unseen > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-status-dnd px-1 text-[10px] font-bold leading-none text-white">
+          <span key={unseen} className="count-badge badge-pop absolute -right-1 -top-1 h-4 min-w-4 px-1 text-[10px]">
             {unseen > 9 ? "9+" : unseen}
           </span>
         )}

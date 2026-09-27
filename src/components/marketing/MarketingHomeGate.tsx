@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { getSupabaseClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { isPasswordResetLink } from "@/lib/recover-session-from-url";
 import { MarketingHomePage } from "@/components/marketing/MarketingHomePage";
+import { ActivityIndicator } from "@/components/ui/ActivityIndicator";
 
 export function MarketingHomeGate() {
   const router = useRouter();
@@ -31,8 +32,8 @@ export function MarketingHomeGate() {
 
   if (!ready) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#1e1f22] text-[#949ba4]">
-        Loading…
+      <div className="flex min-h-screen items-center justify-center bg-canvas">
+        <ActivityIndicator size={22} label="Loading" />
       </div>
     );
   }

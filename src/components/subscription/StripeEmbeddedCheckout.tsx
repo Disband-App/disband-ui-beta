@@ -101,13 +101,13 @@ function PromotionCodeField({ checkout }: { checkout: StripeCheckoutElementsValu
           }}
           placeholder="Coupon code"
           aria-label="Coupon code"
-          className="min-w-0 flex-1 rounded-md border border-divider bg-bg-tertiary px-3 py-2 text-[13px] uppercase tracking-wide text-text-normal outline-none placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted focus:border-brand/60"
+          className="field min-w-0 flex-1 uppercase tracking-wide placeholder:normal-case placeholder:tracking-normal placeholder:text-text-muted text-[14px]"
         />
         <button
           type="button"
           onClick={() => void apply()}
           disabled={busy || !code.trim()}
-          className="shrink-0 rounded-md bg-bg-accent px-3.5 py-2 text-[13px] font-semibold hover:bg-interactive-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="btn btn-gray btn-sm shrink-0"
         >
           {busy ? "Applying…" : "Apply"}
         </button>
@@ -196,7 +196,7 @@ function CheckoutForm({ onSuccess }: { onSuccess: () => void }) {
       <button
         type="submit"
         disabled={!checkout.canConfirm || loading}
-        className="w-full rounded-lg bg-brand py-2.5 text-sm font-bold text-white hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn btn-filled w-full"
       >
         {loading ? "Processing…" : `Pay ${checkout.total.total.amount}`}
       </button>

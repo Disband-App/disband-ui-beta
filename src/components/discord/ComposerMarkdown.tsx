@@ -98,7 +98,7 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
         node: (
           <Fragment key={`${keyBase}-c${n}`}>
             <span className={MARKER}>`</span>
-            <span className="rounded bg-bg-accent text-[#e6b673]">{code[1]}</span>
+            <span className="rounded bg-bg-accent text-sys-orange">{code[1]}</span>
             <span className={MARKER}>`</span>
           </Fragment>
         ),
@@ -156,7 +156,7 @@ export function ComposerMarkdown({ text }: { text: string }) {
 
     if (inFence) {
       out.push(
-        <div key={key} className="text-[#9cdcfe]">
+        <div key={key} className="text-sys-teal">
           {line || "​"}
         </div>,
       );

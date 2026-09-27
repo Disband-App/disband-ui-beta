@@ -12,11 +12,14 @@ import {
 } from "@/lib/catalysts";
 import { useApp } from "@/contexts/AppContext";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
-import { IconClose, IconCopy, IconTrash, IconSettings, IconLink, IconShield, IconPalette, IconAlert, IconEmoji, IconHash, IconVideo, IconEdit, IconPlus, IconChevron, IconGripVertical } from "@/components/icons";
+import { IconFriends, IconCopy, IconTrash, IconSettings, IconLink, IconShield, IconPalette, IconAlert, IconEmoji, IconHash, IconVideo, IconEdit, IconPlus, IconChevron, IconGripVertical } from "@/components/icons";
 import { RoleManager } from "@/components/modals/RoleManager";
 import { AuditLogPanel } from "@/components/modals/AuditLogPanel";
+import { SheetCloseButton } from "@/components/ui/Sheet";
+import { Toggle } from "@/components/discord/settings/SettingsPrimitives";
+import { SpaceTile } from "@/components/discord/ServerList";
 import { RolePicker } from "@/components/ui/RolePicker";
-import { getInviteUrl, serverInitials, displayName } from "@/lib/utils";
+import { getInviteUrl, displayName } from "@/lib/utils";
 import { safeImageUrl } from "@/lib/safe-url";
 import { SendInvitePanel } from "@/components/modals/SendInvitePanel";
 import { Avatar } from "@/components/ui/Avatar";
@@ -30,17 +33,17 @@ interface ServerSettingsModalProps {
 
 type Section = "overview" | "invite" | "channels" | "members" | "roles" | "bans" | "audit" | "emoji" | "appearance" | "danger";
 
-const NAV: { id: Section; label: string; icon: typeof IconSettings; ownerOnly?: boolean; permission?: ServerPermissionKey }[] = [
-  { id: "overview", label: "Overview", icon: IconSettings },
-  { id: "invite", label: "Invites", icon: IconLink },
-  { id: "channels", label: "Channels", icon: IconHash, permission: "manage_channels" },
-  { id: "members", label: "Members", icon: IconShield, permission: "manage_roles" },
-  { id: "roles", label: "Roles", icon: IconShield, permission: "manage_roles" },
-  { id: "bans", label: "Bans", icon: IconAlert, permission: "ban" },
-  { id: "audit", label: "Audit Log", icon: IconHash, permission: "view_audit_log" },
-  { id: "emoji", label: "Emoji", icon: IconEmoji, ownerOnly: true },
-  { id: "appearance", label: "Appearance", icon: IconPalette, ownerOnly: true },
-  { id: "danger", label: "Danger Zone", icon: IconAlert, ownerOnly: true },
+const NAV: { id: Section; label: string; icon: typeof IconSettings; tint: string; ownerOnly?: boolean; permission?: ServerPermissionKey }[] = [
+  { id: "overview", label: "Overview", icon: IconSettings, tint: "linear-gradient(180deg,#9a9aa3,#6f6f78)" },
+  { id: "invite", label: "Invites", icon: IconLink, tint: "linear-gradient(180deg,#3d9bff,#0a6fe8)" },
+  { id: "channels", label: "Channels", icon: IconHash, tint: "linear-gradient(180deg,#4fd0e6,#1f9fb8)", permission: "manage_channels" },
+  { id: "members", label: "Members", icon: IconFriends, tint: "linear-gradient(180deg,#4fd88b,#22a95b)", permission: "manage_roles" },
+  { id: "roles", label: "Roles", icon: IconShield, tint: "linear-gradient(180deg,#ffb147,#f08a0b)", permission: "manage_roles" },
+  { id: "bans", label: "Bans", icon: IconAlert, tint: "linear-gradient(180deg,#ff6961,#e5352b)", permission: "ban" },
+  { id: "audit", label: "Audit Log", icon: IconHash, tint: "linear-gradient(180deg,#7d7aff,#5451d6)", permission: "view_audit_log" },
+  { id: "emoji", label: "Emoji", icon: IconEmoji, tint: "linear-gradient(180deg,#ffd84d,#f5b800)", ownerOnly: true },
+  { id: "appearance", label: "Appearance", icon: IconPalette, tint: "linear-gradient(180deg,#ff7a93,#ec4263)", ownerOnly: true },
+  { id: "danger", label: "Danger Zone", icon: IconAlert, tint: "linear-gradient(180deg,#ff6961,#e5352b)", ownerOnly: true },
 ];
 
 export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSettingsModalProps) {
@@ -304,7 +307,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
   function renderChannelRow(c: { id: string; name: string; type: string }) {
     return (
-      <li key={c.id} className="flex items-center gap-2 rounded-lg border border-divider bg-bg-secondary px-3 py-2">
+      <li key={c.id} className="rounded-[14px] bg-fill-tertiary flex items-center gap-2 px-3 py-2">
         {c.type === "voice" ? (
           <IconVideo size={16} className="shrink-0 text-text-muted" />
         ) : (
@@ -320,13 +323,13 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                 if (e.key === "Escape") setRenamingId(null);
               }}
               autoFocus
-              className="min-w-0 flex-1 rounded bg-bg-accent px-2 py-1 text-sm outline-none focus:ring-2 focus:ring-brand"
+              className="field min-w-0 flex-1 text-[14px] min-h-0 py-1.5"
             />
             <button
               type="button"
               onClick={() => void handleRenameChannel()}
               disabled={loading || !renameValue.trim()}
-              className="rounded bg-brand px-3 py-1 text-xs font-semibold text-white disabled:opacity-50"
+              className="btn btn-filled btn-sm"
             >
               Save
             </button>
@@ -381,36 +384,24 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
   }
 
   return (
-    <div role="dialog" aria-modal="true" aria-label="Space settings" className="overlay-fade fixed inset-0 z-[70] flex flex-col bg-bg-primary">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-divider px-6">
-        <div className="flex items-center gap-3">
-          {activeServer.icon_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={safeImageUrl(activeServer.icon_url) || undefined} alt="" className="h-8 w-8 rounded-[30%] object-cover" />
-          ) : (
-            <div className="flex h-8 w-8 items-center justify-center rounded-[30%] bg-brand text-xs font-bold text-white">
-              {serverInitials(activeServer.name)}
-            </div>
-          )}
-          <div>
-            <h1 className="font-bold">{activeServer.name}</h1>
-            <p className="text-xs text-text-muted">Space Settings</p>
+    <div className="fixed inset-0 z-[70] flex items-end justify-center sm:items-center sm:p-6">
+    <button type="button" aria-label="Close" tabIndex={-1} className="overlay-fade absolute inset-0 cursor-default bg-overlay-scrim" onClick={onClose} />
+    <div role="dialog" aria-modal="true" aria-label="Space settings" className="modal-pop relative flex h-[94vh] w-full max-w-[1040px] flex-col overflow-hidden rounded-t-[24px] bg-bg-primary shadow-elev-4 ring-1 ring-glass-border sm:h-[min(90vh,820px)] sm:rounded-[24px]">
+      <header className="flex h-[68px] shrink-0 items-center justify-between gap-3 px-5 hairline-b">
+        <div className="flex min-w-0 items-center gap-3">
+          <SpaceTile server={activeServer} size={40} />
+          <div className="min-w-0">
+            <h1 className="truncate text-[17px] font-semibold tracking-[-0.015em]">{activeServer.name}</h1>
+            <p className="text-[12.5px] text-text-muted">Space settings</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="rounded p-2 text-text-muted transition-colors hover:bg-interactive-hover hover:text-text-normal"
-          aria-label="Close"
-        >
-          <IconClose size={24} />
-        </button>
+        <SheetCloseButton onClick={onClose} />
       </header>
 
       {/* Mobile section picker. This used to live inside the desktop-only
           <nav> below (hidden + md:flex), so on small screens there was no way
           to switch sections at all. */}
-      <div className="shrink-0 border-b border-divider bg-bg-secondary px-4 py-2 md:hidden">
+      <div className="shrink-0 bg-bg-secondary px-4 py-2 hairline-b md:hidden">
         <label className="sr-only" htmlFor="space-settings-section">
           Settings section
         </label>
@@ -418,7 +409,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
           id="space-settings-section"
           value={section}
           onChange={(e) => setSection(e.target.value as Section)}
-          className="w-full rounded bg-bg-accent px-2 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+          className="field w-full text-[14px]"
         >
           {navItems.map((n) => (
             <option key={n.id} value={n.id}>{n.label}</option>
@@ -427,53 +418,59 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
       </div>
 
       <div className="flex min-h-0 flex-1">
-        <nav className="hidden w-56 shrink-0 flex-col border-r border-divider bg-bg-secondary p-4 md:flex">
-          <label className="mb-2 px-2 text-xs font-bold uppercase text-text-muted">Settings</label>
+        <nav aria-label="Space settings sections" className="hidden w-[240px] shrink-0 flex-col overflow-y-auto bg-bg-secondary p-3 md:flex">
+          <div className="rounded-[14px] bg-bg-primary p-1 shadow-[0_0_0_1px_var(--panel-border)]">
           {navItems.map((n) => {
             const Icon = n.icon;
+            const active = section === n.id;
             return (
               <button
                 key={n.id}
                 type="button"
                 onClick={() => setSection(n.id)}
-                className={`mb-0.5 hidden w-full items-center gap-2 rounded px-2 py-2 text-left text-sm transition-colors md:flex ${
-                  section === n.id ? "bg-interactive-selected text-text-normal" : "text-text-muted hover:bg-interactive-hover"
+                aria-current={active ? "page" : undefined}
+                className={`flex w-full items-center gap-2.5 rounded-[10px] px-2 py-[7px] text-left text-[14px] transition-colors ${
+                  active ? "bg-brand font-medium text-brand-foreground" : n.id === "danger" ? "text-status-dnd hover:bg-interactive-hover" : "text-text-normal hover:bg-interactive-hover"
                 }`}
               >
-                <Icon size={16} /> {n.label}
+                <span className="icon-tile h-[26px] w-[26px] rounded-[7px]" style={{ background: n.tint }}>
+                  <Icon size={15} strokeWidth={2.2} />
+                </span>
+                {n.label}
               </button>
             );
           })}
+          </div>
         </nav>
 
         <div className="flex-1 overflow-y-auto p-6 md:p-10">
           <div className="mx-auto max-w-2xl">
             {section === "overview" && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold">Overview</h2>
+                <h2 className="title-2">Overview</h2>
                 <p className="text-sm text-text-muted">Basic information about your space.</p>
                 <label className="block">
-                  <span className="text-xs font-bold uppercase text-text-muted">Space name</span>
+                  <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Space name</span>
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     disabled={!isOwner}
-                    className="mt-1 w-full rounded bg-bg-accent px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand disabled:opacity-60"
+                    className="field mt-1 w-full text-[14px]"
                   />
                 </label>
                 <label className="block">
-                  <span className="text-xs font-bold uppercase text-text-muted">Description</span>
+                  <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Description</span>
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     disabled={!isOwner}
                     rows={4}
                     placeholder="Tell people what this space is about"
-                    className="mt-1 w-full resize-none rounded bg-bg-accent px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand disabled:opacity-60"
+                    className="field mt-1 w-full resize-none text-[14px]"
                   />
                 </label>
                 <div>
-                  <span className="text-xs font-bold uppercase text-text-muted">
+                  <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">
                     Vanity invite code{" "}
                     <span className="ml-1 rounded bg-brand/20 px-1.5 py-px text-[10px] font-bold text-brand">
                       Level 1
@@ -488,14 +485,14 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                           disabled={!isOwner}
                           placeholder="e.g. my-cool-space"
                           maxLength={24}
-                          className="min-w-0 flex-1 rounded bg-bg-accent px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand disabled:opacity-60"
+                          className="field min-w-0 flex-1 text-[14px]"
                         />
                         {isOwner && (
                           <button
                             type="button"
                             onClick={() => void saveVanity()}
                             disabled={loading}
-                            className="shrink-0 rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                            className="btn btn-filled shrink-0"
                           >
                             {vanitySaved ? "Saved" : "Set"}
                           </button>
@@ -513,7 +510,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                     </p>
                   )}
                 </div>
-                <div className="rounded-lg border border-divider bg-bg-secondary p-4">
+                <div className="rounded-[14px] bg-fill-tertiary p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="text-sm font-semibold text-text-normal">Space Discovery</p>
@@ -524,22 +521,12 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                         created.
                       </p>
                     </div>
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={discoverable}
-                      aria-label="Make space discoverable"
+                    <Toggle
+                      checked={discoverable}
+                      label="Make space discoverable"
                       disabled={!isOwner || loading}
-                      onClick={() => void toggleDiscoverable()}
-                      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                        discoverable ? "bg-status-online" : "bg-text-muted/40"
-                      }`}
-                    >
-                      <span
-                        className="inline-block h-[18px] w-[18px] transform rounded-full bg-white shadow transition-transform"
-                        style={{ transform: `translateX(${discoverable ? 22 : 4}px)` }}
-                      />
-                    </button>
+                      onChange={() => void toggleDiscoverable()}
+                    />
                   </div>
                   {discoverable && (
                     <p className="mt-3 text-xs text-text-muted">
@@ -560,7 +547,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                     type="button"
                     disabled={loading}
                     onClick={() => void saveOverview()}
-                    className="rounded bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+                    className="btn btn-filled"
                   >
                     Save Changes
                   </button>
@@ -571,16 +558,16 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
             {section === "invite" && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold">Invites</h2>
+                <h2 className="title-2">Invites</h2>
                 <p className="text-sm text-text-muted">Share this link to invite people to your space.</p>
                 {inviteUrl ? (
                   <>
-                    <div className="rounded-lg border border-divider bg-bg-secondary p-5">
+                    <div className="rounded-[14px] bg-fill-tertiary p-5">
                       <p className="break-all font-mono text-sm">{inviteUrl}</p>
                       <button
                         type="button"
                         onClick={copyInvite}
-                        className="mt-4 flex items-center gap-2 rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+                        className="btn btn-filled mt-4"
                       >
                         <IconCopy size={16} /> {copied ? "Copied!" : "Copy Invite Link"}
                       </button>
@@ -601,7 +588,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
             {section === "channels" && canManageChannels && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold">Channels</h2>
+                <h2 className="title-2">Channels</h2>
                 <p className="text-sm text-text-muted">Create, rename, and delete text and voice channels.</p>
                 <div className="space-y-4">
                   {categories.map((cat) => {
@@ -626,22 +613,22 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                   })()}
                   {channels.length === 0 && <p className="text-sm text-text-muted">No channels yet.</p>}
                 </div>
-                <div className="flex flex-wrap items-end gap-3 rounded-lg border border-divider bg-bg-secondary p-4">
+                <div className="rounded-[14px] bg-fill-tertiary flex flex-wrap items-end gap-3 p-4">
                   <label className="min-w-[160px] flex-1">
-                    <span className="text-xs font-bold uppercase text-text-muted">Channel name</span>
+                    <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Channel name</span>
                     <input
                       value={channelName}
                       onChange={(e) => setChannelName(e.target.value.replace(/\s+/g, "-"))}
                       placeholder="new-channel"
-                      className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                      className="field mt-1 w-full text-[14px]"
                     />
                   </label>
                   <label>
-                    <span className="text-xs font-bold uppercase text-text-muted">Type</span>
+                    <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Type</span>
                     <select
                       value={channelType}
                       onChange={(e) => setChannelType(e.target.value as "text" | "voice")}
-                      className="mt-1 block rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                      className="field mt-1 text-[14px]"
                     >
                       <option value="text">Text</option>
                       <option value="voice">Voice</option>
@@ -651,7 +638,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                     type="button"
                     onClick={() => void handleCreateChannel()}
                     disabled={loading || !channelName.trim()}
-                    className="flex items-center gap-2 rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+                    className="btn btn-filled"
                   >
                     <IconPlus size={16} /> Create Channel
                   </button>
@@ -661,7 +648,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
             {section === "members" && canManageRoles && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold">Members</h2>
+                <h2 className="title-2">Members</h2>
                 <p className="text-sm text-text-muted">Manage members, assign roles, and moderate the space.</p>
                 <ul className="space-y-2">
                   {members.map((m) => {
@@ -677,7 +664,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                     const memberName = m.profile ? displayName(m.profile) : "Unknown member";
                     const isSelf = m.user_id === user?.id;
                     return (
-                      <li key={m.user_id} className="flex items-center gap-3 rounded-lg border border-divider bg-bg-secondary p-3">
+                      <li key={m.user_id} className="rounded-[14px] bg-fill-tertiary flex items-center gap-3 p-3">
                         <Avatar profile={m.profile} size="sm" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium" style={topMemberRole?.color ? { color: topMemberRole.color } : undefined}>
@@ -708,7 +695,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                               <button
                                 type="button"
                                 onClick={() => void handleBanMember(m.user_id, memberName)}
-                                className="rounded bg-bg-accent px-2 py-1.5 text-xs font-semibold text-status-dnd transition-colors hover:bg-status-dnd/10"
+                                className="btn btn-destructive btn-sm"
                               >
                                 Ban
                               </button>
@@ -717,7 +704,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                               <button
                                 type="button"
                                 onClick={() => void handleKickMember(m.user_id, memberName)}
-                                className="rounded bg-bg-accent px-2 py-1.5 text-xs font-semibold text-status-dnd transition-colors hover:bg-status-dnd/10"
+                                className="btn btn-destructive btn-sm"
                               >
                                 Kick
                               </button>
@@ -739,7 +726,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
             {section === "bans" && canBan && (
               <div className="space-y-4">
                 <div>
-                  <h2 className="text-xl font-bold text-text-normal">Bans</h2>
+                  <h2 className="title-2 text-text-normal">Bans</h2>
                   <p className="mt-1 text-sm text-text-muted">
                     Banned users cannot rejoin. Unbanning lets them back with a fresh invite.
                   </p>
@@ -754,7 +741,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                     {serverBans.map((b) => (
                       <li
                         key={b.user_id}
-                        className="flex items-center gap-3 rounded-lg border border-divider bg-bg-secondary px-3 py-2"
+                        className="rounded-[14px] bg-fill-tertiary flex items-center gap-3 px-3 py-2"
                       >
                         <Avatar
                           profile={b.profile ?? { display_name: "Banned user" }}
@@ -780,7 +767,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                               });
                             }
                           }}
-                          className="shrink-0 rounded-md border border-divider px-3 py-1.5 text-[13px] font-medium text-text-normal transition-colors hover:bg-interactive-hover disabled:opacity-40"
+                          className="btn btn-gray btn-sm shrink-0"
                         >
                           Unban
                         </button>
@@ -797,7 +784,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
             {section === "emoji" && isOwner && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold">Custom Emoji</h2>
+                <h2 className="title-2">Custom Emoji</h2>
                 <p className="text-sm text-text-muted">
                   Add custom emoji for members to use in chat.
                   {typeof entitlements.customEmojiSlots === "number"
@@ -809,7 +796,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {customEmoji.map((e) => (
-                    <div key={e.id} className="group relative flex items-center gap-2 rounded-lg border border-divider bg-bg-secondary px-3 py-2 text-sm">
+                    <div key={e.id} className="rounded-[14px] bg-fill-tertiary group relative flex items-center gap-2 px-3 py-2 text-sm">
                       <img src={safeImageUrl(e.url) || undefined} alt={e.name} className="h-6 w-6 object-contain" />
                       <span>:{e.name}:</span>
                       <button
@@ -825,18 +812,18 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                 {(typeof entitlements.customEmojiSlots !== "number" ||
                   customEmoji.length <
                     entitlements.customEmojiSlots + (catalystLvl.level >= 2 ? EMOJI_SLOTS_BONUS : 0)) && (
-                  <div className="flex flex-wrap items-end gap-3 rounded-lg border border-divider bg-bg-secondary p-4">
+                  <div className="rounded-[14px] bg-fill-tertiary flex flex-wrap items-end gap-3 p-4">
                     <label className="flex-1">
-                      <span className="text-xs font-bold uppercase text-text-muted">Name</span>
+                      <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Name</span>
                       <input
                         value={emojiName}
                         onChange={(e) => setEmojiName(e.target.value.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 32))}
                         placeholder="my_emoji"
-                        className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+                        className="field mt-1 w-full text-[14px]"
                       />
                     </label>
                     <label className="max-w-40">
-                      <span className="text-xs font-bold uppercase text-text-muted">Image</span>
+                      <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Image</span>
                       <input
                         type="file"
                         accept="image/png,image/gif,image/webp,image/jpeg"
@@ -848,7 +835,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                       type="button"
                       onClick={() => void handleEmojiUpload()}
                       disabled={emojiUploading || !emojiName.trim() || !emojiFile}
-                      className="rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+                      className="btn btn-filled"
                     >
                       {emojiUploading ? "Uploading..." : "Upload"}
                     </button>
@@ -862,16 +849,16 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
             {section === "appearance" && isOwner && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold">Appearance</h2>
+                <h2 className="title-2">Appearance</h2>
                 <p className="text-sm text-text-muted">Customize how your space looks in invites and the sidebar.</p>
-                <label className="flex cursor-pointer items-center justify-between rounded-lg border border-divider bg-bg-secondary p-4 hover:bg-interactive-hover">
+                <label className="rounded-[14px] bg-fill-tertiary flex cursor-pointer items-center justify-between p-4 hover:bg-interactive-hover">
                   <div>
                     <p className="font-medium">Space icon</p>
                     <p className="text-xs text-text-muted">Recommended 512×512</p>
                   </div>
                   <input type="file" accept="image/*" className="text-sm" onChange={(e) => e.target.files?.[0] && void handleIcon(e.target.files[0])} />
                 </label>
-                <label className="flex cursor-pointer items-center justify-between rounded-lg border border-divider bg-bg-secondary p-4 hover:bg-interactive-hover">
+                <label className="rounded-[14px] bg-fill-tertiary flex cursor-pointer items-center justify-between p-4 hover:bg-interactive-hover">
                   <div>
                     <p className="font-medium">Space banner</p>
                     <p className="text-xs text-text-muted">Shown on invite previews</p>
@@ -883,7 +870,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
 
             {section === "danger" && isOwner && (
               <div className="space-y-5">
-                <h2 className="text-xl font-bold text-status-dnd">Danger Zone</h2>
+                <h2 className="title-2 text-status-dnd">Danger Zone</h2>
                 <div className="rounded-lg border border-status-dnd/30 bg-status-dnd/5 p-5">
                   <p className="font-medium">Delete this space</p>
                   <p className="mt-1 text-sm text-text-muted">Permanently delete all channels, messages, and members. This cannot be undone.</p>
@@ -891,7 +878,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
                     type="button"
                     onClick={() => void handleDelete()}
                     disabled={loading}
-                    className="mt-4 flex items-center gap-2 rounded bg-status-dnd px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+                    className="btn btn-danger mt-4"
                   >
                     <IconTrash size={16} /> Delete Space
                   </button>
@@ -903,6 +890,7 @@ export function ServerSettingsModal({ open, onClose, onEditChannel }: ServerSett
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

@@ -125,7 +125,7 @@ export function AttachmentGrid({
   if (images.length === 3) {
     return (
       <div className="mt-1 max-w-[560px]">
-        <div className="flex gap-1 overflow-hidden rounded-lg" style={{ height: ROW_HEIGHT[2] }}>
+        <div className="flex gap-[3px] overflow-hidden rounded-[18px]" style={{ height: ROW_HEIGHT[2] }}>
           {tile(images[0], 0, "flex-[2]")}
           <div className="flex min-w-0 flex-1 flex-col gap-1">
             {tile(images[1], 1, "min-h-0 flex-1")}
@@ -148,7 +148,7 @@ export function AttachmentGrid({
   return (
     <div className="mt-1 max-w-[560px]">
       {images.length > 0 && (
-        <div className="flex flex-col gap-1 overflow-hidden rounded-lg">
+        <div className="flex flex-col gap-[3px] overflow-hidden rounded-[18px]">
           {rows.map((row, r) =>
             row.length === 0 ? null : (
               <div key={r} className="flex gap-1" style={{ height: ROW_HEIGHT[row.length] ?? ROW_HEIGHT[3] }}>
@@ -197,7 +197,7 @@ function OtherFiles({ others }: { others: MessageAttachment[] }) {
           href={safeImageUrl(a.url) ?? undefined}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-1 flex items-center gap-2 rounded-md bg-bg-accent px-3 py-2 text-sm text-text-normal hover:bg-interactive-hover"
+          className="mt-1 flex items-center gap-2 rounded-[12px] bg-fill-tertiary px-3 py-2 text-sm text-text-normal hover:bg-interactive-hover"
         >
           <span className="truncate">{a.name ?? "Attachment"}</span>
           {a.size ? (

@@ -44,7 +44,7 @@ export function VerificationPanel() {
       {status === "error" && (
         <Link
           href="/login"
-          className="mt-5 rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          className="btn btn-filled mt-5"
         >
           Back to sign in
         </Link>

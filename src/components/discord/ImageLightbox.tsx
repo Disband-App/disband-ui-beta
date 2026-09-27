@@ -122,11 +122,11 @@ export function ImageLightbox({
 
         <div className="flex min-h-0 flex-1 items-center justify-center px-6 pb-8 pt-2">
           <div
-            className="modal-pop pointer-events-auto flex max-h-full max-w-[min(56rem,92vw)] flex-col overflow-hidden rounded-lg bg-overlay-media shadow-2xl ring-1 ring-divider"
+            className="modal-pop pointer-events-auto flex max-h-full max-w-[min(56rem,92vw)] flex-col overflow-hidden rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
             onClick={(e) => e.stopPropagation()}
           >
             {author && (
-              <header className="flex shrink-0 items-center gap-3 border-b border-black/25 px-4 py-3">
+              <header className="flex shrink-0 items-center gap-3 px-4 py-3 hairline-b">
                 <Avatar profile={author} size="sm" />
                 <div className="min-w-0 flex flex-wrap items-baseline gap-2">
                   <span className="text-[15px] font-medium" style={nameStyle}>

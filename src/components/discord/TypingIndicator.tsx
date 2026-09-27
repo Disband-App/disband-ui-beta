@@ -76,13 +76,13 @@ export function TypingIndicator({
 
   return (
     <div
-      className={`flex items-center gap-2 px-4 pb-2 transition-opacity duration-300 ${
-        active ? "opacity-100" : "pointer-events-none opacity-0"
+      className={`flex items-end gap-2 px-4 pb-1.5 transition-[opacity,transform] duration-300 ease-ios ${
+        active ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-1 opacity-0"
       }`}
       aria-hidden={!active}
     >
       {groupContext && (
-        <div className="flex shrink-0 items-center">
+        <div className="flex shrink-0 items-center self-center">
           {shown.map((t, i) => {
             const profile = byId.get(t.userId);
             if (!profile) return null;
@@ -93,7 +93,7 @@ export function TypingIndicator({
                 className="avatar-pop -ml-1.5 rounded-full ring-2 ring-bg-primary first:ml-0"
                 style={{ zIndex: MAX_AVATARS - i }}
               >
-                <Avatar profile={profile} size="sm" className="h-6 w-6" />
+                <Avatar profile={profile} size="sm" className="h-6 w-6 text-[10px]" />
               </span>
             );
           })}
@@ -105,7 +105,7 @@ export function TypingIndicator({
                 key={`leaving-${t.userId}`}
                 className="avatar-leave -ml-1.5 rounded-full opacity-0 ring-2 ring-bg-primary"
               >
-                <Avatar profile={profile} size="sm" className="h-6 w-6" />
+                <Avatar profile={profile} size="sm" className="h-6 w-6 text-[10px]" />
               </span>
             );
           })}
@@ -116,12 +116,19 @@ export function TypingIndicator({
           )}
         </div>
       )}
-      {/* Animated dots are a phone affordance and live in the iOS and Android
-          clients only; web and desktop keep the written label. */}
+      {/* The Messages typing bubble, with the written label beside it so it
+          still says who is typing on a desktop-sized window. */}
       {active && (
-        <p className="min-w-0 truncate text-[13px] leading-5 text-text-muted">
-          {formatTypingLabel(typers, groupContext)}
-        </p>
+        <>
+          <span className="bubble bubble-in avatar-pop flex h-[30px] items-center gap-[4px] px-3 py-0 text-text-muted" data-tail="" style={{ ["--bubble-origin" as string]: "bottom left" }}>
+            <span className="typing-dot h-[6px] w-[6px]" />
+            <span className="typing-dot h-[6px] w-[6px]" />
+            <span className="typing-dot h-[6px] w-[6px]" />
+          </span>
+          <p className="mb-1 ml-1 min-w-0 truncate text-[12.5px] leading-5 text-text-muted">
+            {formatTypingLabel(typers, groupContext)}
+          </p>
+        </>
       )}
     </div>
   );

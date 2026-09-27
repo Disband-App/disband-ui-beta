@@ -19,9 +19,9 @@ export function AttachmentUploadCard({
   const showsThumb = !!localUrl && (type === "image" || type === "video");
 
   return (
-    <div className="mt-1 w-full max-w-md overflow-hidden rounded-lg border border-divider bg-bg-secondary">
+    <div className="mt-1 w-full max-w-sm overflow-hidden rounded-[18px] bg-bubble-in">
       <div className="flex items-center gap-3 px-3 py-2.5">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-bg-accent text-[11px] font-bold text-brand">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-fill-tertiary text-[11px] font-bold text-brand">
           {showsThumb && type === "image" ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={localUrl!} alt="" className="h-full w-full object-cover opacity-60" />
@@ -49,10 +49,10 @@ export function AttachmentUploadCard({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label={`Uploading ${name}`}
-        className="h-1 w-full bg-bg-accent"
+        className="mx-3 mb-3 h-1 overflow-hidden rounded-full bg-fill-secondary"
       >
         <div
-          className="h-full bg-brand transition-[width] duration-200 ease-out"
+          className="h-full rounded-full bg-brand transition-[width] duration-200 ease-out"
           style={{ width: `${pct}%` }}
         />
       </div>

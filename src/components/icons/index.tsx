@@ -54,6 +54,41 @@ import {
   FolderPlus,
   FolderMinus,
   Timer,
+  ArrowUp,
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  Ellipsis,
+  Reply,
+  Smile,
+  Image as ImageGlyph,
+  AtSign,
+  Moon,
+  Sun,
+  SunMoon,
+  User,
+  Lock,
+  CreditCard,
+  Bot,
+  Gift,
+  MessageCircle,
+  Inbox,
+  PanelLeft,
+  SlidersHorizontal,
+  Bug,
+  Eye,
+  Globe,
+  Type,
+  Accessibility,
+  WandSparkles,
+  AudioLines,
+  Forward,
+  UserPlus,
+  Radio,
+  NotebookPen,
+  ChartBarBig,
+  ShieldCheck,
+  Gavel,
 } from "lucide-react";
 
 export type IconProps = { size?: number; className?: string; strokeWidth?: number };
@@ -101,7 +136,7 @@ export const IconStar = icon(Star);
 export const IconEmoji = icon(SmilePlus);
 export const IconScreenShare = icon(ScreenShare);
 export const IconScreenShareOff = icon(ScreenShareOff);
-export const IconNotes = icon(SquarePen);
+export const IconNotes = icon(NotebookPen);
 export const IconCrown = icon(Crown);
 export const IconMenu = icon(Menu);
 
@@ -132,6 +167,41 @@ export const IconFolder = icon(Folder);
 export const IconFolderPlus = icon(FolderPlus);
 export const IconFolderMinus = icon(FolderMinus);
 export const IconTimer = icon(Timer);
+export const IconArrowUp = icon(ArrowUp);
+export const IconChevronRight = icon(ChevronRight);
+export const IconChevronLeft = icon(ChevronLeft);
+export const IconCheck = icon(Check);
+export const IconMore = icon(Ellipsis);
+export const IconReply = icon(Reply);
+export const IconSmile = icon(Smile);
+export const IconImage = icon(ImageGlyph);
+export const IconAt = icon(AtSign);
+export const IconMoon = icon(Moon);
+export const IconSun = icon(Sun);
+export const IconAuto = icon(SunMoon);
+export const IconUser = icon(User);
+export const IconLock = icon(Lock);
+export const IconCard = icon(CreditCard);
+export const IconBot = icon(Bot);
+export const IconGift = icon(Gift);
+export const IconMessage = icon(MessageCircle);
+export const IconInbox = icon(Inbox);
+export const IconSidebar = icon(PanelLeft);
+export const IconSliders = icon(SlidersHorizontal);
+export const IconBug = icon(Bug);
+export const IconEye = icon(Eye);
+export const IconGlobe = icon(Globe);
+export const IconText = icon(Type);
+export const IconAccessibility = icon(Accessibility);
+export const IconWand = icon(WandSparkles);
+export const IconWaveform = icon(AudioLines);
+export const IconForward = icon(Forward);
+export const IconUserPlus = icon(UserPlus);
+export const IconLive = icon(Radio);
+export const IconSquarePen = icon(SquarePen);
+export const IconPoll = icon(ChartBarBig);
+export const IconShieldCheck = icon(ShieldCheck);
+export const IconGavel = icon(Gavel);
 
 export const IconVerified = function IconVerified({ size = 16, className }: IconProps) {
   return (

@@ -108,6 +108,10 @@ function getAccentSampleColor(profile: ProfileAccentFields): string {
 }
 
 export function getProfilePanelStyle(profile: ProfileAccentFields): CSSProperties {
+  // No profile colours: the card is a plain sheet in the viewer's theme.
+  if (!usesCustomAccent(profile)) {
+    return { background: "var(--overlay-panel)", color: "var(--text-normal)" };
+  }
   const sample = getAccentSampleColor(profile);
   return {
     background: getAccentBackground(profile),
@@ -116,19 +120,32 @@ export function getProfilePanelStyle(profile: ProfileAccentFields): CSSPropertie
 }
 
 export function getProfilePanelMutedColor(profile: ProfileAccentFields): string {
+  if (!usesCustomAccent(profile)) return "var(--text-muted)";
   const sample = getAccentSampleColor(profile);
   return contrastTextColor(sample) === "#ffffff" ? "rgba(255,255,255,0.72)" : "rgba(6,6,7,0.62)";
 }
 
 export function getAccentBackground(profile: ProfileAccentFields): string {
-  if (!usesCustomAccent(profile)) return DEFAULT_ACCENT;
+  // Banner for someone without profile colours: a quiet wash of the theme accent.
+  if (!usesCustomAccent(profile)) {
+    return "linear-gradient(135deg, color-mix(in srgb, var(--brand) 55%, var(--bg-secondary)) 0%, color-mix(in srgb, var(--brand) 22%, var(--bg-secondary)) 100%)";
+  }
   const c1 = sanitizeHex(profile.accent_color);
   const c2 = sanitizeHex(profile.accent_color_2);
   if (!isProfileGradient(profile)) return c1;
   return `linear-gradient(135deg, ${c1} 0%, ${c2} 100%)`;
 }
 
+// iOS Contacts monogram: a soft grey gradient with white initials, for
+// anyone who hasn't picked profile colours. Themed via tokens so it sits
+// right in light and dark.
+const MONOGRAM: CSSProperties = {
+  background: "linear-gradient(180deg, var(--monogram-top, #a5a9b5) 0%, var(--monogram-bottom, #858a96) 100%)",
+  color: "#ffffff",
+};
+
 export function getAvatarStyle(profile: ProfileAccentFields): CSSProperties {
+  if (!usesCustomAccent(profile)) return MONOGRAM;
   const bg = getAccentBackground(profile);
   const sample = isProfileGradient(profile)
     ? mixHex(profile.accent_color!, profile.accent_color_2!, 0.5)
@@ -142,8 +159,9 @@ export function getAvatarStyle(profile: ProfileAccentFields): CSSProperties {
 }
 
 export function getUsernameStyle(profile: ProfileAccentFields, onDarkBackground = true): CSSProperties {
+  // No custom colours: names read in the label colour, as they do on iOS.
   if (!usesCustomAccent(profile)) {
-    return { color: DEFAULT_ACCENT };
+    return {};
   }
   if (isProfileGradient(profile)) {
     return {

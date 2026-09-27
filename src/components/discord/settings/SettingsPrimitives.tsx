@@ -1,5 +1,8 @@
 "use client";
 
+// iOS Settings vocabulary: a small uppercase header, an inset grouped list
+// with hairlines between rows, and an optional footnote under the group.
+
 export function SettingsSection({
   title,
   description,
@@ -13,18 +16,14 @@ export function SettingsSection({
 }) {
   return (
     <section className="mb-8">
-      <div className="mb-3 flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <h3 className="text-[15px] font-semibold text-text-normal">{title}</h3>
-          {description && (
-            <p className="mt-0.5 text-[13px] leading-relaxed text-text-muted">{description}</p>
-          )}
-        </div>
+      <div className="mb-2 flex items-end justify-between gap-4 px-4">
+        <h3 className="text-[12px] font-medium uppercase tracking-[0.04em] text-text-muted">{title}</h3>
         {action && <div className="shrink-0">{action}</div>}
       </div>
-      <div className="overflow-hidden rounded-lg border border-divider bg-bg-secondary">
-        {children}
-      </div>
+      <div className="list-group">{children}</div>
+      {description && (
+        <p className="mt-2 px-4 text-[12.5px] leading-relaxed text-text-muted">{description}</p>
+      )}
     </section>
   );
 }
@@ -35,26 +34,26 @@ export function SettingRow({
   htmlFor,
   children,
   stacked = false,
+  icon,
 }: {
   label: string;
   description?: string;
   htmlFor?: string;
   children?: React.ReactNode;
   stacked?: boolean;
+  /** Optional coloured glyph tile, as in the iOS Settings app. */
+  icon?: React.ReactNode;
 }) {
   const Label = htmlFor ? "label" : "div";
   return (
-    <div className="border-b border-divider px-4 py-3.5 last:border-b-0">
-      <div
-        className={
-          stacked ? "block" : "flex items-center justify-between gap-4"
-        }
-      >
+    <div className="list-row" style={icon ? { ["--row-inset" as string]: "56px" } : undefined}>
+      {icon && <span className="self-start pt-0.5">{icon}</span>}
+      <div className={`min-w-0 flex-1 ${stacked ? "block" : "flex items-center justify-between gap-4"}`}>
         <Label
           {...(htmlFor ? { htmlFor } : {})}
           className={`min-w-0 ${htmlFor ? "cursor-pointer" : ""}`}
         >
-          <span className="block text-[14px] font-medium text-text-normal">{label}</span>
+          <span className="block text-[14.5px] text-text-normal">{label}</span>
           {description && (
             <span className="mt-0.5 block text-[12.5px] leading-relaxed text-text-muted">
               {description}
@@ -62,13 +61,14 @@ export function SettingRow({
           )}
         </Label>
         {children && (
-          <div className={stacked ? "mt-3" : "shrink-0"}>{children}</div>
+          <div className={stacked ? "mt-2.5" : "shrink-0"}>{children}</div>
         )}
       </div>
     </div>
   );
 }
 
+/** UISwitch: green track, white knob that stretches while pressed. */
 export function Toggle({
   checked,
   onChange,
@@ -91,33 +91,31 @@ export function Toggle({
       aria-label={label}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-        checked ? "bg-status-online" : "bg-text-muted/40"
+      className={`group relative inline-flex h-[28px] w-[46px] shrink-0 rounded-full transition-colors duration-300 disabled:cursor-not-allowed disabled:opacity-45 ${
+        checked ? "bg-sys-green" : "bg-fill"
       }`}
     >
       <span
-        className={`inline-block h-4.5 w-4.5 transform rounded-full bg-white shadow transition-transform ${
-          checked ? "translate-x-[22px]" : "translate-x-1"
+        aria-hidden
+        className={`absolute top-[2px] h-[24px] rounded-full bg-white shadow-[0_2px_6px_rgb(0_0_0/0.18),0_0_0_0.5px_rgb(0_0_0/0.04)] transition-[left,width] duration-500 ease-spring group-active:w-[29px] ${
+          checked ? "left-[20px] w-[24px] group-active:left-[15px]" : "left-[2px] w-[24px]"
         }`}
-        style={{ height: 18, width: 18 }}
       />
     </button>
   );
 }
 
-export const settingsInputClass =
-  "w-full rounded-md border border-divider bg-bg-tertiary px-3 py-2 text-[14px] text-text-normal " +
-  "outline-none transition-colors placeholder:text-text-muted focus:border-brand/60";
+export const settingsInputClass = "field";
 
 export function Hint({ children, tone = "muted" }: { children: React.ReactNode; tone?: "muted" | "super" | "online" }) {
   return (
     <span
-      className={`inline-flex items-center rounded px-1.5 py-0.5 text-[11px] font-semibold ${
+      className={`pill ${
         tone === "super"
-          ? "bg-super/20 text-super"
+          ? "bg-super/15 text-super"
           : tone === "online"
             ? "bg-status-online/15 text-status-online"
-            : "bg-bg-accent text-text-muted"
+            : "bg-fill-tertiary text-text-muted"
       }`}
     >
       {children}

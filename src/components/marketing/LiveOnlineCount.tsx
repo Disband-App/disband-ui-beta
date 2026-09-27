@@ -8,7 +8,12 @@ import type { RealtimeChannel } from "@supabase/supabase-js";
 const POLL_MS = 60_000;
 const CONNECT_TIMEOUT_MS = 4_000;
 
-export function LiveOnlineCount() {
+export function LiveOnlineCount({
+  format = (n) => <>Online — {n === null ? "…" : n}</>,
+}: {
+  /** How to present the count; null while it's still loading. */
+  format?: (count: number | null) => React.ReactNode;
+} = {}) {
   const [count, setCount] = useState<number | null>(null);
   const disposedRef = useRef(false);
 
@@ -56,5 +61,5 @@ export function LiveOnlineCount() {
     };
   }, []);
 
-  return <span>Online — {count === null ? "…" : count}</span>;
+  return <span>{format(count)}</span>;
 }

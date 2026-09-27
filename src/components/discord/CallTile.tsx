@@ -56,7 +56,7 @@ export function CallTile({
         </span>
       )}
 
-      <span className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-md bg-black/60 px-2 py-1 text-[13px] font-medium text-white backdrop-blur-sm">
+      <span className="pointer-events-none absolute bottom-2 left-2 flex max-w-[calc(100%-1rem)] items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[12.5px] font-semibold text-white backdrop-blur-sm">
         {muted && (
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
             strokeWidth="2.2" strokeLinecap="round" className="shrink-0 text-status-dnd">
@@ -67,7 +67,7 @@ export function CallTile({
         )}
         <span className="truncate">{label}</span>
         {kind === "screen" && (
-          <span className="shrink-0 rounded bg-status-online/25 px-1 text-[10px] font-bold uppercase tracking-wide text-status-online">
+          <span className="shrink-0 rounded bg-status-online/25 px-1 text-[10px] uppercase font-semibold tracking-[0.04em] text-status-online">
             Live
           </span>
         )}

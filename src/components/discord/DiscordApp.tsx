@@ -51,7 +51,12 @@ import {
   IconNotes,
   IconPin,
   IconPinOff,
-  IconMenu,
+  IconSidebar,
+  IconCheck,
+  IconReply,
+  IconSmile,
+  IconMessage,
+  IconHash,
   IconPlus,
   IconEdit,
   IconFolder,
@@ -264,6 +269,26 @@ export function DiscordApp() {
         return "Disband";
     }
   }, [app.viewMode, dmFriend, activeGroup, activeChannel, app.activeServer?.name]);
+
+  // Phones: a conversation carries its own navigation bar (title, call and
+  // member actions), so the app-wide bar steps aside and lends it the
+  // sidebar button rather than stacking a second bar on top.
+  const mobileChatOpen =
+    isMobile &&
+    ((app.viewMode === "dm" && !!dmFriend) ||
+      app.viewMode === "notes" ||
+      (app.viewMode === "group" && !!activeGroup && !(groupCall.joined && groupCall.groupId === activeGroup.id)) ||
+      (app.viewMode === "space" && !!activeChannel && !isVoice));
+  const mobileNavButton = isMobile ? (
+    <button
+      type="button"
+      aria-label="Open navigation"
+      onClick={() => setMobileMenuOpen((v) => !v)}
+      className="tool-btn -ml-1.5 h-9 w-9 shrink-0 text-brand hover:text-brand"
+    >
+      <IconSidebar size={22} />
+    </button>
+  ) : null;
 
   const toggleMic = () => app.setMicMuted(!app.micMuted);
   const toggleDeafen = () => {
@@ -692,7 +717,7 @@ export function DiscordApp() {
         {
           id: "reply",
           label: "Reply",
-          icon: <IconFriends size={16} />,
+          icon: <IconReply size={16} />,
           onClick: () => {
             chatRef.current?.setReplyTo({
               id: message.id,
@@ -708,7 +733,7 @@ export function DiscordApp() {
         {
           id: "react",
           label: "Add Reaction",
-          icon: <IconCopy size={16} />,
+          icon: <IconSmile size={16} />,
           onClick: () => chatRef.current?.openReactionPicker(message.id, x, y),
         },
         ...(context === "dm" && app.activeDmThreadId
@@ -1308,44 +1333,48 @@ export function DiscordApp() {
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-bg-primary">
+    <div className="h-screen w-screen overflow-hidden bg-canvas">
       <div
         className="h-full w-full origin-top-left"
         style={{ transform: `scale(${zoom})`, width: `${100 / zoom}%`, height: `${100 / zoom}%` }}
       >
-        <div className={`relative flex h-full w-full overflow-hidden ${isMobile ? "pt-10" : ""}`}>
-      {isMobile && (
-        <div className="absolute inset-x-0 top-0 z-[60] flex h-10 items-center gap-2 border-b border-divider bg-bg-tertiary px-2">
-          <button
-            type="button"
-            aria-label="Open navigation"
-            onClick={() => setMobileMenuOpen((v) => !v)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-text-normal hover:bg-interactive-hover"
-          >
-            <IconMenu size={22} />
-          </button>
-          <span className="min-w-0 flex-1 truncate text-sm font-semibold text-text-normal">
+        {/* Desktop: the rail sits on the canvas and everything else floats
+            on it as rounded panels (sidebar, then content), iPadOS-style.
+            Phone widths drop the chrome and go full-bleed under a nav bar. */}
+        <div className={`relative flex h-full w-full overflow-hidden ${isMobile ? `flex-col ${mobileChatOpen ? "" : "pt-[52px]"}` : "gap-2 py-2 pr-2"}`}>
+      {isMobile && !mobileChatOpen && (
+        <div className="glass absolute inset-x-0 top-0 z-[60] flex h-[52px] items-center gap-2 px-2.5">
+          {mobileNavButton}
+          <span className="min-w-0 flex-1 truncate text-center text-[16px] font-semibold tracking-[-0.01em] text-text-normal">
             {mobileTitle}
           </span>
           <button
             type="button"
             aria-label="Settings"
             onClick={() => setSettingsOpen(true)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-text-muted hover:bg-interactive-hover hover:text-text-normal"
+            className="tool-btn h-9 w-9 text-brand hover:text-brand"
           >
-            <IconSettings size={20} />
+            <IconSettings size={21} />
           </button>
         </div>
       )}
 
-      {!online && (
-        <div className="fixed left-0 right-0 top-0 z-[100] bg-status-dnd px-4 py-2 text-center text-sm font-medium text-white">
-          You are offline. Messages will send when your connection returns.
-        </div>
-      )}
-      {checkoutSuccess && (
-        <div className="fixed left-0 right-0 top-0 z-[100] bg-[#57f287] px-4 py-2 text-center text-sm font-medium text-black">
-          Subscription activated successfully!
+      {/* System notices drop from the top edge like the Dynamic Island. */}
+      {(!online || checkoutSuccess) && (
+        <div className="pointer-events-none fixed inset-x-0 top-3 z-[100] flex justify-center px-4">
+          {!online ? (
+            <div role="status" className="island island-in pointer-events-auto">
+              <span className="h-2 w-2 shrink-0 rounded-full bg-sys-orange" />
+              You&rsquo;re offline — messages will send when you reconnect.
+            </div>
+          ) : (
+            <div role="status" className="island island-in pointer-events-auto">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-sys-green text-white">
+                <IconCheck size={13} strokeWidth={3} />
+              </span>
+              Subscription activated. Welcome to Aero.
+            </div>
+          )}
         </div>
       )}
 
@@ -1371,17 +1400,20 @@ export function DiscordApp() {
       )}
 
       {call.callNotice && (
-        <div className="fixed bottom-6 left-1/2 z-[95] flex -translate-x-1/2 items-center gap-3 rounded-lg border border-divider bg-bg-secondary px-4 py-3 text-sm shadow-xl">
-          <span>{call.callNotice}</span>
-          {call.canRetryCall && (
-            <button
-              type="button"
-              onClick={() => void call.retryCall()}
-              className="shrink-0 rounded-md bg-brand px-2.5 py-1 text-[13px] font-semibold text-white transition-opacity hover:opacity-90"
-            >
-              Retry
-            </button>
-          )}
+        <div className="pointer-events-none fixed inset-x-0 bottom-6 z-[95] flex justify-center px-4">
+          <div role="status" className="island island-in pointer-events-auto">
+            <IconPhone size={15} className="shrink-0 text-sys-green" />
+            <span>{call.callNotice}</span>
+            {call.canRetryCall && (
+              <button
+                type="button"
+                onClick={() => void call.retryCall()}
+                className="press ml-1 shrink-0 rounded-full bg-sys-green px-3 py-1 text-[12.5px] font-semibold text-white"
+              >
+                Retry
+              </button>
+            )}
+          </div>
         </div>
       )}
       {isMobile ? (
@@ -1391,7 +1423,7 @@ export function DiscordApp() {
               className="absolute inset-0 bg-overlay-scrim overlay-fade"
               onClick={() => setMobileMenuOpen(false)}
             />
-            <div className="relative flex h-full w-[min(86vw,22rem)] shadow-2xl">
+            <div className="drawer-in relative flex h-full w-[min(88vw,24rem)] bg-canvas shadow-elev-4">
               <ServerList
                 servers={app.servers}
                 activeServerId={app.activeServerId}
@@ -1412,6 +1444,7 @@ export function DiscordApp() {
                 onReorderFolders={handleReorderFolders}
               />
 
+              <div className="panel-sidebar my-2 mr-2 flex min-w-0 flex-1 flex-col overflow-hidden">
               {app.viewMode === "discover" ? (
                 <DiscoverSidebar
                   tab={discoverTab}
@@ -1460,24 +1493,22 @@ export function DiscordApp() {
                   onOpenCatalysts={app.activeServer ? () => setCatalystServerId(app.activeServer!.id) : undefined}
                 />
               )}
+              <UserPanel onOpenSettings={() => setSettingsOpen(true)} onOpenProfile={app.profile ? () => openProfile(app.profile!) : undefined} onContextMenu={handleUserPanelContext} />
+              </div>
             </div>
           </div>
         )
       ) : (
         <>
-          {/* A column so the UserPanel can span the rail and the panel beside
-              it. The rail and the panel are a ROW inside it — nesting them
-              directly in the column stacked them vertically, which collapsed
-              the panel to its header.
+          {/* The rail sits on the canvas; the sidebar is a floating card with
+              the UserPanel docked at its foot.
 
-              The width is pinned to the rail (72px) plus a panel (w-60 = 240px)
-              rather than left to auto. On auto the column takes its widest
-              child's max-content, and the UserPanel's name and custom status
-              have no natural limit — a long status widened the whole column and
-              opened a gap beside the chat. A definite width is also what lets
-              the `truncate` inside the UserPanel do anything at all. */}
-          <div className="relative flex h-full min-h-0 w-[312px] shrink-0 flex-col">
-            <div className="flex min-h-0 flex-1">
+              The card's width is pinned rather than left to auto. On auto it
+              takes its widest child's max-content, and the UserPanel's name
+              and custom status have no natural limit — a long status widened
+              the whole column and opened a gap beside the chat. A definite
+              width is also what lets the `truncate` inside it do anything. */}
+          <div className="relative flex h-full min-h-0 shrink-0">
               <ServerList
                 servers={app.servers}
                 activeServerId={app.activeServerId}
@@ -1498,8 +1529,9 @@ export function DiscordApp() {
                 onReorderFolders={handleReorderFolders}
               />
 
+              <div className="panel-sidebar flex h-full min-h-0 w-[264px] flex-col overflow-hidden">
               {app.viewMode === "discover" ? (
-                <div className="flex min-h-0">
+                <div className="flex min-h-0 flex-1">
                   <DiscoverSidebar
                     tab={discoverTab}
                     onTabChange={setDiscoverTab}
@@ -1510,7 +1542,7 @@ export function DiscordApp() {
                   />
                 </div>
               ) : app.viewMode === "home" || app.viewMode === "dm" || app.viewMode === "group" || app.viewMode === "notes" ? (
-                <div className="flex min-h-0">
+                <div className="flex min-h-0 flex-1">
                   <HomePanel
                     onOpenSettings={() => setSettingsOpen(true)}
                     onOpenProfile={app.profile ? () => openProfile(app.profile!) : undefined}
@@ -1520,10 +1552,11 @@ export function DiscordApp() {
                     }}
                     onGroupContext={handleGroupContext}
                     onOpenSubscription={() => setSubscriptionOpen(true)}
+                    onOpenShop={() => setShopOpen(true)}
                   />
                 </div>
               ) : (
-                <div className="flex min-h-0">
+                <div className="flex min-h-0 flex-1">
                   <ChannelList
                     title={app.activeServer?.name ?? "Space"}
                     verified={app.activeServer?.verified}
@@ -1551,19 +1584,25 @@ export function DiscordApp() {
                   />
                 </div>
               )}
-            </div>
-            <UserPanel onOpenSettings={() => setSettingsOpen(true)} onOpenProfile={app.profile ? () => openProfile(app.profile!) : undefined} onContextMenu={handleUserPanelContext} />
+              <UserPanel onOpenSettings={() => setSettingsOpen(true)} onOpenProfile={app.profile ? () => openProfile(app.profile!) : undefined} onContextMenu={handleUserPanelContext} />
+              </div>
           </div>
         </>
       )}
+
+      {/* Content card: one rounded panel holding the view and, on wide
+          windows, its inspector column (members, profile). */}
+      <section className={`relative flex min-h-0 min-w-0 flex-1 overflow-hidden ${isMobile ? "bg-bg-primary" : "panel"}`}>
 
       {app.viewMode === "dm" && dmFriend && (
         <>
           <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <ChatCanvas
             key={app.activeDmThreadId}
+            headerLeading={mobileNavButton}
             ref={dmChatRef}
             channelName={displayName(dmFriend)}
+            channelAvatar={dmFriend}
             messages={dmMessages}
             loading={app.dmLoading}
             members={[dmFriend, ...(app.profile ? [app.profile] : [])]}
@@ -1581,9 +1620,7 @@ export function DiscordApp() {
                     onClick={() => setShowDmProfile((v) => !v)}
                     title={showDmProfile ? "Hide profile panel" : "Show profile panel"}
                     aria-pressed={showDmProfile}
-                    className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-all hover:bg-interactive-hover ${
-                      showDmProfile ? "text-brand" : "text-text-muted hover:text-text-normal"
-                    }`}
+                    className="tool-btn"
                   >
                     <IconFriends size={18} />
                   </button>
@@ -1594,7 +1631,7 @@ export function DiscordApp() {
                       if (app.activeDmThreadId) void app.loadPinnedMessages("dm", app.activeDmThreadId);
                     }}
                     title="Pinned messages"
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal"
+                    className="tool-btn"
                   >
                     <IconPin size={18} />
                   </button>
@@ -1632,15 +1669,16 @@ export function DiscordApp() {
       {/* The conversation may be gone (deleted, access revoked, stale link):
           render an honest dead-end instead of a blank pane. */}
       {app.viewMode === "dm" && !dmFriend && (
-        <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-3 bg-bg-primary px-6 text-center">
-          <p className="text-[15px] font-semibold text-text-normal">Conversation unavailable</p>
-          <p className="max-w-sm text-sm text-text-muted">
+        <div className="view-enter flex min-w-0 flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+          <span className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-fill-tertiary text-text-muted"><IconMessage size={26} /></span>
+          <p className="title-2">Conversation unavailable</p>
+          <p className="max-w-sm text-[13.5px] text-text-muted">
             This conversation may have been deleted, or you may no longer have access to it.
           </p>
           <button
             type="button"
             onClick={() => app.setViewHome()}
-            className="mt-1 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+            className="btn btn-filled mt-3"
           >
             Back to friends
           </button>
@@ -1675,8 +1713,10 @@ export function DiscordApp() {
             ) : (
               <ChatCanvas
                 key={app.activeGroupChatId}
+                headerLeading={mobileNavButton}
                 ref={groupChatRef}
                 channelName={activeGroup.name}
+                channelIcon={<IconGroup size={18} />}
                 messages={groupMessages}
                 loading={app.groupLoading}
                 members={activeGroup.members}
@@ -1695,7 +1735,7 @@ export function DiscordApp() {
                         if (app.activeGroupChatId) void app.loadPinnedMessages("group", app.activeGroupChatId);
                       }}
                       title="Pinned messages"
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-text-muted transition-all hover:bg-interactive-hover hover:text-text-normal"
+                      className="tool-btn"
                     >
                       <IconPin size={18} />
                     </button>
@@ -1716,7 +1756,7 @@ export function DiscordApp() {
               />
             )}
           </div>
-          <div className="hidden min-h-0 w-60 shrink-0 flex-col bg-bg-secondary lg:flex">
+          <div className="hidden min-h-0 shrink-0 flex-col border-l border-hairline lg:flex">
             <GroupMemberList
               members={activeGroup.members}
               ownerId={activeGroup.owner_id}
@@ -1730,15 +1770,16 @@ export function DiscordApp() {
       )}
 
       {app.viewMode === "group" && !activeGroup && (
-        <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-3 bg-bg-primary px-6 text-center">
-          <p className="text-[15px] font-semibold text-text-normal">Conversation unavailable</p>
-          <p className="max-w-sm text-sm text-text-muted">
+        <div className="view-enter flex min-w-0 flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+          <span className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-fill-tertiary text-text-muted"><IconMessage size={26} /></span>
+          <p className="title-2">Conversation unavailable</p>
+          <p className="max-w-sm text-[13.5px] text-text-muted">
             This group may have been deleted, or you may no longer be a member.
           </p>
           <button
             type="button"
             onClick={() => app.setViewHome()}
-            className="mt-1 rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+            className="btn btn-filled mt-3"
           >
             Back to friends
           </button>
@@ -1748,6 +1789,7 @@ export function DiscordApp() {
       {app.viewMode === "notes" && (
         <ChatCanvas
           key="notes"
+          headerLeading={mobileNavButton}
           ref={notesChatRef}
           channelName="Notes"
           channelIcon={<IconNotes size={22} className="text-text-muted" />}
@@ -1759,7 +1801,7 @@ export function DiscordApp() {
           messageContext="notes"
           headerTrailing={
             pinnedNoteIds.size > 0 ? (
-              <span className="flex items-center gap-1 rounded-full bg-bg-accent px-2 py-0.5 text-[11px] font-medium text-text-muted">
+              <span className="pill bg-fill-tertiary text-text-muted">
                 <IconPin size={12} />
                 {pinnedNoteIds.size} pinned
               </span>
@@ -1794,6 +1836,7 @@ export function DiscordApp() {
       {app.viewMode === "space" && activeChannel && !isVoice && (
         <ChatCanvas
           key={app.activeChannelId}
+          headerLeading={mobileNavButton}
           ref={channelChatRef}
           channelName={activeChannel.name}
           composerLockedReason={
@@ -1833,9 +1876,11 @@ export function DiscordApp() {
       )}
 
       {app.viewMode === "space" && !activeChannel && (
-        <div className="flex min-w-0 flex-1 items-center justify-center bg-bg-primary px-6 text-center">
-          <p className="text-[15px] text-text-muted">
-            {app.channels.length ? "Pick a channel to start talking." : "This space has no channels yet."}
+        <div className="view-enter flex min-w-0 flex-1 flex-col items-center justify-center gap-2 px-6 text-center">
+          <span className="mb-2 flex h-14 w-14 items-center justify-center rounded-full bg-fill-tertiary text-text-muted"><IconHash size={26} /></span>
+          <p className="title-2">{app.channels.length ? "Pick a channel" : "No channels yet"}</p>
+          <p className="max-w-xs text-[13.5px] text-text-muted">
+            {app.channels.length ? "Choose a channel from the sidebar to start talking." : "Channels you create in this space will show up in the sidebar."}
           </p>
         </div>
       )}
@@ -1848,6 +1893,8 @@ export function DiscordApp() {
           onMemberContext={handleMemberContext}
         />
       )}
+
+      </section>
 
       <UserProfileModal
         profile={profileTarget}

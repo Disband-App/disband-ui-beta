@@ -143,7 +143,7 @@ export function ShopModal({ open, onClose, self, onChanged }: ShopModalProps) {
         role="dialog"
         aria-modal="true"
         aria-label="Disband Shop"
-        className="modal-pop relative flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-bg-primary shadow-2xl"
+        className="modal-pop relative flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
       >
         <header className="flex items-center gap-3 border-b border-divider px-5 py-4">
           <div className="min-w-0 flex-1">
@@ -272,7 +272,7 @@ function ShopCard({
             type="button"
             disabled={busy}
             onClick={onBuy}
-            className="w-full rounded-md bg-brand px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="btn btn-filled w-full"
           >
             {busy ? "Opening…" : `Buy ${formatPrice(item.priceCents)}`}
           </button>

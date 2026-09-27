@@ -26,7 +26,7 @@ interface MessageAttachmentProps {
 }
 
 const mediaClass =
-  "block max-h-[min(20rem,35vh)] max-w-full w-auto rounded-lg border border-black/20 object-contain";
+  "block max-h-[min(20rem,35vh)] max-w-full w-auto rounded-[18px] object-contain";
 
 // Natural dimensions remembered per URL: rows remount constantly
 // (reactions, presence, pagination), and a repeat view can reserve the
@@ -75,7 +75,7 @@ export function MessageAttachment({
   const skeleton = (
     <div
       aria-label="Loading attachment"
-      className={`flex w-full max-w-md items-center justify-center rounded-lg border border-black/20 bg-bg-accent ${
+      className={`flex w-full max-w-md items-center justify-center rounded-[18px] bg-fill-tertiary ${
         dims ? "" : "aspect-[16/10]"
       } max-h-[min(20rem,35vh)] min-h-24`}
       style={dims ? { aspectRatio: `${dims.w} / ${dims.h}` } : undefined}
@@ -87,8 +87,8 @@ export function MessageAttachment({
   if (type === "file") {
     return (
       <>
-        <div className="mt-1 flex max-w-md items-center gap-3 rounded-lg border border-divider bg-bg-secondary px-3 py-2.5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-accent text-xs font-bold text-brand">
+        <div className="mt-1 flex max-w-md items-center gap-3 rounded-[18px] bg-bubble-in px-3 py-2.5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-fill-tertiary text-xs font-bold text-brand">
             {fileExtension(fileName).slice(0, 4)}
           </div>
           <div className="min-w-0 flex-1">
@@ -98,7 +98,7 @@ export function MessageAttachment({
           <button
             type="button"
             onClick={() => setDownloadOpen(true)}
-            className="shrink-0 rounded bg-brand px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+            className="btn btn-tinted btn-sm shrink-0"
           >
             Download
           </button>
@@ -122,9 +122,9 @@ export function MessageAttachment({
 
   if (type === "audio") {
     return (
-      <div className="mt-1 flex w-full max-w-md flex-col gap-1 rounded-lg border border-divider bg-bg-secondary p-3">
+      <div className="mt-1 flex w-full max-w-md flex-col gap-1 rounded-[18px] bg-bubble-in p-3">
         <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-bg-accent text-brand">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-fill-tertiary text-brand">
             <IconMusic size={18} />
           </span>
           <div className="min-w-0 flex-1">
@@ -144,8 +144,8 @@ export function MessageAttachment({
   }
 
   const brokenTile = (
-    <div className="mt-1 flex max-w-md items-center gap-3 rounded-lg border border-divider bg-bg-secondary px-3 py-2.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-accent text-xs font-bold text-text-muted">
+    <div className="mt-1 flex max-w-md items-center gap-3 rounded-[18px] bg-bubble-in px-3 py-2.5">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-fill-tertiary text-xs font-bold text-text-muted">
         {fileExtension(fileName).slice(0, 4) || "FILE"}
       </div>
       <div className="min-w-0 flex-1">

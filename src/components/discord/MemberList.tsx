@@ -111,7 +111,7 @@ export function MemberList({ members, roles, onMemberClick, onMemberContext }: M
     return out;
   }, [members, roles, liveStatus]);
 
-  const scrollerRef = useRef<HTMLElement | null>(null);
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewport, setViewport] = useState(700);
   const [rowH, setRowH] = useState(ROW_H);
@@ -175,11 +175,11 @@ export function MemberList({ members, roles, onMemberClick, onMemberContext }: M
   // blank rail with no explanation.
   if (members.length === 0) {
     return (
-      <aside className="flex w-60 shrink-0 flex-col bg-bg-secondary px-4 py-4">
-        <h2 className="px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
-          Members
-        </h2>
-        <p className="px-2 py-2 text-sm text-text-muted">
+      <aside className="hidden w-[248px] shrink-0 flex-col border-l border-hairline lg:flex">
+        <div className="flex h-[58px] shrink-0 items-center px-5">
+          <h2 className="text-[15px] font-semibold">Members</h2>
+        </div>
+        <p className="px-5 py-2 text-[13px] text-text-muted">
           No members to show yet.
         </p>
       </aside>
@@ -188,21 +188,27 @@ export function MemberList({ members, roles, onMemberClick, onMemberContext }: M
 
   return (
 
-    <aside
+    <aside className="hidden w-[248px] shrink-0 flex-col border-l border-hairline lg:flex">
+      <div className="flex h-[58px] shrink-0 items-center gap-2 px-5 hairline-b">
+        <h2 className="text-[15px] font-semibold tracking-[-0.01em]">Members</h2>
+        <span className="pill bg-fill-tertiary text-text-muted">{members.length}</span>
+      </div>
+    <div
       ref={scrollerRef}
       onScroll={onScroll}
-      className="flex w-60 shrink-0 flex-col overflow-y-auto bg-bg-secondary"
+      className="min-h-0 flex-1 overflow-y-auto"
     >
-      <div className="px-4 py-4">
+      <div className="px-2.5 pb-4 pt-1">
         <div style={{ height: padTop }} aria-hidden />
         {visible.map((item) =>
           item.kind === "header" ? (
             <h2
               key={item.key}
               data-member-header
-              className="flex items-end px-2 pb-1 pt-3 text-xs font-semibold uppercase tracking-wide text-text-muted"
+              className="section-label flex items-end gap-1.5 px-2.5 pb-1.5 pt-4 text-[11.5px]"
             >
-              {item.label} — {item.count}
+              {item.label}
+              <span className="font-normal normal-case tracking-normal opacity-70">{item.count}</span>
             </h2>
           ) : (
             <Row
@@ -218,6 +224,7 @@ export function MemberList({ members, roles, onMemberClick, onMemberContext }: M
         )}
         <div style={{ height: padBottom }} aria-hidden />
       </div>
+    </div>
     </aside>
   );
 }
@@ -261,16 +268,16 @@ function Row({
         e.preventDefault();
         onContext?.(m, e.clientX, e.clientY);
       }}
-      className="group flex w-full items-center gap-3 rounded px-2 py-1.5 transition-all duration-150 ease-in-out hover:bg-interactive-hover"
+      className="nav-row gap-2.5 px-2.5 py-[5px]"
     >
       <div className="relative shrink-0">
         <Avatar profile={p} size="sm" />
         {live !== "offline" && (
-          <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[3px] border-bg-secondary ${STATUS_BG[live]}`} />
+          <span className={`absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-[2.5px] border-bg-primary ${STATUS_BG[live]}`} />
         )}
       </div>
       <span
-        className={`flex min-w-0 flex-1 items-center gap-1.5 truncate text-[15px] ${live === "offline" ? "text-text-muted" : "text-text-normal"}`}
+        className={`flex min-w-0 flex-1 items-center gap-1.5 truncate text-[14px] font-medium ${live === "offline" ? "text-text-muted opacity-70" : "text-text-normal"}`}
         style={color ? { color } : undefined}
       >
         <span className={`truncate ${gradStyle && roleIsGradientAnimated(gradRole) ? "animate-role-gradient" : ""}`} style={gradStyle ?? undefined}>{displayName(p)}</span>
@@ -278,17 +285,17 @@ function Row({
         <PlatformBadge userId={p.id} />
         {m.role === "owner" && (
           <Tooltip label="Owner" side="top" as="span">
-            <IconShield size={14} className="shrink-0 text-status-online" />
+            <IconCrown size={13} className="shrink-0 text-sys-yellow" />
           </Tooltip>
         )}
         {m.role === "admin" && (
           <Tooltip label="Admin" side="top" as="span">
-            <IconCrown size={14} className="shrink-0 text-[#f0b232]" />
+            <IconShield size={13} className="shrink-0 text-sys-blue" />
           </Tooltip>
         )}
         {timedOut && (
           <Tooltip label="Timed out" side="top" as="span">
-            <span className="shrink-0 rounded bg-status-dnd/20 px-1 py-px text-[10px] font-bold uppercase text-status-dnd">
+            <span className="pill shrink-0 bg-status-dnd/15 px-1.5 py-0 text-[10px] text-status-dnd">
               Muted
             </span>
           </Tooltip>

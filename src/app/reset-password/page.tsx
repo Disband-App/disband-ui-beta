@@ -4,7 +4,7 @@ import { AppProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { NewPasswordForm } from "@/components/auth/NewPasswordForm";
 import { MfaStepUpForm } from "@/components/auth/MfaStepUpForm";
-import { Logo } from "@/components/ui/Logo";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { useApp } from "@/contexts/AppContext";
 import { recoverSessionFromUrl } from "@/lib/recover-session-from-url";
 import { getMfaAssurance } from "@/lib/mfa";
@@ -36,7 +36,7 @@ function ResetPasswordGate() {
 
   if (!configured) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg-tertiary p-6 text-center text-text-muted">
+      <div className="flex min-h-screen items-center justify-center bg-canvas p-6 text-center text-text-muted">
         Supabase is not configured.
       </div>
     );
@@ -44,7 +44,7 @@ function ResetPasswordGate() {
 
   if (!ready || !linkReady) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg-tertiary text-text-muted">
+      <div className="flex min-h-screen items-center justify-center bg-canvas text-text-muted">
         Loading…
       </div>
     );
@@ -53,22 +53,22 @@ function ResetPasswordGate() {
   const canReset = !!session && !linkError;
 
   return (
-    <div className="relative min-h-screen bg-bg-tertiary">
+    <div className="relative min-h-screen bg-canvas">
       {!isTauri() && (
         <Link
           href="/login"
-          className="absolute left-6 top-6 z-10 flex items-center gap-2 text-sm font-semibold text-text-muted hover:text-text-normal"
+          className="press absolute left-4 top-4 z-10 flex items-center gap-1 rounded-full px-3 py-1.5 text-[15px] font-medium text-brand transition-colors hover:bg-brand/10"
         >
           ← Back to log in
         </Link>
       )}
       <div className="flex min-h-screen items-center justify-center p-6">
-        <div className="w-full max-w-sm rounded-lg bg-bg-secondary p-8 shadow-xl">
+        <div className="view-enter w-full max-w-sm rounded-[24px] bg-bg-secondary p-8 shadow-elev-3 ring-1 ring-glass-border">
           <div className="mb-6 text-center">
             <div className="mx-auto mb-3 flex justify-center">
-              <Logo adaptive size={56} className="h-14 w-14" priority />
+              <AppIcon size={64} />
             </div>
-            <h1 className="text-2xl font-bold text-text-normal">Choose a new password</h1>
+            <h1 className="title-2 mt-3">Choose a new password</h1>
             <p className="mt-1 text-sm text-text-muted">
               {!canReset
                 ? "This reset link is invalid or has expired."
@@ -91,7 +91,7 @@ function ResetPasswordGate() {
           ) : (
             <Link
               href="/login"
-              className="block w-full rounded bg-brand py-2.5 text-center text-sm font-semibold text-white hover:bg-brand-hover"
+              className="btn btn-filled btn-lg w-full"
             >
               Back to log in
             </Link>

@@ -149,16 +149,16 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
     <>
       <div className="fixed inset-0 z-30" onClick={onClose} />
       <div
-        className="fixed z-40 w-72 max-h-[calc(100vh-100px)] overflow-y-auto rounded-lg bg-bg-secondary shadow-xl ring-1 ring-divider"
-        style={{ left: pos.left, bottom: pos.bottom }}
+        className="glass-thick popover-pop fixed z-40 w-[300px] max-h-[calc(100vh-100px)] overflow-y-auto rounded-[20px] p-1.5"
+        style={{ left: pos.left, bottom: pos.bottom, ["--popover-origin" as string]: "bottom left" }}
       >
         {}
         <div
-          className="relative h-16"
+          className="relative h-20 overflow-hidden rounded-[15px]"
           style={{
             background: profile?.accent_color
-              ? `linear-gradient(to bottom, ${profile.accent_color}, transparent)`
-              : "linear-gradient(to bottom, #5865f2, #3c45a0)",
+              ? `linear-gradient(135deg, ${profile.accent_color}, ${profile.accent_color_2 ?? profile.accent_color})`
+              : "linear-gradient(135deg, var(--brand), color-mix(in srgb, var(--brand) 55%, #000))",
           }}
         >
           {profile?.banner_url && (
@@ -171,19 +171,19 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
           )}
         </div>
 
-        <div className="relative -mt-9 mb-1 flex justify-center px-4">
+        <div className="relative -mt-10 mb-1.5 flex px-3">
           <div className="relative">
-            <Avatar profile={profile ?? { display_name: name }} size="lg" className="ring-[6px] ring-bg-secondary" />
+            <Avatar profile={profile ?? { display_name: name }} size="lg" className="ring-[5px] ring-bg-elevated" />
             <span
-              className={`absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full border-[3px] border-bg-secondary ${STATUS_DOT_BG[currentStatus]}`}
+              className={`absolute bottom-0.5 right-0.5 h-[18px] w-[18px] rounded-full border-[3px] border-bg-elevated ${STATUS_DOT_BG[currentStatus]}`}
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-4 pb-2">
-          <div>
-            <p className="text-sm font-semibold text-text-normal">{name}</p>
-            <p className="text-xs text-text-muted">{statusText}</p>
+        <div className="flex items-center justify-between gap-2 px-2.5 pb-3">
+          <div className="min-w-0">
+            <p className="truncate text-[17px] font-semibold tracking-[-0.015em] text-text-normal">{name}</p>
+            <p className="truncate text-[12.5px] text-text-muted">{statusText}</p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
             {onOpenProfile && (
@@ -192,14 +192,14 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
                   onClose();
                   onOpenProfile();
                 }}
-                className="h-8 shrink-0 rounded px-2 text-[13px] font-medium text-text-muted transition-colors hover:bg-interactive-hover hover:text-text-normal"
+                className="btn btn-gray btn-sm"
               >
                 View profile
               </button>
             )}
             <button
               onClick={onOpenSettings}
-              className="h-8 w-8 shrink-0 rounded p-1.5 text-text-muted transition-colors hover:bg-interactive-hover hover:text-text-normal"
+              className="tool-btn bg-fill-secondary"
               aria-label="Settings"
             >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -209,13 +209,13 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
           </div>
         </div>
 
-        <div className="border-t border-divider px-4 py-2.5">
+        <div className="mx-1 mb-1.5 rounded-[14px] bg-fill-tertiary p-2.5">
           <input
             value={customNote}
             onChange={(e) => setCustomNote(e.target.value)}
             placeholder="Set a custom status"
             maxLength={128}
-            className="w-full rounded-md border border-divider bg-bg-tertiary px-2.5 py-2 text-[13px] text-text-normal placeholder:text-text-muted/60 focus:border-brand focus:outline-none"
+            className="field min-h-0 bg-bg-elevated px-3 py-2 text-[13.5px]"
           />
           <div className="mt-1.5 flex flex-wrap gap-1" role="group" aria-label="Clear custom status after">
             {STATUS_DURATION_PRESETS.map((preset) => (
@@ -224,10 +224,10 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
                 type="button"
                 onClick={() => setCustomDuration(preset.id)}
                 aria-pressed={customDuration === preset.id}
-                className={`rounded-full px-2 py-0.5 text-[11px] font-medium transition-colors ${
+                className={`rounded-full px-2.5 py-1 text-[11.5px] font-medium transition-colors ${
                   customDuration === preset.id
-                    ? "bg-brand text-white"
-                    : "bg-bg-tertiary text-text-muted hover:bg-interactive-hover hover:text-text-normal"
+                    ? "bg-brand text-brand-foreground"
+                    : "bg-fill-secondary text-text-muted hover:text-text-normal"
                 }`}
               >
                 {preset.label}
@@ -239,7 +239,7 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
               type="button"
               disabled={savingCustom}
               onClick={() => void saveCustomStatus()}
-              className="flex-1 rounded-md bg-brand px-2 py-1.5 text-[13px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="btn btn-filled btn-sm flex-1"
             >
               {savingCustom ? "Saving…" : "Set Status"}
             </button>
@@ -248,7 +248,7 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
                 type="button"
                 disabled={savingCustom}
                 onClick={() => void clearCustomStatus()}
-                className="rounded-md border border-divider px-2.5 py-1.5 text-[13px] text-text-muted transition-colors hover:bg-interactive-hover hover:text-text-normal disabled:opacity-50"
+                className="btn btn-gray btn-sm"
               >
                 Clear
               </button>
@@ -256,9 +256,9 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
           </div>
         </div>
 
-        <div className="border-t border-divider px-2 py-1.5">
-          <p className="mb-1 px-2 text-[10px] font-bold uppercase tracking-wide text-text-muted">
-            Set Status
+        <div className="px-1 py-1">
+          <p className="section-label px-2.5 pb-1 pt-1 text-[11px]">
+            Status
           </p>
           {STATUS_OPTIONS.map((opt) => (
             <button
@@ -266,7 +266,7 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
               type="button"
               disabled={changing}
               onClick={() => void setStatus(opt.status)}
-              className={`flex w-full items-center gap-2.5 rounded px-2 py-1.5 text-left text-sm transition-colors hover:bg-interactive-hover ${
+              className={`flex h-9 w-full items-center gap-2.5 rounded-[9px] px-2.5 text-left text-[14px] transition-colors hover:bg-interactive-hover ${
                 currentStatus === opt.status ? "bg-interactive-selected" : ""
               } ${changing ? "opacity-50" : ""}`}
             >
@@ -281,13 +281,14 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
           ))}
         </div>
 
-        <div className="border-t border-divider px-2 py-1.5">
-          <div className="mb-1 flex items-center justify-between px-2">
-            <span className="text-[10px] font-bold uppercase tracking-wide text-text-muted">Accounts</span>
+        <div className="mx-2.5 my-1 h-px bg-hairline" />
+        <div className="px-1 py-1">
+          <div className="mb-1 flex items-center justify-between px-2.5">
+            <span className="section-label px-0 text-[11px]">Accounts</span>
             <button
               type="button"
               onClick={() => setManaging((m) => !m)}
-              className="text-[10px] font-bold uppercase tracking-wide text-text-muted transition-colors hover:text-text-normal"
+              className="text-[12.5px] font-semibold text-brand transition-opacity hover:opacity-80"
             >
               {managing ? "Done" : "Manage"}
             </button>
@@ -295,7 +296,7 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
 
           <div className="flex flex-col gap-0.5">
             {accounts.current && (
-              <div className="flex items-center gap-2.5 rounded bg-interactive-selected px-2 py-1.5">
+              <div className="flex items-center gap-2.5 rounded-[10px] bg-interactive-hover px-2.5 py-1.5">
                 <span className="relative shrink-0">
                   <Avatar
                     size="sm"
@@ -322,7 +323,7 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
               return (
                 <div
                   key={acct.user_id}
-                  className="group flex items-center gap-2.5 rounded px-2 py-1.5 transition-colors hover:bg-interactive-hover"
+                  className="group flex items-center gap-2.5 rounded-[10px] px-2.5 py-1.5 transition-colors hover:bg-interactive-hover"
                 >
                   <button
                     type="button"
@@ -363,14 +364,14 @@ export function UserPanelPopup({ anchorRef, onClose, onOpenSettings, onOpenProfi
             <button
               type="button"
               onClick={() => { beginAddAccount(); onClose(); }}
-              className="flex items-center gap-2.5 rounded px-2 py-1.5 text-left transition-colors hover:bg-interactive-hover"
+              className="flex items-center gap-2.5 rounded-[10px] px-2.5 py-1.5 text-left transition-colors hover:bg-interactive-hover"
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-dashed border-text-muted text-text-muted">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-fill-secondary text-brand">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                   <path d="M12 5v14M5 12h14" />
                 </svg>
               </span>
-              <span className="text-sm text-text-normal">Add an Account</span>
+              <span className="text-[14px] text-brand">Add account</span>
             </button>
           </div>
         </div>

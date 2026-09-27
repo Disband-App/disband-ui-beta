@@ -3,7 +3,6 @@
 import { useOverlayDismiss } from "@/hooks/useOverlayDismiss";
 
 import { useCallback, useEffect, useState } from "react";
-import { useTheme } from "@/components/theme/ThemeProvider";
 import { useApp } from "@/contexts/AppContext";
 import { useMediaUpload } from "@/hooks/useMediaUpload";
 import { AccentPresetGrid, ProfilePreview } from "./settings/ProfilePreview";
@@ -21,7 +20,22 @@ import { GiftModal } from "@/components/gift/GiftModal";
 import { giftUrl } from "@/lib/gifts";
 import { AvatarCropModal } from "@/components/modals/AvatarCropModal";
 import { Avatar } from "@/components/ui/Avatar";
-import { IconClose, IconBell, IconDownload } from "@/components/icons";
+import {
+  IconBell,
+  IconDownload,
+  IconUser,
+  IconLock,
+  IconCrown,
+  IconGift,
+  IconBot,
+  IconAuto,
+  IconWand,
+  IconWaveform,
+  IconText,
+  IconBug,
+  IconLeave,
+} from "@/components/icons";
+import { SheetCloseButton } from "@/components/ui/Sheet";
 import { NewPasswordForm } from "@/components/auth/NewPasswordForm";
 import { MfaSettingsPanel } from "@/components/auth/MfaSettingsPanel";
 import { UsernameAvailabilityInput } from "@/components/discord/UsernameAvailabilityInput";
@@ -33,8 +47,6 @@ import { MyReferralCard } from "@/components/referrals/MyReferralCard";
 import Link from "next/link";
 import { requestNotificationPermissionFromGesture } from "@/lib/notifications";
 import { useAudioDevices } from "@/hooks/useAudioDevices";
-import { useZoom, MIN_ZOOM, MAX_ZOOM } from "@/hooks/useZoom";
-import { getStoredMotion, setStoredMotion, type MotionPreference } from "@/lib/motion";
 import { getDisbandUserMedia } from "@/lib/media";
 import {
   getPreferredAudioInputId,
@@ -66,6 +78,7 @@ import { SubscriptionModal } from "@/components/subscription/SubscriptionModal";
 import { PLANS } from "@/lib/subscription";
 import { useSubscription } from "@/hooks/useSubscription";
 import { ThemesPanel } from "@/components/discord/settings/ThemesPanel";
+import { AppearancePanel } from "@/components/discord/settings/AppearancePanel";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
 interface SettingsModalProps {
@@ -73,20 +86,21 @@ interface SettingsModalProps {
   onClose: () => void;
 }
 
+// Each tab gets a coloured glyph tile, as rows do in the iOS Settings app.
 const TABS = [
-  { id: "profile" as const, label: "Profile", group: "User Settings" },
-  { id: "account" as const, label: "Account & Security", group: "User Settings" },
-  { id: "subscriptions" as const, label: "Subscription", group: "User Settings" },
-  { id: "referrals" as const, label: "Referrals", group: "User Settings" },
-  { id: "bots" as const, label: "Bots", group: "User Settings" },
-  { id: "appearance" as const, label: "Appearance", group: "App Settings" },
-  { id: "themes" as const, label: "Themes", group: "App Settings" },
-  { id: "notifications" as const, label: "Notifications", group: "App Settings" },
-  { id: "voice" as const, label: "Voice & Video", group: "App Settings" },
-  { id: "textMedia" as const, label: "Text & Media", group: "App Settings" },
+  { id: "profile" as const, label: "Profile", group: "Account", icon: IconUser, tint: "linear-gradient(180deg,#3d9bff,#0a6fe8)" },
+  { id: "account" as const, label: "Account & Security", group: "Account", icon: IconLock, tint: "linear-gradient(180deg,#9a9aa3,#6f6f78)" },
+  { id: "subscriptions" as const, label: "Subscription", group: "Account", icon: IconCrown, tint: "linear-gradient(180deg,#b986ff,#8a5cf5)" },
+  { id: "referrals" as const, label: "Referrals", group: "Account", icon: IconGift, tint: "linear-gradient(180deg,#4fd88b,#22a95b)" },
+  { id: "bots" as const, label: "Bots", group: "Account", icon: IconBot, tint: "linear-gradient(180deg,#7d7aff,#5451d6)" },
+  { id: "appearance" as const, label: "Appearance", group: "App", icon: IconAuto, tint: "linear-gradient(180deg,#5e9cff,#2f6fe0)" },
+  { id: "themes" as const, label: "Skins & CSS", group: "App", icon: IconWand, tint: "linear-gradient(180deg,#ff7a93,#ec4263)" },
+  { id: "notifications" as const, label: "Notifications", group: "App", icon: IconBell, tint: "linear-gradient(180deg,#ff6961,#e5352b)" },
+  { id: "voice" as const, label: "Voice & Video", group: "App", icon: IconWaveform, tint: "linear-gradient(180deg,#4fd88b,#22a95b)" },
+  { id: "textMedia" as const, label: "Text & Media", group: "App", icon: IconText, tint: "linear-gradient(180deg,#ffb147,#f08a0b)" },
 ];
 
-const NAV_GROUPS = ["User Settings", "App Settings"] as const;
+const NAV_GROUPS = ["Account", "App"] as const;
 
 function formatBytes(bytes: number): string {
   return `${Math.round(bytes / (1024 * 1024))} MB`;
@@ -102,15 +116,12 @@ const STATUSES: { id: UserStatus; label: string }[] = [
 type SettingsTab = (typeof TABS)[number]["id"];
 
 export function SettingsModal({ open, onClose }: SettingsModalProps) {
-  const { theme, themes, setTheme } = useTheme();
   const { profile, user, updateProfile, updatePassword, requestPasswordReset, signOut } = useApp();
 
   const myBadges = useBadges(profile?.id);
   const [gifting, setGifting] = useState(false);
   const [giftLink, setGiftLink] = useState<string | null>(null);
   const { upload, isUploading } = useMediaUpload();
-  const [zoom, setZoom] = useZoom();
-  const [motion, setMotion] = useState<MotionPreference>(() => getStoredMotion());
   const [tab, setTab] = useState<SettingsTab>("profile");
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
@@ -362,88 +373,109 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <button type="button" aria-label="Close" className="absolute inset-0 bg-overlay-scrim overlay-fade" onClick={onClose} />
-        <div role="dialog" aria-modal="true" aria-label="Settings" className="modal-pop relative flex max-h-[88vh] w-full max-w-[920px] overflow-hidden rounded-xl bg-bg-primary shadow-2xl">
-          <nav className="hidden w-60 shrink-0 flex-col overflow-y-auto bg-bg-secondary p-3 sm:flex">
+      <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
+        <button type="button" aria-label="Close" tabIndex={-1} className="absolute inset-0 cursor-default bg-overlay-scrim overlay-fade" onClick={onClose} />
+        <div role="dialog" aria-modal="true" aria-label="Settings" className="modal-pop relative flex h-[92vh] w-full max-w-[980px] overflow-hidden rounded-t-[24px] bg-bg-primary shadow-elev-4 ring-1 ring-glass-border sm:h-[min(88vh,780px)] sm:rounded-[24px]">
+          <nav aria-label="Settings sections" className="hidden w-[264px] shrink-0 flex-col overflow-y-auto bg-bg-secondary px-3 pb-3 pt-4 sm:flex">
+            <h2 className="large-title mb-3 px-2 text-[26px]">Settings</h2>
             {profile && (
-              <div className="mb-3 flex items-center gap-2.5 rounded-lg px-2 py-2">
-                <Avatar profile={profile} size="sm" />
+              // The account card at the top, like the Apple ID row.
+              <button
+                type="button"
+                onClick={() => setTab("profile")}
+                className="press mb-4 flex items-center gap-3 rounded-[14px] bg-bg-primary p-2.5 text-left shadow-[0_0_0_1px_var(--panel-border)] transition-colors hover:bg-interactive-hover"
+              >
+                <Avatar profile={profile} size="md" className="h-11 w-11" />
                 <div className="min-w-0">
-                  <p className="truncate text-[14px] font-semibold leading-tight">
+                  <p className="truncate text-[15px] font-semibold leading-tight">
                     {profile.display_name || profile.username}
                   </p>
-                  <p className="truncate text-[12px] text-text-muted">@{profile.username}</p>
+                  <p className="truncate text-[12px] text-text-muted">@{profile.username} · Disband account</p>
                 </div>
-              </div>
+              </button>
             )}
 
             {NAV_GROUPS.map((group) => (
-              <div key={group} className="mb-3">
-                <h2 className="mb-1 px-2 text-[11px] font-bold uppercase tracking-wide text-text-muted">
-                  {group}
-                </h2>
-                {TABS.filter((t) => t.group === group).map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => setTab(t.id)}
-                    className={`block w-full rounded px-2 py-1.5 text-left text-[15px] transition-colors duration-150 ${
-                      tab === t.id
-                        ? "bg-interactive-selected text-text-normal"
-                        : "text-text-muted hover:bg-interactive-hover hover:text-text-normal"
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
+              <div key={group} className="mb-4">
+                <div className="overflow-hidden rounded-[14px] bg-bg-primary p-1 shadow-[0_0_0_1px_var(--panel-border)]">
+                  {TABS.filter((t) => t.group === group).map((t) => {
+                    const Icon = t.icon;
+                    const active = tab === t.id;
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setTab(t.id)}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex w-full items-center gap-2.5 rounded-[10px] px-2 py-[7px] text-left text-[14px] transition-colors duration-150 ${
+                          active
+                            ? "bg-brand font-medium text-brand-foreground"
+                            : "text-text-normal hover:bg-interactive-hover"
+                        }`}
+                      >
+                        <span className="icon-tile h-[26px] w-[26px] rounded-[7px]" style={{ background: t.tint }}>
+                          <Icon size={15} strokeWidth={2.2} />
+                        </span>
+                        <span className="min-w-0 flex-1 truncate">{t.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             ))}
 
-            <button
-              type="button"
-              onClick={() => {
-                onClose();
-                window.location.href = "/bug-report";
-              }}
-              className="mt-auto rounded px-2 py-1.5 text-left text-[15px] text-text-muted transition-colors duration-150 hover:bg-interactive-hover hover:text-text-normal"
-            >
-              Report a Bug
-            </button>
-            <button
-              type="button"
-              onClick={() => void signOut()}
-              className="rounded px-2 py-1.5 text-left text-[15px] text-status-dnd transition-colors duration-150 hover:bg-interactive-hover"
-            >
-              Log Out
-            </button>
+            <div className="mt-auto overflow-hidden rounded-[14px] bg-bg-primary p-1 shadow-[0_0_0_1px_var(--panel-border)]">
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  window.location.href = "/bug-report";
+                }}
+                className="flex w-full items-center gap-2.5 rounded-[10px] px-2 py-[7px] text-left text-[14px] text-text-normal transition-colors hover:bg-interactive-hover"
+              >
+                <span className="icon-tile h-[26px] w-[26px] rounded-[7px]" style={{ background: "linear-gradient(180deg,#9a9aa3,#6f6f78)" }}>
+                  <IconBug size={15} strokeWidth={2.2} />
+                </span>
+                Report a bug
+              </button>
+              <button
+                type="button"
+                onClick={() => void signOut()}
+                className="flex w-full items-center gap-2.5 rounded-[10px] px-2 py-[7px] text-left text-[14px] text-status-dnd transition-colors hover:bg-status-dnd/10"
+              >
+                <span className="icon-tile h-[26px] w-[26px] rounded-[7px] bg-status-dnd/15 text-status-dnd shadow-none">
+                  <IconLeave size={15} strokeWidth={2.2} />
+                </span>
+                Log out
+              </button>
+            </div>
           </nav>
 
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="flex items-center justify-between border-b border-divider px-6 py-4">
-              <div className="min-w-0">
+            <header className="flex shrink-0 items-center justify-between gap-3 px-6 pb-2 pt-5">
+              <div className="min-w-0 flex-1">
                 <select
                   value={tab}
                   onChange={(e) => setTab(e.target.value as SettingsTab)}
-                  className="w-full rounded bg-bg-accent px-2 py-1.5 text-lg font-semibold outline-none focus:ring-2 focus:ring-brand sm:hidden"
+                  aria-label="Settings section"
+                  className="field w-full text-[17px] font-semibold sm:hidden"
                 >
                   {TABS.map((t) => (
                     <option key={t.id} value={t.id}>{t.label}</option>
                   ))}
                 </select>
-                <h1 className="hidden text-xl font-semibold sm:block">{activeTab?.label ?? "Settings"}</h1>
+                <h1 key={tab} className="large-title view-enter hidden truncate sm:block">{activeTab?.label ?? "Settings"}</h1>
               </div>
-              <button type="button" onClick={onClose} className="text-text-muted hover:text-text-normal">
-                <IconClose size={24} />
-              </button>
+              <SheetCloseButton onClick={onClose} />
             </header>
 
-            <div key={tab} className="view-enter flex-1 overflow-y-auto px-6 py-6">
+            <div key={tab} className="view-enter min-h-0 flex-1 overflow-y-auto px-6 pb-6 pt-4">
+              <div className="mx-auto max-w-[680px]">
               {tab === "profile" && (
                 <div className="pb-20">
                   {profile && (
                     <div className="mb-6">
-                      <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-text-muted">
+                      <p className="mb-2 text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
                         Preview
                       </p>
                       <ProfilePreview
@@ -587,7 +619,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                         <button
                           type="button"
                           onClick={() => setUseDefaultAccent(true)}
-                          className="rounded-md border border-divider px-2.5 py-1 text-[12px] transition-colors hover:bg-interactive-hover"
+                          className="btn btn-gray btn-sm"
                         >
                           Reset to default
                         </button>
@@ -725,7 +757,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                         type="button"
                         onClick={resetProfileEdits}
                         disabled={!profileDirty || saving}
-                        className="rounded-md border border-divider px-4 py-2 text-sm font-semibold text-text-normal transition-colors hover:bg-interactive-hover disabled:cursor-not-allowed disabled:opacity-50"
+                        className="btn btn-gray"
                       >
                         Revert
                       </button>
@@ -733,7 +765,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                         type="button"
                         onClick={() => void saveProfile()}
                         disabled={saving || !profileDirty}
-                        className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-60"
+                        className="btn btn-filled"
                       >
                         {saving ? "Saving…" : profileDirty ? "Save Changes" : "Saved!"}
                       </button>
@@ -763,7 +795,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                         <button
                           type="button"
                           onClick={() => void copyUserId()}
-                          className="shrink-0 rounded-md border border-divider px-3 py-2 text-[13px] font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+                          className="btn btn-gray btn-sm shrink-0"
                         >
                           {copiedId ? "Copied" : "Copy"}
                         </button>
@@ -799,7 +831,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                               else setResetEmailSent(true);
                             })();
                           }}
-                          className="rounded-md border border-divider px-3 py-1.5 text-[13px] font-semibold transition-colors hover:bg-interactive-hover"
+                          className="btn btn-gray btn-sm"
                         >
                           Send reset email
                         </button>
@@ -826,7 +858,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                         type="button"
                         onClick={() => void signOutEverywhere()}
                         disabled={signingOutAll}
-                        className="rounded-md border border-status-dnd/40 px-3 py-1.5 text-[13px] font-semibold text-status-dnd transition-colors hover:bg-status-dnd/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="btn btn-destructive btn-sm"
                       >
                         {signingOutAll ? "Signing out…" : "Sign out everywhere"}
                       </button>
@@ -844,118 +876,10 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
               )}
 
               {tab === "appearance" && (
-                <div>
-                  <div className="mb-5">
-                    <p className="mb-3 text-sm font-semibold">Interface zoom</p>
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z - 0.1))}
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-divider text-lg text-text-normal hover:bg-interactive-hover"
-                        aria-label="Zoom out"
-                      >
-                        −
-                      </button>
-                      <input
-                        type="range"
-                        min={MIN_ZOOM}
-                        max={MAX_ZOOM}
-                        step={0.05}
-                        value={zoom}
-                        onChange={(e) => setZoom(Number.parseFloat(e.target.value))}
-                        className="flex-1 accent-brand"
-                        aria-label="Interface zoom"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z + 0.1))}
-                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-divider text-lg text-text-normal hover:bg-interactive-hover"
-                        aria-label="Zoom in"
-                      >
-                        +
-                      </button>
-                      <span className="w-12 shrink-0 text-right text-sm tabular-nums text-text-muted">
-                        {Math.round(zoom * 100)}%
-                      </span>
-                    </div>
-                    <p className="mt-2 text-xs text-text-muted">
-                      Tip: use Ctrl/Cmd + and Ctrl/Cmd − (or Ctrl/Cmd 0 to reset) anywhere in the app.
-                    </p>
-                  </div>
-
-                  <div className="mb-5">
-                    <p className="mb-1 text-sm font-semibold">Animations</p>
-                    <p className="mb-3 text-xs text-text-muted">
-                      Interface motion: message arrivals, view transitions, badges and ambient effects.
-                    </p>
-                    <div className="flex gap-1 rounded-lg bg-bg-accent p-1" role="group" aria-label="Animation preference">
-                      {(
-                        [
-                          { id: "system", label: "System", hint: "Follow your OS setting" },
-                          { id: "full", label: "Full", hint: "Always animate" },
-                          { id: "reduced", label: "Reduced", hint: "Calm interface" },
-                        ] as const
-                      ).map((opt) => (
-                        <button
-                          key={opt.id}
-                          type="button"
-                          title={opt.hint}
-                          aria-pressed={motion === opt.id}
-                          onClick={() => {
-                            setMotion(opt.id);
-                            setStoredMotion(opt.id);
-                          }}
-                          className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                            motion === opt.id
-                              ? "bg-bg-secondary text-text-normal shadow"
-                              : "text-text-muted hover:text-text-normal"
-                          }`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  <p className="mb-4 text-sm text-text-muted">Theme changes apply instantly and sync to your account.</p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {themes.map((t) => {
-
-                      const isLocked = !!t.plan && subPlan === "free";
-                      return (
-                        <button
-                          key={t.id}
-                          type="button"
-                          disabled={isLocked}
-                          onClick={() => {
-                            if (isLocked) return;
-                            setTheme(t.id);
-                            void savePreference({ theme: t.id });
-                          }}
-                          className={`overflow-hidden rounded-lg border-2 text-left transition-all duration-150 ${
-                            theme === t.id ? "border-brand" : "border-transparent hover:border-interactive-hover"
-                          } ${isLocked ? "cursor-not-allowed opacity-50" : ""}`}
-                        >
-                          <div className="flex h-16">
-                            {t.swatch.map((c, i) => (
-                              <div key={i} className="flex-1" style={{ backgroundColor: c }} />
-                            ))}
-                          </div>
-                          <div className="bg-bg-secondary px-3 py-2">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-semibold">{t.label}</p>
-                              {t.plan && <SubscriptionBadge plan={t.plan} />}
-                              {isLocked && (
-                                <span className="ml-auto text-xs text-text-muted">Locked</span>
-                              )}
-                            </div>
-                            <p className="text-xs text-text-muted">{t.description}</p>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                <AppearancePanel
+                  plan={subPlan}
+                  onSaveTheme={(next) => void savePreference({ theme: next })}
+                />
               )}
 
               {tab === "themes" && <ThemesPanel />}
@@ -993,7 +917,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                     <button
                       type="button"
                       onClick={() => void enableDesktopNotifications()}
-                      className="flex items-center gap-2 rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+                      className="btn btn-filled"
                     >
                       <IconBell size={16} />
                       Enable browser notifications
@@ -1085,7 +1009,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                       <button
                         type="button"
                         onClick={() => void testMediaAccess()}
-                        className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover"
+                        className="btn btn-filled"
                       >
                         Allow microphone & camera
                       </button>
@@ -1103,7 +1027,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                     Upgrade your plan for larger uploads, higher quality video, exclusive themes, and more.
                   </p>
 
-                  <div className="rounded-lg border border-divider bg-bg-secondary p-4">
+                  <div className="rounded-[14px] bg-fill-tertiary p-4">
                     <div className="flex items-center justify-between">
                       <div className="space-y-1">
                         <p className="text-xs font-semibold uppercase text-text-muted">Current Plan</p>
@@ -1134,7 +1058,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                         <button
                           type="button"
                           onClick={() => setShowSubscription(true)}
-                          className="rounded bg-brand px-3 py-1.5 text-sm font-semibold text-white hover:bg-brand-hover"
+                          className="btn btn-filled btn-sm"
                         >
                           {subPlan === "free" ? "Upgrade" : "Manage"}
                         </button>
@@ -1189,7 +1113,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                     Share your code and earn when friends join with it.
                   </p>
                   <MyReferralCard />
-                  <div className="flex flex-col gap-1.5 rounded-lg border border-divider bg-bg-secondary p-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="rounded-[14px] bg-fill-tertiary flex flex-col gap-1.5 p-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-[13px] font-medium text-text-normal">Live leaderboard</p>
                       <p className="mt-0.5 text-[12px] text-text-muted">
@@ -1199,7 +1123,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                     </div>
                     <Link
                       href="/leaderboards/referrals"
-                      className="inline-flex shrink-0 items-center justify-center rounded-md bg-brand px-3.5 py-2 text-[13px] font-medium text-white transition-colors hover:bg-brand-hover"
+                      className="btn btn-filled btn-sm shrink-0"
                     >
                       View leaderboard
                     </Link>
@@ -1228,6 +1152,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                   {settingsError && <p className="text-sm text-status-dnd">{settingsError}</p>}
                 </div>
               )}
+              </div>
             </div>
           </div>
         </div>

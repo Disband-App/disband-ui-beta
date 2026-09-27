@@ -11,8 +11,8 @@ export const metadata: Metadata = {
 function Section({ id, title, children }: { id: string; title: string; children: React.ReactNode }) {
   return (
     <section id={id} className="scroll-mt-20">
-      <h2 className="text-xl font-semibold tracking-[-0.01em] text-white">{title}</h2>
-      <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-[#9aa0a8]">{children}</div>
+      <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-text-normal">{title}</h2>
+      <div className="mt-3 space-y-3 text-[15px] leading-relaxed text-text-muted">{children}</div>
     </section>
   );
 }
@@ -32,24 +32,24 @@ const contents = [
 
 export default function LegalPage() {
   return (
-    <div className="min-h-screen bg-[#1e1f22]">
+    <div className="min-h-screen bg-canvas">
       <MarketingNav />
       <main className="mx-auto max-w-3xl px-6 pb-20 pt-24 sm:pt-28">
-        <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6e727a]">
+        <p className="text-[13px] font-medium text-text-muted">
           Last updated September 2026
         </p>
-        <h1 className="mt-3 text-3xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
+        <h1 className="large-title mt-3 text-[34px] sm:text-[40px]">
           Legal Information
         </h1>
-        <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-[#9aa0a8]">
+        <p className="mt-4 max-w-2xl text-[15px] leading-relaxed text-text-muted">
           Everything below describes who owns and operates Disband, how your data is handled,
           and the terms under which the service is provided. If anything here conflicts with a
           separate written agreement, the written agreement controls.
         </p>
 
-        <nav className="mt-8 grid gap-1.5 rounded-xl border border-white/[0.08] bg-white/[0.02] p-4 sm:grid-cols-2">
+        <nav className="mt-8 grid gap-1.5 rounded-[16px] bg-bg-primary p-4 shadow-elev-1 sm:grid-cols-2">
           {contents.map((c) => (
-            <a key={c.id} href={`#${c.id}`} className="text-sm text-[#b5bac1] transition-colors hover:text-white">
+            <a key={c.id} href={`#${c.id}`} className="text-sm text-text-muted transition-colors hover:text-text-normal">
               {c.label}
             </a>
           ))}
@@ -58,20 +58,20 @@ export default function LegalPage() {
         <div className="mt-12 space-y-12">
           <Section id="entity" title="1. Entity & Ownership">
             <p>
-              Disband is owned and operated by <span className="font-semibold text-white">Genysis IQ</span>,
+              Disband is owned and operated by <span className="font-semibold text-text-normal">Genysis IQ</span>,
               its parent company. Disband is not its own corporation at this time; all corporate,
               legal, and financial responsibility for the service sits with Genysis IQ.
             </p>
             <ul className="list-disc space-y-1.5 pl-5">
               <li>
-                <span className="font-semibold text-white">Lead programmer / Owner:</span> Josh Clark
+                <span className="font-semibold text-text-normal">Lead programmer / Owner:</span> Josh Clark
                 (15 years old).
               </li>
               <li>
-                <span className="font-semibold text-white">Security advisor:</span> Diego Quintero.
+                <span className="font-semibold text-text-normal">Security advisor:</span> Diego Quintero.
               </li>
               <li>
-                <span className="font-semibold text-white">Marketing:</span> powered by the community.
+                <span className="font-semibold text-text-normal">Marketing:</span> powered by the community.
                 Disband has no paid marketing department; growth comes from its users.
               </li>
             </ul>
@@ -138,27 +138,27 @@ export default function LegalPage() {
             </p>
             <ul className="list-disc space-y-1.5 pl-5">
               <li>
-                <span className="font-semibold text-white">Supabase</span> — primary application
+                <span className="font-semibold text-text-normal">Supabase</span> — primary application
                 database. Data stored here is never shared with another company and is never sold.
               </li>
               <li>
-                <span className="font-semibold text-white">Cloudflare</span> — stores encrypted
+                <span className="font-semibold text-text-normal">Cloudflare</span> — stores encrypted
                 images (encrypted through Supabase) on the CDN and is the domain registrar of
                 Disband.
               </li>
               <li>
-                <span className="font-semibold text-white">Vercel</span> — hosts disband.dev,
+                <span className="font-semibold text-text-normal">Vercel</span> — hosts disband.dev,
                 disband.app, and all other respective public-facing materials served to the users
                 of Disband.
               </li>
               <li>
-                <span className="font-semibold text-white">Apple Inc. and Google Inc.</span> —
+                <span className="font-semibold text-text-normal">Apple Inc. and Google Inc.</span> —
                 Disband relies on Apple and Google to publish apps on both the Google Play Store
                 and the Apple App Store. Store installations are governed by Apple&apos;s and
                 Google&apos;s own terms in addition to these.
               </li>
               <li>
-                <span className="font-semibold text-white">Payment processing</span> — paid
+                <span className="font-semibold text-text-normal">Payment processing</span> — paid
                 subscriptions and one-time purchases are processed by our payment provider;
                 Disband does not store full payment card numbers.
               </li>

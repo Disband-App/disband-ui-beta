@@ -73,11 +73,11 @@ export function MfaStepUpForm({ onVerified }: { onVerified: () => void }) {
         <form onSubmit={submitTotp} className="space-y-4">
           {totpFactors.length > 1 && (
             <label className="block">
-              <span className="mb-1 block text-xs font-bold uppercase text-text-muted">Authenticator</span>
+              <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Authenticator</span>
               <select
                 value={selectedFactorId}
                 onChange={(e) => setSelectedFactorId(e.target.value)}
-                className="w-full rounded bg-bg-accent px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand"
+                className="field w-full text-[14px]"
               >
                 {totpFactors.map((factor) => (
                   <option key={factor.id} value={factor.id}>{factorLabel(factor)}</option>
@@ -86,7 +86,7 @@ export function MfaStepUpForm({ onVerified }: { onVerified: () => void }) {
             </label>
           )}
           <label className="block">
-            <span className="mb-1 block text-xs font-bold uppercase text-text-muted">Authentication code</span>
+            <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Authentication code</span>
             <input
               required
               inputMode="numeric"
@@ -95,14 +95,14 @@ export function MfaStepUpForm({ onVerified }: { onVerified: () => void }) {
               maxLength={6}
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              className="w-full rounded bg-bg-accent px-3 py-2.5 text-center text-lg tracking-[0.35em] outline-none focus:ring-2 focus:ring-brand"
+              className="field w-full text-center text-lg tracking-[0.35em]"
               placeholder="000000"
             />
           </label>
           <button
             type="submit"
             disabled={loading || code.length !== 6}
-            className="w-full rounded bg-brand py-2.5 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+            className="btn btn-filled w-full"
           >
             {loading ? "…" : "Verify code"}
           </button>
@@ -120,7 +120,7 @@ export function MfaStepUpForm({ onVerified }: { onVerified: () => void }) {
               type="button"
               disabled={loading}
               onClick={() => void usePasskey(factor.id)}
-              className="w-full rounded border border-divider bg-bg-accent py-2.5 text-sm font-semibold text-text-normal hover:bg-interactive-hover disabled:opacity-50"
+              className="btn btn-gray w-full"
             >
               {loading ? "…" : `Use ${factorLabel(factor)}`}
             </button>

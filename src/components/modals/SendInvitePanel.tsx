@@ -37,7 +37,7 @@ export function SendInvitePanel({ inviteUrl, serverName }: SendInvitePanelProps)
   return (
     <div className="space-y-3">
       <p className="text-sm text-text-muted">Send the invite link in a DM — no copy/paste needed.</p>
-      <ul className="divide-y divide-divider overflow-hidden rounded-lg border border-divider bg-bg-secondary">
+      <ul className="rounded-[14px] bg-fill-tertiary divide-y divide-divider overflow-hidden">
         {friends.map((friend) => {
           const sent = sentIds.has(friend.id);
           const sending = sendingId === friend.id;
@@ -54,7 +54,7 @@ export function SendInvitePanel({ inviteUrl, serverName }: SendInvitePanelProps)
                 type="button"
                 disabled={sent || sending}
                 onClick={() => void handleSend(friend.id)}
-                className="flex shrink-0 items-center gap-1.5 rounded bg-brand px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+                className="btn btn-filled btn-sm shrink-0"
               >
                 <IconSend size={14} />
                 {sent ? "Sent" : sending ? "Sending…" : "Send"}

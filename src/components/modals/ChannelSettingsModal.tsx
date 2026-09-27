@@ -7,6 +7,7 @@ import { useApp } from "@/contexts/AppContext";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { IconClose, IconHash, IconSpeaker, IconTrash } from "@/components/icons";
 import type { Channel } from "@/lib/supabase/types";
+import { Toggle } from "@/components/discord/settings/SettingsPrimitives";
 
 type ActionKey = "can_view" | "can_post" | "can_react" | "can_attach";
 type TriState = null | boolean;
@@ -173,7 +174,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <button type="button" aria-label="Close" className="absolute inset-0 bg-overlay-scrim overlay-fade" onClick={onClose} />
-      <div role="dialog" aria-modal="true" aria-label="Channel settings" className="modal-pop relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-bg-primary shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-label="Channel settings" className="modal-pop relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border">
         <header className="flex items-center gap-2 border-b border-divider px-5 py-4">
           {channel.type === "text" ? <IconHash size={20} /> : <IconSpeaker size={20} />}
           <div className="min-w-0 flex-1">
@@ -189,7 +190,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
 
         <div className="flex-1 space-y-5 overflow-y-auto px-5 py-4">
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-text-muted">Overview</h3>
+            <h3 className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Overview</h3>
             <div className="mt-2 space-y-3">
               <label className="block">
                 <span className="text-xs font-semibold text-text-muted">Channel name</span>
@@ -200,7 +201,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
                   <input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full rounded bg-bg-accent px-3 py-2 text-sm text-text-normal outline-none focus:ring-2 focus:ring-brand"
+                    className="field w-full text-[14px]"
                     maxLength={32}
                   />
                 </div>
@@ -213,23 +214,13 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
                     Only people who can manage channels may post here.
                   </span>
                 </span>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={readOnly}
-                  onClick={() => setReadOnly(!readOnly)}
-                  className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${readOnly ? "bg-brand" : "bg-bg-secondary"}`}
-                >
-                  <span
-                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${readOnly ? "left-[18px]" : "left-0.5"}`}
-                  />
-                </button>
+                <Toggle checked={readOnly} onChange={setReadOnly} label="Announcement channel" />
               </label>
             </div>
           </section>
 
           <section>
-            <h3 className="text-xs font-bold uppercase tracking-wide text-text-muted">Role permissions</h3>
+            <h3 className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Role permissions</h3>
             <p className="mt-0.5 text-xs text-text-muted">
               Tap a cell to cycle Default → Allow → Deny. "Default" follows the role's own settings; once any
               role has an override here, channels not allowed for a role are hidden and read-only.
@@ -239,9 +230,9 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
             <div className="mt-2 hidden overflow-x-auto sm:block">
               <div className="min-w-[520px]">
                 <div className="grid grid-cols-[1fr_repeat(4,72px)] items-center gap-1 border-b border-divider pb-1">
-                  <span className="text-[11px] font-bold uppercase text-text-muted">Role</span>
+                  <span className="text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">Role</span>
                   {ACTIONS.map((a) => (
-                    <span key={a.key} className="text-center text-[11px] font-bold uppercase text-text-muted">
+                    <span key={a.key} className="text-center text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
                       {a.label}
                     </span>
                   ))}
@@ -269,7 +260,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
                 <p className="py-4 text-center text-sm text-text-muted">Loading permissions…</p>
               ) : (
                 rows.map((r) => (
-                  <div key={r.role_id} className="rounded-lg border border-divider bg-bg-secondary p-3">
+                  <div key={r.role_id} className="rounded-[14px] bg-fill-tertiary p-3">
                     <p className="mb-2 truncate text-sm font-semibold" style={{ color: r.role_color }}>
                       {r.role_name}
                     </p>
@@ -279,7 +270,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
                           key={a.key}
                           className="flex items-center justify-between gap-2 rounded bg-bg-accent px-2 py-1.5"
                         >
-                          <span className="text-[11px] font-bold uppercase text-text-muted">{a.label}</span>
+                          <span className="text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">{a.label}</span>
                           {renderCell(r.role_id, a, "min-w-[64px]")}
                         </div>
                       ))}
@@ -291,7 +282,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
           </section>
 
           <section className="rounded border border-status-dnd/20 bg-status-dnd/10 px-3 py-3">
-            <h3 className="text-xs font-bold uppercase tracking-wide text-status-dnd">Danger zone</h3>
+            <h3 className="text-xs uppercase font-semibold tracking-[0.04em] text-status-dnd">Danger zone</h3>
             <div className="mt-2 flex items-center justify-between gap-3">
               <p className="text-xs text-text-muted">
                 Permanently delete <span className="font-semibold text-text-normal">#{channel.name}</span> with its
@@ -305,7 +296,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
                     onClose();
                   }
                 }}
-                className="shrink-0 rounded bg-status-dnd px-3 py-1.5 text-xs font-semibold text-white hover:opacity-90"
+                className="btn btn-danger btn-sm shrink-0"
               >
                 <IconTrash size={12} className="mr-1 inline" />
                 Delete
@@ -324,7 +315,7 @@ export function ChannelSettingsModal({ channel, onClose }: ChannelSettingsModalP
             type="button"
             onClick={() => void save()}
             disabled={saving}
-            className="rounded bg-brand px-4 py-2 text-sm font-semibold text-white transition-all duration-150 hover:bg-brand-hover disabled:opacity-50"
+            className="btn btn-filled"
           >
             {saving ? "Saving…" : "Save Changes"}
           </button>

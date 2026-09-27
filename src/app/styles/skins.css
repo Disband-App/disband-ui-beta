@@ -1,0 +1,466 @@
+/* Aero skins. These restyle the whole app — corners, type, and how every
+   button is drawn — so they are unlayered on purpose: they must win over
+   Tailwind utilities and over the base design tokens in tokens.css. Accent
+   colours (data-accent) step aside whenever a skin is active. */
+
+[data-skin="minecraft"] {
+  --skin-radius-sm: 0px;
+  --skin-radius-md: 0px;
+  --skin-radius-lg: 0px;
+  --skin-radius-xl: 0px;
+  --skin-radius-2xl: 0px;
+  --skin-radius-3xl: 0px;
+
+  --bg-primary: #3b3b3b;
+  --bg-secondary: #2f2f2f;
+  --bg-tertiary: #1d1d1d;
+  --bg-accent: #262626;
+  --interactive-hover: #4a4a4a;
+  --interactive-selected: #5a5a5a;
+  --brand: #5b8c3a;
+  --brand-hover: #4a7530;
+  --text-normal: #ffffff;
+  --text-muted: #a8a8a8;
+  --divider: #151515;
+  --status-online: #5b8c3a;
+}
+
+[data-skin="minecraft"] button,
+[data-skin="minecraft"] h1,
+[data-skin="minecraft"] h2,
+[data-skin="minecraft"] h3 {
+  font-family: "Disband Pixel", "Courier New", monospace;
+  letter-spacing: 0.02em;
+}
+
+[data-skin="minecraft"] button {
+
+  border-radius: 0;
+
+  box-shadow:
+    inset 2px 2px 0 rgba(255, 255, 255, 0.25),
+    inset -2px -2px 0 rgba(0, 0, 0, 0.45);
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.55);
+}
+
+[data-skin="minecraft"] button:active {
+
+  box-shadow:
+    inset -2px -2px 0 rgba(255, 255, 255, 0.2),
+    inset 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+[data-skin="minecraft"] img,
+[data-skin="minecraft"] video {
+  image-rendering: pixelated;
+}
+
+[data-skin="cod"] {
+  --skin-radius-sm: 0px;
+  --skin-radius-md: 1px;
+  --skin-radius-lg: 1px;
+  --skin-radius-xl: 2px;
+  --skin-radius-2xl: 2px;
+  --skin-radius-3xl: 2px;
+
+  --bg-primary: #24231e;
+  --bg-secondary: #1c1b17;
+  --bg-tertiary: #121210;
+  --bg-accent: #16150f;
+  --interactive-hover: #33322a;
+  --interactive-selected: #403e33;
+  --brand: #b4802a;
+  --brand-hover: #8f6420;
+  --text-normal: #ddd8c8;
+  --text-muted: #8d8877;
+  --text-link: #d9a441;
+  --divider: #3a382e;
+  --status-online: #7d8c3a;
+}
+
+[data-skin="cod"] button,
+[data-skin="cod"] h1,
+[data-skin="cod"] h2 {
+  font-family: "Disband Condensed", "Oswald", "Arial Narrow", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+[data-skin="cod"] button {
+  border-radius: 1px;
+  border-left: 2px solid rgba(180, 128, 42, 0.55);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+
+[data-skin="cod"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.05;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.7) 0.5px, transparent 0.5px);
+  background-size: 3px 3px;
+}
+
+[data-skin="y2k"],
+[data-skin="paper"],
+[data-skin="brutalist"] {
+  color-scheme: light !important;
+
+  --super: #63480a;
+  --ping-bg: rgba(214, 158, 46, 0.15);
+  --ping-bg-hover: rgba(214, 158, 46, 0.22);
+  --ping-bar: #c0851d;
+  --status-offline: #8a8a8a;
+}
+
+[data-skin="minecraft"],
+[data-skin="cod"],
+[data-skin="frutiger"],
+[data-skin="terminal"],
+[data-skin="vaporwave"],
+[data-skin="neon"] {
+  color-scheme: dark !important;
+}
+
+[data-skin="y2k"] {
+  --skin-radius-sm: 0px;
+  --skin-radius-md: 2px;
+  --skin-radius-lg: 3px;
+  --skin-radius-xl: 3px;
+  --skin-radius-2xl: 3px;
+  --skin-radius-3xl: 3px;
+  --skin-font: Tahoma, Verdana, Geneva, "DejaVu Sans", sans-serif;
+
+  --bg-primary: #ece9d8;
+  --bg-secondary: #d6d2c2;
+
+  --bg-tertiary: #c3bfae;
+  --bg-accent: #ffffff;
+  --interactive-hover: #c1d2ee;
+  --interactive-selected: #b6c9e8;
+  --brand: #0054e3;
+  --brand-hover: #003fb0;
+  --text-normal: #1b1b1b;
+  --text-muted: #4a4a4a;
+  --text-link: #0000ee;
+  --divider: #a8a294;
+  --status-online: #1f8a1f;
+}
+
+[data-skin="y2k"] button {
+  border-radius: 2px;
+
+  border: 1px solid #7f7f7f;
+  border-top-color: #ffffff;
+  border-left-color: #ffffff;
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.75), rgba(0, 0, 0, 0.06));
+  box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+[data-skin="y2k"] button:active {
+  border-top-color: #7f7f7f;
+  border-left-color: #7f7f7f;
+  border-bottom-color: #ffffff;
+  border-right-color: #ffffff;
+  box-shadow: none;
+}
+
+[data-skin="y2k"] input,
+[data-skin="y2k"] textarea {
+  border: 1px solid #7f7f7f;
+  border-top-color: #404040;
+  border-left-color: #404040;
+  background: #ffffff;
+}
+
+[data-skin="frutiger"] {
+  --skin-radius-sm: 6px;
+  --skin-radius-md: 12px;
+  --skin-radius-lg: 16px;
+  --skin-radius-xl: 22px;
+  --skin-radius-2xl: 28px;
+  --skin-radius-3xl: 34px;
+
+  --bg-primary: #0e3b52;
+  --bg-secondary: #0b3247;
+  --bg-tertiary: #072433;
+  --bg-accent: #0a2c3e;
+  --interactive-hover: rgba(255, 255, 255, 0.12);
+  --interactive-selected: rgba(255, 255, 255, 0.2);
+  --brand: #35c3f3;
+  --brand-hover: #23a5d4;
+  --text-normal: #f2fbff;
+  --text-muted: #a9cede;
+  --text-link: #7fe7c4;
+  --divider: rgba(255, 255, 255, 0.16);
+  --status-online: #6ee7a8;
+}
+
+[data-skin="frutiger"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  mix-blend-mode: screen;
+  opacity: 0.5;
+  background-image:
+    radial-gradient(120% 90% at 15% -10%, rgba(80, 200, 255, 0.55), transparent 62%),
+    radial-gradient(120% 90% at 95% 110%, rgba(110, 231, 168, 0.5), transparent 62%);
+}
+
+[data-skin="frutiger"] button {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.12) 48%,
+    rgba(255, 255, 255, 0) 52%,
+    rgba(0, 0, 0, 0.08) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    inset 0 0 12px rgba(255, 255, 255, 0.18),
+    0 2px 8px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(6px) saturate(140%);
+}
+
+[data-skin="frutiger"] button:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 0 16px rgba(255, 255, 255, 0.28),
+    0 3px 12px rgba(0, 0, 0, 0.32);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  [data-skin="frutiger"] button {
+    backdrop-filter: none;
+  }
+}
+
+[data-skin="terminal"] {
+  --skin-radius-sm: 0px;
+  --skin-radius-md: 0px;
+  --skin-radius-lg: 0px;
+  --skin-radius-xl: 0px;
+  --skin-radius-2xl: 0px;
+  --skin-radius-3xl: 0px;
+  --skin-font: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+
+  --bg-primary: #030703;
+  --bg-secondary: #050c05;
+  --bg-tertiary: #000200;
+  --bg-accent: #071007;
+  --interactive-hover: #0d1f0d;
+  --interactive-selected: #123112;
+  --brand: #2fe86b;
+  --brand-hover: #24bd55;
+  --text-normal: #b8ffcb;
+  --text-muted: #4f9c66;
+  --text-link: #7dfba5;
+  --status-online: #2fe86b;
+  --status-idle: #d8f36a;
+  --status-dnd: #ff5f56;
+  --divider: #102c15;
+}
+
+[data-skin="terminal"] button {
+  border: 1px solid rgba(47, 232, 107, 0.4);
+  background-image: none;
+  text-transform: lowercase;
+}
+
+[data-skin="terminal"] button:hover {
+  border-color: rgba(47, 232, 107, 0.9);
+  box-shadow: 0 0 8px rgba(47, 232, 107, 0.35);
+}
+
+[data-skin="terminal"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.22;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.7) 3px
+  );
+}
+
+[data-skin="vaporwave"] {
+  --skin-radius-sm: 3px;
+  --skin-radius-md: 6px;
+  --skin-radius-lg: 10px;
+  --skin-radius-xl: 14px;
+  --skin-radius-2xl: 18px;
+  --skin-radius-3xl: 24px;
+
+  --bg-primary: #2a1052;
+  --bg-secondary: #220c46;
+  --bg-tertiary: #170733;
+  --bg-accent: #1d0a3d;
+  --interactive-hover: #3a1a68;
+  --interactive-selected: #4a2280;
+  --brand: #ff5ea8;
+  --brand-hover: #e0448c;
+  --text-normal: #f6e9ff;
+  --text-muted: #b088d8;
+  --text-link: #5ff0e6;
+  --status-online: #5ff0e6;
+  --status-idle: #ffd166;
+  --status-dnd: #ff5ea8;
+  --divider: #45217a;
+}
+
+[data-skin="vaporwave"] button {
+  border: 1px solid rgba(95, 240, 230, 0.45);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.28),
+    rgba(255, 94, 168, 0.12) 55%,
+    rgba(95, 240, 230, 0.18)
+  );
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 0 12px rgba(255, 94, 168, 0.28);
+}
+
+[data-skin="vaporwave"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0.35;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(90% 60% at 50% 105%, rgba(255, 94, 168, 0.55), transparent 60%),
+    radial-gradient(70% 50% at 50% -5%, rgba(95, 240, 230, 0.4), transparent 60%);
+}
+
+[data-skin="paper"] {
+  --skin-radius-sm: 2px;
+  --skin-radius-md: 3px;
+  --skin-radius-lg: 4px;
+  --skin-radius-xl: 6px;
+  --skin-radius-2xl: 8px;
+  --skin-radius-3xl: 10px;
+  --skin-font: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+  --bg-primary: #fbf7ef;
+  --bg-secondary: #f3ede1;
+  --bg-tertiary: #e8e0d0;
+  --bg-accent: #fffdf8;
+  --interactive-hover: #ece4d4;
+  --interactive-selected: #e0d5be;
+  --brand: #8a5a2b;
+  --brand-hover: #6f4720;
+  --text-normal: #2c2620;
+  --text-muted: #6b6055;
+  --text-link: #1f5f8b;
+  --status-online: #3f7d3f;
+  --status-idle: #b0862b;
+  --status-dnd: #a83232;
+  --divider: #d9cfba;
+}
+
+[data-skin="paper"] button {
+  border: 1px solid #cdc2ab;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+}
+
+[data-skin="paper"] button:hover {
+  border-color: #b3a689;
+}
+
+[data-skin="neon"] {
+  --skin-radius-sm: 0px;
+  --skin-radius-md: 2px;
+  --skin-radius-lg: 3px;
+  --skin-radius-xl: 4px;
+  --skin-radius-2xl: 6px;
+  --skin-radius-3xl: 8px;
+
+  --bg-primary: #07070d;
+  --bg-secondary: #0a0a14;
+  --bg-tertiary: #030308;
+  --bg-accent: #0d0d1a;
+  --interactive-hover: #16162a;
+  --interactive-selected: #1f1f3d;
+  --brand: #ff2e88;
+  --brand-hover: #d81f6f;
+  --text-normal: #e8e8ff;
+  --text-muted: #7a7aa8;
+  --text-link: #24e6ff;
+  --status-online: #24e6ff;
+  --status-idle: #ffcf3f;
+  --status-dnd: #ff2e88;
+  --divider: #23234a;
+}
+
+[data-skin="neon"] button {
+  border: 1px solid rgba(36, 230, 255, 0.35);
+  box-shadow:
+    inset 0 0 8px rgba(36, 230, 255, 0.12),
+    0 0 10px rgba(255, 46, 136, 0.18);
+}
+
+[data-skin="neon"] button:hover {
+  border-color: rgba(36, 230, 255, 0.85);
+  box-shadow:
+    inset 0 0 10px rgba(36, 230, 255, 0.25),
+    0 0 16px rgba(36, 230, 255, 0.45);
+}
+
+[data-skin="brutalist"] {
+  --skin-radius-sm: 0px;
+  --skin-radius-md: 0px;
+  --skin-radius-lg: 0px;
+  --skin-radius-xl: 0px;
+  --skin-radius-2xl: 0px;
+  --skin-radius-3xl: 0px;
+  --skin-font: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --bg-primary: #ffffff;
+  --bg-secondary: #f2f2f2;
+
+  --bg-tertiary: #ffffff;
+  --bg-accent: #ffffff;
+  --interactive-hover: #e6e6e6;
+  --interactive-selected: #d4d4d4;
+  --brand: #1400ff;
+  --brand-hover: #1000cc;
+  --text-normal: #000000;
+  --text-muted: #555555;
+  --text-link: #1400ff;
+  --status-online: #007a2f;
+  --status-idle: #9a6b00;
+  --status-dnd: #d20000;
+  --divider: #000000;
+}
+
+[data-skin="brutalist"] button {
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0 #000000;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+[data-skin="brutalist"] button:active {
+
+  transform: translate(3px, 3px);
+  box-shadow: none;
+}
+
+[data-skin="brutalist"] input,
+[data-skin="brutalist"] textarea {
+  border: 2px solid #000000;
+}
+

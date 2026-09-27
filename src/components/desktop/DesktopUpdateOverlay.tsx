@@ -87,12 +87,12 @@ export function DesktopUpdateOverlay() {
 
   return (
     <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-bg-tertiary px-6 text-center">
-      <div className="max-w-md rounded-2xl border border-divider bg-bg-secondary p-8 shadow-2xl">
+      <div className="modal-pop max-w-md rounded-[24px] bg-overlay-panel p-8 shadow-elev-4 ring-1 ring-glass-border">
         <div className="mx-auto mb-4 flex justify-center">
           <Logo adaptive size={56} className="h-14 w-14" />
         </div>
-        <p className="text-xs font-bold uppercase tracking-wider text-brand">Update available</p>
-        <h1 className="mt-3 text-2xl font-bold text-text-normal">A new version of Disband is ready</h1>
+        <p className="text-xs uppercase font-semibold tracking-[0.04em] text-brand">Update available</p>
+        <h1 className="title-2 mt-3 text-text-normal">A new version of Disband is ready</h1>
         <p className="mt-3 text-sm leading-relaxed text-text-muted">
           You&apos;re on <span className="font-medium text-text-normal">v{update.current}</span>.
           {" "}Version <span className="font-medium text-text-normal">{update.latestTag}</span> is available.
@@ -105,7 +105,7 @@ export function DesktopUpdateOverlay() {
             href={downloadHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-hover"
+            className="btn btn-filled"
           >
             {update.download ? `Download for ${update.download.label}` : "Download update"}
           </a>
@@ -113,7 +113,7 @@ export function DesktopUpdateOverlay() {
             href={releaseUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-lg bg-interactive-hover px-5 py-2.5 text-sm font-semibold text-text-normal hover:bg-interactive-selected"
+            className="btn btn-gray"
           >
             View on GitHub
           </a>

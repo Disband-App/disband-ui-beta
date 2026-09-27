@@ -63,7 +63,7 @@ export function UserBadges({
             label={
               <span className="block text-center">
                 <span className="block">Disband Aero</span>
-                <span className="mt-0.5 block text-[11px] font-normal text-[#b5bac1]">
+                <span className="mt-0.5 block text-[11px] font-normal text-text-muted">
                   {tier.label} · {interactive ? "click for details" : `${months} months`}
                 </span>
               </span>
@@ -112,11 +112,11 @@ function BadgePip({ badge, size }: { badge: AwardedBadge; size: number }) {
       label={
         <span className="block text-center">
           <span className="block">{badge.name}</span>
-          <span className="mt-0.5 block text-[11px] font-normal text-[#b5bac1]">
+          <span className="mt-0.5 block text-[11px] font-normal text-text-muted">
             {badge.description}
           </span>
           {detail && (
-            <span className="mt-0.5 block text-[11px] font-normal text-[#8b9198]">{detail}</span>
+            <span className="mt-0.5 block text-[11px] font-normal text-text-muted">{detail}</span>
           )}
         </span>
       }

@@ -158,7 +158,7 @@ export function PlatformModerationPanel() {
       </div>
 
       <div ref={containerRef} className="relative">
-        <span className="text-xs font-bold uppercase text-text-muted">User to ban</span>
+        <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">User to ban</span>
         {selected ? (
           <div className="mt-1 flex items-center gap-3 rounded bg-bg-accent px-3 py-2">
             <Avatar profile={selected} size="sm" />
@@ -169,7 +169,7 @@ export function PlatformModerationPanel() {
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="shrink-0 rounded border border-divider px-2 py-1 text-xs hover:bg-interactive-hover"
+              className="btn btn-gray btn-sm shrink-0"
             >
               Change
             </button>
@@ -181,10 +181,10 @@ export function PlatformModerationPanel() {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => results.length > 0 && setDropdownOpen(true)}
               placeholder="Search by username or display name…"
-              className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+              className="field mt-1 w-full text-[14px]"
             />
             {dropdownOpen && (searching || results.length > 0 || query.trim().length > 0) && (
-              <div className="absolute z-10 mt-1 max-h-72 w-full overflow-y-auto rounded-lg border border-divider bg-bg-secondary shadow-lg">
+              <div className="glass-thick rounded-[14px] absolute z-10 mt-1 max-h-72 w-full overflow-y-auto">
                 {searching && (
                   <p className="px-3 py-3 text-xs text-text-muted">Searching…</p>
                 )}
@@ -213,22 +213,22 @@ export function PlatformModerationPanel() {
       </div>
 
       <label className="block">
-        <span className="text-xs font-bold uppercase text-text-muted">Reason (optional)</span>
+        <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Reason (optional)</span>
         <input
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+          className="field mt-1 w-full text-[14px]"
         />
       </label>
 
       <label className="block">
-        <span className="text-xs font-bold uppercase text-text-muted">Owner password</span>
+        <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Owner password</span>
         <input
           type="password"
           autoComplete="off"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand"
+          className="field mt-1 w-full text-[14px]"
         />
       </label>
 
@@ -245,8 +245,8 @@ export function PlatformModerationPanel() {
       {success && <p className="text-sm text-status-online">{success}</p>}
 
       {bans.length > 0 && (
-        <div className="rounded-lg border border-divider bg-bg-secondary">
-          <p className="border-b border-divider px-4 py-2 text-xs font-bold uppercase text-text-muted">Active platform bans</p>
+        <div className="rounded-[14px] bg-fill-tertiary">
+          <p className="border-b border-divider px-4 py-2 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Active platform bans</p>
           <ul className="divide-y divide-divider">
             {bans.map((ban) => (
               <li key={ban.user_id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
@@ -261,7 +261,7 @@ export function PlatformModerationPanel() {
                   type="button"
                   disabled={loading || !password}
                   onClick={() => void handleUnban(ban.user_id, ban.profile?.username ?? null)}
-                  className="shrink-0 rounded border border-divider px-3 py-1 text-xs hover:bg-interactive-hover disabled:opacity-50"
+                  className="btn btn-gray btn-sm shrink-0"
                 >
                   Unban
                 </button>

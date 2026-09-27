@@ -5,6 +5,7 @@ import { useApp } from "@/contexts/AppContext";
 import { catalystLevel } from "@/lib/catalysts";
 import type { ServerPermissionKey, ServerRole } from "@/lib/supabase/types";
 import { IconEdit, IconGripVertical, IconPlus, IconTrash } from "@/components/icons";
+import { Toggle as SwitchControl } from "@/components/discord/settings/SettingsPrimitives";
 
 export const PERM_GROUPS: { title: string; perms: { key: ServerPermissionKey; label: string; hint: string }[] }[] = [
   {
@@ -42,23 +43,7 @@ export const PERM_GROUPS: { title: string; perms: { key: ServerPermissionKey; la
 export const ROLE_COLORS = ["#5865f2", "#57f287", "#fee75c", "#eb459e", "#ed4245", "#e67e22", "#9b59b6", "#1abc9c", "#95a5ba", "#ffffff"];
 
 function Toggle({ on, disabled, onFlip, label }: { on: boolean; disabled?: boolean; onFlip: () => void; label: string }) {
-  return (
-    <button
-      type="button"
-      role="switch"
-      aria-checked={on}
-      aria-label={label}
-      disabled={disabled}
-      onClick={onFlip}
-      className={`relative h-5 w-9 shrink-0 rounded-full transition-colors disabled:opacity-40 ${
-        on ? "bg-brand" : "bg-bg-accent"
-      }`}
-    >
-      <span
-        className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${on ? "left-[18px]" : "left-0.5"}`}
-      />
-    </button>
-  );
+  return <SwitchControl checked={on} disabled={disabled} onChange={onFlip} label={label} />;
 }
 
 export function RoleManager() {
@@ -108,7 +93,7 @@ export function RoleManager() {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-text-normal">Roles</h2>
+        <h2 className="title-2 text-text-normal">Roles</h2>
         <p className="mt-1 text-sm text-text-muted">
           Select a role to edit it. Drag rows to reorder — higher roles win when permissions conflict.
         </p>
@@ -186,7 +171,7 @@ export function RoleManager() {
               }}
               placeholder="New role"
               maxLength={32}
-              className="min-w-0 flex-1 rounded-md border border-divider bg-bg-secondary px-2.5 py-1.5 text-sm text-text-normal outline-none placeholder:text-text-muted focus:border-brand"
+              className="field min-w-0 flex-1 placeholder:text-text-muted text-[14px] min-h-0 py-1.5"
             />
             <button
               type="button"
@@ -198,14 +183,14 @@ export function RoleManager() {
                 }))
               }
               aria-label="Create role"
-              className="shrink-0 rounded-md bg-brand px-2.5 py-1.5 text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="btn btn-filled btn-sm shrink-0"
             >
               <IconPlus size={16} />
             </button>
           </div>
         </div>
 
-        <div className="min-w-0 rounded-lg border border-divider bg-bg-secondary p-4">
+        <div className="rounded-[14px] bg-fill-tertiary min-w-0 p-4">
           {!selected ? (
             <p className="text-sm text-text-muted">No roles yet — create one.</p>
           ) : (
@@ -223,7 +208,7 @@ export function RoleManager() {
                       if (e.key === "Escape") setEditName(null);
                     }}
                     maxLength={32}
-                    className="min-w-0 flex-1 rounded-md border border-brand bg-bg-tertiary px-2 py-1 text-[15px] font-bold text-text-normal outline-none"
+                    className="field min-w-0 flex-1 min-h-0 py-1.5"
                   />
                 ) : (
                   <button
@@ -257,7 +242,7 @@ export function RoleManager() {
               </div>
 
               <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-text-muted">Color</p>
+                <p className="mb-2 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Color</p>
                 <div className="flex flex-wrap items-center gap-1.5">
                   {ROLE_COLORS.map((c) => (
                     <button
@@ -284,7 +269,7 @@ export function RoleManager() {
               </div>
 
               <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wide text-text-muted">
+                <p className="mb-2 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">
                   Gradient {lvl.level < 3 && <span className="font-normal normal-case">· Level 3 unlocks</span>}
                 </p>
                 <div className="flex flex-wrap items-center gap-2">
@@ -321,14 +306,14 @@ export function RoleManager() {
 
               {PERM_GROUPS.map((group) => (
                 <div key={group.title}>
-                  <p className="mb-2 text-xs font-bold uppercase tracking-wide text-text-muted">{group.title}</p>
+                  <p className="mb-2 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">{group.title}</p>
                   <div className="space-y-1">
                     {group.perms.map((p) => {
                       const locked = selected.is_default && p.key !== "send_messages" && p.key !== "add_reactions" && p.key !== "attach_files";
                       return (
                         <div
                           key={p.key}
-                          className={`flex items-center gap-3 rounded-md px-2.5 py-2 ${locked ? "opacity-40" : "hover:bg-bg-tertiary"}`}
+                          className={`flex items-center gap-3 rounded-[10px] px-2.5 py-2 ${locked ? "opacity-40" : "hover:bg-interactive-hover"}`}
                         >
                           <div className="min-w-0 flex-1">
                             <p className="text-sm font-medium leading-tight text-text-normal">{p.label}</p>

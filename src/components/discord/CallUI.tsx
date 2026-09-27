@@ -50,30 +50,31 @@ export function CallControls({
     ...(onOpenSettings ? [{ onClick: onOpenSettings, title: "Settings", active: false, on: IconSettings, off: IconSettings }] : []),
   ];
 
+  // FaceTime's control bar: a dark glass capsule of round buttons. A control
+  // that is switched on (muted, deafened, camera off…) turns white with a
+  // dark glyph, and End is always red.
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 rounded-full bg-[#1c1c1e]/80 p-2 shadow-elev-3 ring-1 ring-white/10 backdrop-blur-2xl">
       {items.map((item) => {
         const Icon = item.active && item.off ? item.off : item.on;
+        const danger = "danger" in item && item.danger;
         return (
           <button
             key={item.title}
             type="button"
             onClick={item.onClick}
             title={item.title}
-            className={`flex h-9 w-9 items-center justify-center rounded-full transition-all ${
-              "danger" in item && item.danger
-                ? "bg-status-dnd text-white shadow-lg shadow-status-dnd/30 hover:scale-105 hover:brightness-110"
-                  : item.active
-                    ? "brand" in item && item.brand
-                      ? "bg-brand/25 text-brand ring-2 ring-brand/40"
-                      : "bg-status-dnd/25 text-status-dnd ring-2 ring-status-dnd/40"
-                    // Inactive controls use the theme text color at low alpha
-                    // (not white): this component renders on black call
-                    // panels and on the themed voice lobby alike.
-                    : "bg-text-normal/10 text-text-normal hover:bg-text-normal/20 hover:scale-105"
+            aria-label={item.title}
+            aria-pressed={danger ? undefined : item.active}
+            className={`flex h-11 w-11 items-center justify-center rounded-full transition-[transform,background-color,color] duration-300 ease-spring active:scale-90 ${
+              danger
+                ? "w-14 bg-sys-red text-white hover:brightness-110"
+                : item.active
+                  ? "bg-white text-[#1c1c1e]"
+                  : "bg-white/14 text-white hover:bg-white/22"
             }`}
           >
-            <Icon size={16} />
+            <Icon size={20} strokeWidth={2} />
           </button>
         );
       })}
@@ -103,8 +104,8 @@ function ParticipantTile({
   const hasVideo = useLiveVideoStream(stream);
   const textSize = size === "lg" ? "text-4xl" : "text-3xl";
   const ringClass = ring
-    ? "ring-[3px] ring-status-online"
-    : "ring-[3px] ring-white/15";
+    ? "speaking-ring"
+    : "ring-1 ring-white/10";
 
   useEffect(() => {
     if (ref.current && stream && hasVideo) {
@@ -116,7 +117,7 @@ function ParticipantTile({
   return (
     <div className="flex flex-col items-center gap-2.5">
       <div
-        className={`relative h-full min-h-0 w-full overflow-hidden rounded-xl bg-overlay-media ${ringClass} ${
+        className={`relative h-full min-h-0 w-full overflow-hidden rounded-[20px] bg-[#1c1c1e] ${ringClass} ${
           ring ? "shadow-[0_0_24px_rgba(59,165,93,0.3)]" : ""
         }`}
       >
@@ -139,10 +140,10 @@ function ParticipantTile({
             <span className={`${textSize} font-bold text-white/40`}>{label.charAt(0).toUpperCase()}</span>
           </div>
         )}
-        <span className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-md bg-black/60 px-2 py-1 text-[13px] font-medium text-white backdrop-blur-sm">
+        <span className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[12.5px] font-semibold text-white backdrop-blur-md">
           <span className="max-w-[160px] truncate">{label}</span>
           {isScreen && (
-            <span className="shrink-0 rounded bg-status-online/25 px-1 text-[10px] font-bold uppercase tracking-wide text-status-online">
+            <span className="shrink-0 rounded-full bg-status-online/25 px-1.5 text-[10px] uppercase font-semibold tracking-[0.04em] text-status-online">
               Live
             </span>
           )}
@@ -155,30 +156,36 @@ function ParticipantTile({
 export function IncomingCallOverlay({ callerName, profile, onAccept, onReject }: {
   callerName: string; profile?: Profile; onAccept: () => void; onReject: () => void;
 }) {
+  // The iOS incoming-call screen: caller up top on a deep blur, the two
+  // answer buttons at the foot, each labelled underneath.
   return (
-    <div className="overlay-fade fixed inset-0 z-[100] flex items-center justify-center bg-overlay-scrim-strong backdrop-blur-md">
-      <div className="call-enter flex flex-col items-center px-8 text-center">
-        <p className="mb-6 text-sm font-medium uppercase tracking-widest text-text-muted">Incoming voice call</p>
-        <div className="relative mb-6">
-          <div className="absolute inset-0 animate-ping rounded-full bg-brand/20" />
-          <div className="call-ring absolute -inset-3 rounded-full" />
+    <div className="overlay-fade fixed inset-0 z-[100] flex flex-col items-center justify-between bg-black/70 px-8 pb-16 pt-[18vh] text-center text-white backdrop-blur-2xl">
+      <div className="call-enter flex flex-col items-center">
+        <div className="relative mb-5">
+          <div className="call-ring absolute -inset-2 rounded-full" />
           {profile ? (
-            <Avatar profile={profile} size="lg" className="relative h-28 w-28 text-4xl ring-4 ring-brand/50" />
+            <Avatar profile={profile} size="lg" className="relative h-28 w-28 text-4xl" />
           ) : (
-            <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-brand text-4xl font-bold text-white ring-4 ring-brand/50">
+            <div className="relative flex h-28 w-28 items-center justify-center rounded-full bg-[linear-gradient(180deg,#a5a9b5,#858a96)] font-rounded text-4xl font-semibold text-white">
               {callerName.charAt(0).toUpperCase()}
             </div>
           )}
         </div>
-        <h2 className="text-2xl font-bold text-text-normal">{callerName}</h2>
-        <p className="mt-2 text-text-muted">is calling you...</p>
-        <div className="mt-10 flex gap-6">
-          <button type="button" onClick={onReject} className="flex h-14 w-14 items-center justify-center rounded-full bg-status-dnd text-white shadow-lg transition-transform hover:scale-105" aria-label="Decline">
-            <IconPhoneOff size={24} />
+        <h2 className="font-display text-[34px] font-semibold leading-tight tracking-[-0.02em]">{callerName}</h2>
+        <p className="mt-1.5 text-[15px] text-white/60">Disband voice call…</p>
+      </div>
+      <div className="call-enter flex gap-20">
+        <div className="flex flex-col items-center gap-2">
+          <button type="button" onClick={onReject} className="press flex h-[72px] w-[72px] items-center justify-center rounded-full bg-sys-red text-white" aria-label="Decline">
+            <IconPhoneOff size={30} />
           </button>
-          <button type="button" onClick={onAccept} className="flex h-14 w-14 items-center justify-center rounded-full bg-status-online text-white shadow-lg transition-transform hover:scale-105" aria-label="Accept">
-            <IconPhone size={24} />
+          <span className="text-[13px] text-white/80">Decline</span>
+        </div>
+        <div className="flex flex-col items-center gap-2">
+          <button type="button" onClick={onAccept} className="press flex h-[72px] w-[72px] items-center justify-center rounded-full bg-sys-green text-white" aria-label="Accept">
+            <IconPhone size={30} />
           </button>
+          <span className="text-[13px] text-white/80">Accept</span>
         </div>
       </div>
     </div>
@@ -188,14 +195,19 @@ export function IncomingCallOverlay({ callerName, profile, onAccept, onReject }:
 export function GroupRingOverlay({ groupName, onJoin, onDismiss }: {
   groupName: string; onJoin: () => void; onDismiss: () => void;
 }) {
+  // A banner notification dropping in from the top edge.
   return (
-    <div className="call-enter fixed bottom-4 left-4 right-4 z-[100] rounded-xl border border-status-online/40 bg-bg-secondary p-4 shadow-2xl sm:left-auto sm:w-80">
-      <p className="text-xs font-bold uppercase text-status-online">Group call</p>
-      <p className="mt-1 font-semibold text-text-normal">{groupName}</p>
-      <p className="text-sm text-text-muted">Someone started a call in this group</p>
-      <div className="mt-3 flex gap-2">
-        <button type="button" onClick={onJoin} className="flex-1 rounded bg-status-online py-2 text-sm font-semibold text-white">Join</button>
-        <button type="button" onClick={onDismiss} className="rounded bg-interactive-hover px-4 py-2 text-sm">Dismiss</button>
+    <div className="pointer-events-none fixed inset-x-0 top-3 z-[100] flex justify-center px-4">
+      <div className="glass-thick island-in pointer-events-auto flex w-full max-w-md items-center gap-3 rounded-[22px] p-3 pr-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[12px] bg-sys-green text-white">
+          <IconPhone size={21} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[14px] font-semibold text-text-normal">{groupName}</p>
+          <p className="truncate text-[12.5px] text-text-muted">Group call started</p>
+        </div>
+        <button type="button" onClick={onDismiss} className="btn btn-gray btn-sm">Not now</button>
+        <button type="button" onClick={onJoin} className="btn btn-sm bg-sys-green text-white hover:brightness-110">Join</button>
       </div>
     </div>
   );
@@ -254,8 +266,8 @@ export function CallPanel({
 
   if (calling) {
     return (
-      <div className="call-enter flex shrink-0 flex-col items-center justify-center bg-black py-10">
-        <p className="mb-6 text-xs font-bold uppercase tracking-widest text-white/30">Calling</p>
+      <div className="call-enter flex shrink-0 flex-col items-center justify-center bg-[#0b0b0c] py-10">
+        <p className="mb-6 text-[12px] font-medium text-white/45">Calling…</p>
         <div className="flex h-44 w-full max-w-3xl flex-col py-3 sm:h-56">
           <CallGrid>
             {selfProfile && (
@@ -266,8 +278,8 @@ export function CallPanel({
             )}
           </CallGrid>
         </div>
-        <p className="mb-6 text-lg font-semibold text-white">{title}</p>
-        <p className="mb-8 text-sm text-white/40">{subtitle || "Ringing..."}</p>
+        <p className="font-display text-[22px] font-semibold tracking-[-0.02em] text-white">{title}</p>
+        <p className="mb-7 mt-1 text-[13px] text-white/50">{subtitle || "Ringing…"}</p>
         <CallControls
           micMuted={micMuted} deafened={deafened}
           cameraEnabled={cameraEnabled} screenShareEnabled={screenShareEnabled}
@@ -281,14 +293,15 @@ export function CallPanel({
 
   return (
     <div
-      className="call-enter flex shrink-0 flex-col overflow-hidden bg-black"
+      className="call-enter flex shrink-0 flex-col overflow-hidden bg-[#0b0b0c]"
       style={{ height: callHeight }}
     >
      <div className="flex min-h-0 flex-1 flex-col items-center px-6 pt-3">
-      <p className="mb-1 text-xs font-bold uppercase tracking-widest text-white/30">
-        Voice Connected
+      <p className="flex items-center gap-1.5 text-[12px] font-semibold text-sys-green">
+        <span className="h-1.5 w-1.5 rounded-full bg-sys-green" />
+        Connected
       </p>
-      <p className="text-sm text-white/50">
+      <p className="nums mt-0.5 text-[13px] text-white/55">
         {elapsed > 0 ? formatElapsed(elapsed) : subtitle}
       </p>
 
@@ -344,9 +357,10 @@ export function HeaderCallButton({ disabled, onClick }: { disabled?: boolean; on
       disabled={disabled}
       onClick={onClick}
       title="Start voice call"
-      className="ml-auto flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-status-online transition-all hover:bg-status-online/15 disabled:cursor-not-allowed disabled:opacity-40"
+      aria-label="Start voice call"
+      className="tool-btn text-status-online hover:bg-status-online/14 hover:text-status-online disabled:cursor-not-allowed disabled:opacity-40"
     >
-      <IconPhone size={20} />
+      <IconPhone size={18} />
     </button>
   );
 }

@@ -65,7 +65,7 @@ export function PollCreateModal({ open, onClose, onCreated }: PollCreateModalPro
         role="dialog"
         aria-modal="true"
         aria-label="Create a poll"
-        className="modal-pop w-full max-w-md rounded-lg border border-divider bg-bg-secondary p-4 shadow-2xl"
+        className="modal-pop w-full max-w-md rounded-[22px] bg-overlay-panel p-4 shadow-elev-4 ring-1 ring-glass-border"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-3 flex items-center justify-between">
@@ -81,14 +81,14 @@ export function PollCreateModal({ open, onClose, onCreated }: PollCreateModalPro
         </div>
 
         <label className="block">
-          <span className="mb-1 block text-[11px] font-bold uppercase text-text-muted">Question</span>
+          <span className="mb-1 block text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">Question</span>
           <input
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="What&apos;s your favorite color?"
             maxLength={200}
             autoFocus
-            className="w-full rounded-md border border-black/20 bg-bg-accent px-3 py-2 text-sm text-text-normal placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+            className="field w-full placeholder:text-text-muted text-[14px]"
           />
         </label>
 
@@ -100,7 +100,7 @@ export function PollCreateModal({ open, onClose, onCreated }: PollCreateModalPro
                 onChange={(e) => updateOption(i, e.target.value)}
                 placeholder={`Option ${i + 1}`}
                 maxLength={100}
-                className="flex-1 rounded-md border border-black/20 bg-bg-accent px-3 py-2 text-sm text-text-normal placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
+                className="field flex-1 placeholder:text-text-muted text-[14px]"
               />
               {options.length > 2 && (
                 <button
@@ -141,7 +141,7 @@ export function PollCreateModal({ open, onClose, onCreated }: PollCreateModalPro
             type="button"
             disabled={!canCreate}
             onClick={() => void create()}
-            className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            className="btn btn-filled"
           >
             {creating ? "Creating…" : "Create poll"}
           </button>

@@ -55,7 +55,7 @@ export function InviteGroupModal({ open, groupId, members, onClose }: InviteGrou
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-overlay-scrim overlay-fade p-4">
-      <form onSubmit={submit} role="dialog" aria-modal="true" aria-label="Invite to group" className="modal-pop w-full max-w-md rounded-lg bg-bg-secondary p-6 shadow-2xl">
+      <form onSubmit={submit} role="dialog" aria-modal="true" aria-label="Invite to group" className="modal-pop w-full max-w-md rounded-[22px] bg-overlay-panel p-6 shadow-elev-4 ring-1 ring-glass-border">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold">Invite friends</h2>
           <button type="button" onClick={onClose}><IconClose size={20} /></button>
@@ -75,7 +75,7 @@ export function InviteGroupModal({ open, groupId, members, onClose }: InviteGrou
         <button
           type="submit"
           disabled={loading || selected.size === 0}
-          className="w-full rounded bg-brand py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+          className="btn btn-filled w-full"
         >
           {loading ? "Inviting…" : `Invite ${selected.size || ""} friend${selected.size === 1 ? "" : "s"}`}
         </button>

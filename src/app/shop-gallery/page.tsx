@@ -32,7 +32,7 @@ export default function ShopGalleryPage() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="rounded-md bg-bg-secondary px-3 py-1.5 text-sm text-text-normal outline-none focus:ring-2 focus:ring-brand"
+            className="field text-[14px] min-h-0 py-1.5"
           />
         </label>
       </header>
@@ -47,7 +47,7 @@ export default function ShopGalleryPage() {
         </p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           <article className="rounded-xl border border-divider bg-bg-secondary p-3">
-            <div className="relative h-44 overflow-hidden rounded-lg bg-[#16181d]">
+            <div className="relative h-44 overflow-hidden rounded-lg bg-bg-secondary">
               <LottieEffect src="/shop/lottie/wiring-test.json" />
             </div>
             <p className="mt-2 text-sm font-semibold">wiring-test.json</p>
@@ -143,7 +143,7 @@ function Tile({ item, name }: { item: ShopItem; name: string }) {
       {item.category === "overlay" && (
         // Same proportions as the real profile card, so the scene is judged at
         // the size it actually plays at.
-        <div className="fx-overlay-host relative h-56 overflow-hidden rounded-lg bg-[#16181d]">
+        <div className="fx-overlay-host relative h-56 overflow-hidden rounded-lg bg-bg-secondary">
           <ProfileOverlay itemId={item.id} />
           <div className="relative z-10 flex h-full flex-col justify-end p-3">
             <div className="h-12 w-12 rounded-full bg-bg-accent" />

@@ -160,7 +160,7 @@ export function CatalystModal({ server, open, onClose }: CatalystModalProps) {
   return (
     <div className="overlay-fade fixed inset-0 z-50 flex items-center justify-center bg-overlay-scrim p-4" onClick={onClose}>
       <div
-        className="modal-pop flex max-h-[90vh] w-full max-w-md flex-col overflow-y-auto rounded-2xl bg-overlay-panel shadow-2xl"
+        className="modal-pop flex max-h-[90vh] w-full max-w-md flex-col overflow-y-auto rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
         role="dialog"
         aria-modal="true"
         aria-label="Server catalysts"
@@ -244,7 +244,7 @@ export function CatalystModal({ server, open, onClose }: CatalystModalProps) {
                 Disband Aero members get 4 free Catalysts every month.
               </p>
             )}
-            {error && <p className="mt-2 text-[13px] text-red-400">{error}</p>}
+            {error && <p className="mt-2 text-[13px] text-status-dnd">{error}</p>}
             <div className="mt-3 flex gap-2">
               <button
                 type="button"
@@ -260,7 +260,7 @@ export function CatalystModal({ server, open, onClose }: CatalystModalProps) {
                   type="button"
                   disabled={busy}
                   onClick={() => void doWithdraw()}
-                  className="rounded-lg border border-divider px-3 py-2 text-sm text-text-muted transition-colors hover:bg-interactive-hover hover:text-text-normal disabled:opacity-50"
+                  className="btn btn-gray"
                 >
                   Withdraw
                 </button>
@@ -283,7 +283,7 @@ export function CatalystModal({ server, open, onClose }: CatalystModalProps) {
               </div>
             ) : (
               <>
-                {buyError && <p className="mt-2 text-[13px] text-red-400">{buyError}</p>}
+                {buyError && <p className="mt-2 text-[13px] text-status-dnd">{buyError}</p>}
                 <div className="mt-3 flex items-center gap-2">
                   <div className="flex items-center rounded-lg border border-divider">
                     <button

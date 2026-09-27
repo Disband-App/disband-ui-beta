@@ -90,125 +90,108 @@ export function DownloadSection() {
   const versionLabel = displayVersion(release, assets);
 
   return (
-    <section id="download" className="border-t border-white/[0.06] px-6 py-20 sm:py-24">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-2xl font-semibold tracking-[-0.02em] text-white sm:text-[2rem]">
-          Download Disband
-        </h2>
-        <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-[#9aa0a8]">
-          Native builds for macOS, Windows, and Linux, or Disband on your iPhone through the App
-          Store. Skip the install entirely and use Disband in your browser.
-        </p>
-
-        {}
-        <div className="mt-10 flex flex-wrap items-start gap-8 rounded-lg border border-white/[0.08] bg-white/[0.02] p-6">
-          <div className="min-w-0 flex-1">
-            <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#6e727a]">
-              iOS
-            </p>
-            <h3 className="mt-2 text-lg font-semibold text-white">Get Disband on iPhone</h3>
-            <p className="mt-1.5 max-w-lg text-[15px] leading-relaxed text-[#9aa0a8]">
-              Chat, voice calls, and communities on the go — the same account you use on desktop,
-              synced across every device.
-            </p>
-            <a
-              href={APP_STORE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-md bg-brand px-5 py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-brand-hover"
-            >
-              <PlatformIcon platform="apple" />
-              Download on the App Store
-            </a>
-          </div>
-          <a
-            href={APP_STORE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Download Disband on the App Store"
-            className="shrink-0"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/appstore-badge.png"
-              alt="Download on the App Store"
-              width={150}
-              height={50}
-              className="h-[50px] w-[150px]"
-            />
-          </a>
+    <section id="download" className="scroll-mt-16 px-5 py-24 sm:py-32">
+      <div className="mx-auto max-w-[1080px]">
+        <div className="reveal max-w-2xl">
+          <p className="text-[14px] font-semibold text-brand">Download</p>
+          <h2 className="mt-2 font-display text-[36px] font-bold leading-[1.06] tracking-[-0.03em] sm:text-[48px]">
+            On every screen you own.
+          </h2>
+          <p className="mt-4 text-[17px] leading-relaxed text-text-muted">
+            Native apps for Mac, Windows and Linux, Disband for iPhone on the App Store — or skip the
+            install and use it in your browser. One account everywhere.
+          </p>
         </div>
 
-        {loading ? (
-          <p className="mt-10 text-sm text-[#6e727a]">Loading releases…</p>
-        ) : downloadOptions.length > 0 ? (
-          <div className="mt-10 grid gap-12 lg:grid-cols-[minmax(0,4fr)_minmax(0,6fr)]">
-            {recommended && (
-              <div>
-                <a
-                  href={recommended.url}
-                  className="inline-flex items-center gap-2 rounded-md bg-brand px-6 py-3 text-[15px] font-medium text-white transition-colors hover:bg-brand-hover"
-                >
-                  <PlatformIcon platform={platformIconKey(recommended.platform)} />
-                  Download for {recommended.label}
-                </a>
-                {versionLabel && (
-                  <p className="mt-3 font-mono text-[11px] tracking-[0.1em] text-[#6e727a]">
-                    {versionLabel}
-                  </p>
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
+          {/* Desktop */}
+          <div className="reveal flex flex-col rounded-[28px] bg-bg-secondary p-7 shadow-[0_0_0_1px_var(--panel-border)]">
+            <p className="text-[13px] font-semibold text-text-muted">Desktop</p>
+            <h3 className="mt-1 text-[24px] font-bold tracking-[-0.02em]">Mac, Windows &amp; Linux</h3>
+            {loading ? (
+              <p className="mt-6 text-[14px] text-text-muted">Checking for the latest release…</p>
+            ) : downloadOptions.length > 0 ? (
+              <>
+                {recommended && (
+                  <div className="mt-6">
+                    <a href={recommended.url} className="btn btn-filled btn-lg">
+                      <PlatformIcon platform={platformIconKey(recommended.platform)} />
+                      Download for {recommended.label}
+                    </a>
+                    {versionLabel && (
+                      <p className="nums mt-2.5 text-[12px] text-text-muted">{versionLabel}</p>
+                    )}
+                  </div>
                 )}
-                {platform === "macos" && (
-                  <p className="mt-5 max-w-sm text-[13px] leading-relaxed text-[#6e727a]">
-                    First launch blocked by macOS? Right-click the app and choose Open, or run{" "}
-                    <code className="text-[#9aa0a8]">xattr -cr /Applications/Disband.app</code> in
-                    Terminal.
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div>
-              <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.14em] text-[#6e727a]">
-                All platforms
-              </p>
-              <ul className="divide-y divide-white/[0.06] border-y border-white/[0.06]">
-                {downloadOptions.map((asset) => (
-                  <li key={asset.url}>
-                    <a
-                      href={asset.url}
-                      className="group flex items-center justify-between gap-4 py-3.5 transition-colors hover:bg-white/[0.02]"
-                    >
-                      <span className="flex min-w-0 items-center gap-3">
-                        <PlatformIcon platform={platformIconKey(asset.platform)} />
-                        <span className="min-w-0">
-                          <span className="block text-sm text-white">{asset.label}</span>
-                          <span className="block truncate font-mono text-[11px] text-[#6e727a]">
-                            {asset.name}
+                <ul className="mt-6 overflow-hidden rounded-[16px] bg-bg-primary shadow-[0_0_0_1px_var(--panel-border)]" style={{ ["--row-inset" as string]: "48px" }}>
+                  {downloadOptions.map((asset) => (
+                    <li key={asset.url} className="list-row p-0">
+                      <a
+                        href={asset.url}
+                        className="group flex w-full items-center justify-between gap-4 px-4 py-3 transition-colors hover:bg-interactive-hover"
+                      >
+                        <span className="flex min-w-0 items-center gap-3">
+                          <PlatformIcon platform={platformIconKey(asset.platform)} />
+                          <span className="min-w-0">
+                            <span className="block text-[14px] font-medium">{asset.label}</span>
+                            <span className="block truncate font-mono text-[11px] text-text-muted">{asset.name}</span>
                           </span>
                         </span>
-                      </span>
-                      <span className="shrink-0 text-[13px] text-[#6e727a] transition-colors group-hover:text-white">
-                        Download
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
+                        <span className="shrink-0 text-[13px] font-semibold text-brand">Get</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                {platform === "macos" && (
+                  <p className="mt-4 text-[12.5px] leading-relaxed text-text-muted">
+                    First launch blocked by macOS? Right-click the app and choose Open, or run{" "}
+                    <code className="md-code">xattr -cr /Applications/Disband.app</code> in Terminal.
+                  </p>
+                )}
+              </>
+            ) : (
+              <div className="mt-6">
+                <p className="text-[14px] leading-relaxed text-text-muted">
+                  Desktop builds are published on GitHub Releases.
+                </p>
+                <a href={GITHUB_RELEASES_URL} className="btn btn-gray mt-4">
+                  View downloads on GitHub
+                </a>
+              </div>
+            )}
+          </div>
+
+          {/* iPhone + web */}
+          <div className="flex flex-col gap-5">
+            <div className="reveal flex flex-1 flex-col rounded-[28px] bg-bg-secondary p-7 shadow-[0_0_0_1px_var(--panel-border)]" style={{ ["--i" as string]: 1 }}>
+              <p className="text-[13px] font-semibold text-text-muted">iPhone</p>
+              <h3 className="mt-1 text-[24px] font-bold tracking-[-0.02em]">Disband for iOS</h3>
+              <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-text-muted">
+                Chat, calls and communities on the go, with the same account you use on desktop.
+              </p>
+              <a
+                href={APP_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Download Disband on the App Store"
+                className="press mt-auto w-fit pt-5"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/appstore-badge.png" alt="Download on the App Store" width={150} height={50} className="h-[46px] w-auto" />
+              </a>
+            </div>
+            <div className="reveal flex flex-col rounded-[28px] bg-bg-secondary p-7 shadow-[0_0_0_1px_var(--panel-border)]" style={{ ["--i" as string]: 2 }}>
+              <p className="text-[13px] font-semibold text-text-muted">Browser</p>
+              <h3 className="mt-1 text-[24px] font-bold tracking-[-0.02em]">No install needed</h3>
+              <p className="mt-2 max-w-sm text-[15px] leading-relaxed text-text-muted">
+                Works in any recent Chromium, Firefox or Safari.
+              </p>
+              <a href="/app" className="btn btn-tinted mt-5 w-fit">
+                Open in browser
+              </a>
             </div>
           </div>
-        ) : (
-          <div className="mt-10 space-y-4">
-            <p className="max-w-md text-[15px] leading-relaxed text-[#9aa0a8]">
-              Desktop builds are published on GitHub Releases.
-            </p>
-            <a
-              href={GITHUB_RELEASES_URL}
-              className="inline-flex items-center gap-2 rounded-md border border-white/15 px-6 py-3 text-[15px] font-medium text-white transition-colors hover:border-white/30 hover:bg-white/[0.04]"
-            >
-              View downloads on GitHub
-            </a>
-          </div>
-        )}
+        </div>
       </div>
     </section>
   );

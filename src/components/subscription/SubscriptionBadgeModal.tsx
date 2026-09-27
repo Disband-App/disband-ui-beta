@@ -39,7 +39,7 @@ export function SubscriptionBadgeModal({
       onClick={onClose}
     >
       <div
-        className="modal-pop relative w-full max-w-[680px] overflow-hidden rounded-2xl bg-bg-secondary shadow-2xl ring-1 ring-divider"
+        className="modal-pop relative w-full max-w-[680px] overflow-hidden rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
         onClick={(e) => e.stopPropagation()}
       >
         <button

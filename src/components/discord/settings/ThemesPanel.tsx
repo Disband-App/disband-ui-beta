@@ -59,8 +59,8 @@ export function ThemesPanel() {
     <div className="space-y-8">
       <section>
         <div className="mb-1 flex items-center gap-2">
-          <h3 className="text-sm font-semibold text-text-normal">Themes</h3>
-          <span className="rounded bg-super/15 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-super">
+          <h3 className="title-2">Skins</h3>
+          <span className="rounded bg-super/15 px-1.5 py-0.5 text-[10px] uppercase font-semibold tracking-[0.04em] text-super">
             Aero
           </span>
         </div>
@@ -99,7 +99,7 @@ export function ThemesPanel() {
           <SkinCard
             label="None"
             description="The standard Disband look."
-            swatch={["#1e1f22", "#2b2d31", "#313338", "#5865f2"]}
+            swatch={["#0b0b0c", "#1c1c1e", "#141416", "#0a84ff"]}
             selected={!skin.preset}
             locked={locked}
             onSelect={() => void commit({ preset: null }, "Skin removed.")}
@@ -161,7 +161,7 @@ export function ThemesPanel() {
               touched.current = false;
               void commit({ customCss: draftCss }, "Custom CSS saved.");
             }}
-            className="rounded-md bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+            className="btn btn-filled"
           >
             {saving ? "Saving…" : "Save CSS"}
           </button>
@@ -193,7 +193,7 @@ export function ThemesPanel() {
             disabled={locked}
             onChange={(e) => setIconName(e.target.value)}
             placeholder="icon name"
-            className="w-44 rounded-md border border-divider bg-bg-tertiary px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand disabled:opacity-50"
+            className="field w-44 text-[14px]"
           />
           <input
             ref={fileRef}
@@ -210,7 +210,7 @@ export function ThemesPanel() {
             type="button"
             disabled={locked || uploading || !iconName.trim()}
             onClick={() => fileRef.current?.click()}
-            className="rounded-md border border-divider px-4 py-2 text-sm font-semibold text-text-normal hover:bg-interactive-hover disabled:opacity-50"
+            className="btn btn-gray"
           >
             {uploading ? "Uploading…" : "Upload icon"}
           </button>
@@ -221,7 +221,7 @@ export function ThemesPanel() {
             {Object.entries(skin.icons).map(([name, url]) => (
               <li
                 key={name}
-                className="flex items-center gap-3 rounded-md border border-divider bg-bg-secondary px-3 py-2"
+                className="rounded-[14px] bg-fill-tertiary flex items-center gap-3 px-3 py-2"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="h-6 w-6 shrink-0 object-contain" />
@@ -277,18 +277,18 @@ function SkinCard({
       onMouseLeave={() => { if (!locked) onEndPreview(); }}
       onFocus={() => { if (!locked) onPreview(); }}
       onBlur={() => { if (!locked) onEndPreview(); }}
-      className={`overflow-hidden rounded-lg border-2 text-left transition-all duration-150 ${
-        selected ? "border-brand" : "border-transparent hover:border-interactive-hover"
+      className={`overflow-hidden rounded-[16px] bg-bg-secondary p-2 text-left transition-[transform,box-shadow] duration-500 ease-spring enabled:hover:-translate-y-0.5 enabled:active:scale-[0.98] ${
+        selected ? "ring-[2.5px] ring-brand" : "ring-1 ring-divider"
       } ${locked ? "cursor-not-allowed opacity-50" : ""}`}
     >
-      <div className="flex h-32 p-3" style={{background:swatch[0],fontFamily:font}} aria-hidden="true">
+      <div className="flex h-32 overflow-hidden rounded-[10px] p-3" style={{background:swatch[0],fontFamily:font}} aria-hidden="true">
         <div className="flex w-7 flex-col items-center gap-2 pt-2">{[0,1,2].map(i=><span key={i} className="h-3.5 w-3.5" style={{background:i===0?swatch[3]:swatch[2],borderRadius:radius||"50%"}}/>)}</div>
         <div className="w-20 p-2" style={{background:swatch[1],borderRadius:radius||"4px"}}><div className="mb-3 h-1.5 w-12 bg-white/40"/>{[0,1,2,3].map(i=><div key={i} className="my-2 h-1 w-10 bg-white/20"/>)}</div>
         <div className="min-w-0 flex-1 p-3" style={{background:swatch[2],borderRadius:radius||"4px"}}><div className="mb-4 h-1.5 w-16 bg-white/50"/>{[0,1].map(i=><div key={i} className="mb-3 flex gap-2"><span className="h-4 w-4 shrink-0" style={{background:swatch[3],borderRadius:radius||"50%"}}/><div className="flex-1"><div className="mb-1 h-1 w-8 bg-white/40"/><div className="h-1 w-full bg-white/20"/></div></div>)}<div className="mt-2 h-3" style={{background:swatch[1],borderRadius:radius||"3px"}}/></div>
       </div>
-      <div className="bg-bg-secondary px-3 py-2">
-        <p className="text-sm font-semibold">{label}</p>
-        <p className="text-xs text-text-muted">{description}</p>
+      <div className="px-1 pb-0.5 pt-2">
+        <p className="text-[13px] font-semibold">{label}</p>
+        <p className="line-clamp-2 text-[11.5px] text-text-muted">{description}</p>
       </div>
     </button>
   );

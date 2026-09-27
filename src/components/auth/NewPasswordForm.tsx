@@ -62,7 +62,7 @@ export function NewPasswordForm({
   ) {
     return (
       <label className="block" htmlFor={id}>
-        <span className="mb-1 block text-xs font-bold uppercase text-text-muted">{label}</span>
+        <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">{label}</span>
         <span className="relative block">
           <input
             id={id}
@@ -71,7 +71,7 @@ export function NewPasswordForm({
             minLength={6}
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            className="w-full rounded bg-bg-accent px-3 py-2.5 pr-16 text-sm text-text-normal outline-none focus:ring-2 focus:ring-brand"
+            className="field w-full text-[14px]"
           />
           <button
             type="button"
@@ -96,7 +96,7 @@ export function NewPasswordForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded bg-brand py-2.5 text-sm font-semibold text-white transition-all duration-150 ease-in-out hover:bg-brand-hover disabled:opacity-50"
+        className="btn btn-filled w-full"
       >
         {loading ? "Updating…" : submitLabel}
       </button>

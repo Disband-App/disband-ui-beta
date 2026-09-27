@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { IconPhone, IconPhoneOff } from "@/components/icons";
+import { IconPhoneOff, IconWaveform } from "@/components/icons";
 import { getCallIndicatorState, subscribeCallIndicator, type CallIndicatorState } from "@/lib/call-status";
 
 function connectionBars(): number {
@@ -42,7 +42,7 @@ export function CallIndicator() {
   if (!state.active) return null;
 
   return (
-    <div className="shrink-0 border-t border-divider bg-bg-tertiary px-2 py-1.5">
+    <div className="shrink-0 px-2 pb-1.5 pt-1">
       <div
         role="button"
         tabIndex={state.focus ? 0 : -1}
@@ -54,29 +54,28 @@ export function CallIndicator() {
           }
         }}
         title={state.focus ? "Return to call" : undefined}
-        className={`flex w-full items-center gap-2 rounded-lg border border-status-online/30 bg-status-online/10 px-2.5 py-1.5 text-left transition-colors ${
-          state.focus ? "cursor-pointer hover:bg-status-online/20" : "cursor-default"
+        className={`island-in flex w-full items-center gap-2.5 rounded-[14px] bg-status-online/12 px-2.5 py-2 text-left ring-1 ring-status-online/20 transition-colors ${
+          state.focus ? "cursor-pointer hover:bg-status-online/18" : "cursor-default"
         }`}
       >
-        <span className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-status-online text-white">
-          <IconPhone size={14} />
-          <span className="absolute -right-0.5 -top-0.5 h-2 w-2 animate-pulse rounded-full bg-status-online ring-2 ring-bg-tertiary" />
+        <span className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-status-online text-white">
+          <IconWaveform size={16} strokeWidth={2.2} />
         </span>
 
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[12px] font-semibold leading-tight text-status-online">
+          <span className="block truncate text-[13px] font-semibold leading-tight text-status-online">
             {state.label}
           </span>
-          <span className="block text-[11px] leading-tight text-text-muted">
+          <span className="nums block text-[11.5px] leading-tight text-text-muted">
             {state.startedAt ? formatElapsed(Math.max(0, now - state.startedAt)) : "Connecting…"}
           </span>
         </span>
 
-        <span className="flex shrink-0 items-end gap-0.5" title="Connection strength" aria-label="Connection strength">
+        <span className="flex shrink-0 items-end gap-[2px]" title="Connection strength" aria-label="Connection strength">
           {[1, 2, 3].map((i) => (
             <span
               key={i}
-              className={`w-0.5 rounded-full ${i <= bars ? "bg-status-online" : "bg-text-muted/30"}`}
+              className={`w-[3px] rounded-full ${i <= bars ? "bg-status-online" : "bg-text-muted/30"}`}
               style={{ height: `${4 + i * 3}px` }}
             />
           ))}
@@ -91,9 +90,9 @@ export function CallIndicator() {
             }}
             title="Hang up"
             aria-label="Hang up"
-            className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-status-dnd text-white transition-transform hover:scale-110"
+            className="press flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sys-red text-white"
           >
-            <IconPhoneOff size={12} />
+            <IconPhoneOff size={15} />
           </button>
         )}
       </div>

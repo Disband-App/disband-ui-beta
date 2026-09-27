@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getServiceSupabase } from "@/lib/supabase/server";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
-import { Logo } from "@/components/ui/Logo";
+import { AppIcon } from "@/components/ui/AppIcon";
 
 export const metadata = {
   title: "Referral — Disband",
@@ -40,8 +40,8 @@ export default async function ReferralPage({
       <div className="flex min-h-screen items-center justify-center bg-bg-tertiary px-6 py-12">
         <div className="w-full max-w-[400px] text-center">
           <div className="mb-8 flex flex-col items-center">
-            <Logo adaptive size={44} className="h-11 w-11" priority />
-            <h1 className="mt-5 text-[26px] font-semibold tracking-[-0.02em] text-text-normal">
+            <AppIcon size={64} />
+            <h1 className="mt-5 text-[28px] font-bold leading-tight tracking-[-0.025em] text-text-normal">
               This referral code isn&apos;t valid
             </h1>
             <p className="mt-2 text-[15px] leading-relaxed text-text-muted">
@@ -52,7 +52,7 @@ export default async function ReferralPage({
           </div>
           <Link
             href="/login"
-            className="block w-full rounded-md bg-brand py-2.5 text-[15px] font-medium text-white transition-colors hover:bg-brand-hover"
+            className="btn btn-filled btn-lg btn-block"
           >
             Create an account anyway
           </Link>

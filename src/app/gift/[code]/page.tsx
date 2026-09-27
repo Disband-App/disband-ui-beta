@@ -2,7 +2,7 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { Logo } from "@/components/ui/Logo";
+import { AppIcon } from "@/components/ui/AppIcon";
 import { GiftCard } from "@/components/gift/GiftCard";
 
 export default function GiftPage({ params }: { params: Promise<{ code: string }> }) {
@@ -12,8 +12,8 @@ export default function GiftPage({ params }: { params: Promise<{ code: string }>
     <div className="flex min-h-screen items-center justify-center bg-bg-tertiary px-6 py-12">
       <div className="w-full max-w-[420px]">
         <div className="mb-7 flex flex-col items-center text-center">
-          <Logo adaptive size={44} className="h-11 w-11" priority />
-          <h1 className="mt-5 text-[24px] font-semibold tracking-[-0.02em] text-text-normal">
+          <AppIcon size={64} />
+          <h1 className="mt-5 text-[28px] font-bold leading-tight tracking-[-0.025em] text-text-normal">
             Someone sent you a gift
           </h1>
           <p className="mt-2 text-[15px] leading-relaxed text-text-muted">

@@ -55,8 +55,8 @@ export function ForwardModal({ open, onClose, onForward }: ForwardModalProps) {
   const content = (
     <>
       <div className="fixed inset-0 z-40 bg-overlay-scrim overlay-fade" onClick={onClose} />
-      <div role="dialog" aria-modal="true" aria-label="Forward message" className="overlay-fade fixed inset-x-0 bottom-0 z-50 mx-auto max-w-sm rounded-t-xl border border-divider bg-bg-secondary shadow-2xl sm:inset-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-xl">
-        <div className="border-b border-divider px-4 py-3">
+      <div role="dialog" aria-modal="true" aria-label="Forward message" className="modal-pop fixed inset-x-0 bottom-0 z-50 mx-auto max-w-sm rounded-t-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border sm:inset-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[22px]">
+        <div className="px-4 py-3 hairline-b">
           <h3 className="text-sm font-semibold text-text-normal">Forward message</h3>
           <input
             type="text"
@@ -64,7 +64,7 @@ export function ForwardModal({ open, onClose, onForward }: ForwardModalProps) {
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search friends and groups..."
             autoFocus
-            className="mt-2 w-full rounded bg-bg-primary px-3 py-2 text-sm text-text-normal placeholder:text-text-muted outline-none"
+            className="field mt-2 w-full placeholder:text-text-muted text-[14px]"
           />
         </div>
 

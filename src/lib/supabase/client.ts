@@ -177,7 +177,26 @@ export function resetSupabaseClient() {
   lastRefreshTime = 0;
 }
 
+// The design preview (/design-preview) mounts the real components on mock
+// data. It gets a client aimed at an unroutable host, so nothing it renders —
+// typing broadcasts, presence, lazy member counts — can reach production or
+// show a fake user to real people.
+const PREVIEW_SUPABASE_URL = "http://127.0.0.1:9";
+let previewClient: SupabaseClient | null = null;
+
+export function isDesignPreview(): boolean {
+  return typeof window !== "undefined"
+    && (window as { __DISBAND_DESIGN_PREVIEW__?: boolean }).__DISBAND_DESIGN_PREVIEW__ === true;
+}
+
 export function getSupabaseClient(): SupabaseClient {
+  if (isDesignPreview()) {
+    previewClient ??= createClient(PREVIEW_SUPABASE_URL, PUBLIC_ENV.supabaseAnonKey || "preview", {
+      auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+      realtime: { reconnectAfterMs: () => 600_000 },
+    });
+    return previewClient;
+  }
   if (browserClient) return browserClient;
 
   const url = PUBLIC_ENV.supabaseUrl;

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Tooltip } from "./Tooltip";
-import { IconVerified, IconHome, IconPlus, IconCompass, IconChevron } from "@/components/icons";
+import { IconVerified, IconPlus, IconCompass, IconChevron, IconMessage } from "@/components/icons";
 import { displayName, serverInitials } from "@/lib/utils";
 import { safeImageUrl } from "@/lib/safe-url";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -130,13 +130,31 @@ function UnreadCountBadge({ count }: { count: number }) {
   if (count <= 0) return null;
   const label = count > 99 ? "99+" : String(count);
   return (
-    <span className="absolute -bottom-0.5 -right-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-status-dnd px-1 text-[10px] font-bold leading-none text-white ring-2 ring-bg-tertiary">
+    <span key={count} className="count-badge badge-pop absolute -right-1 -top-1 ring-[2.5px] ring-canvas">
       {label}
     </span>
   );
 }
 
-/// Shows where a dragged server will land, sitting in the 8px gap between two
+/// The capsule at the rail's leading edge: tall for the current space, a dot
+/// for unread, a short bar on hover. Height is what springs, so moving
+/// between states reads as one object stretching rather than a swap.
+function RailIndicator({ state }: { state: "active" | "unread" | "none" }) {
+  return (
+    <span
+      aria-hidden
+      className={`absolute -left-[10px] top-1/2 w-[4px] -translate-y-1/2 rounded-full bg-text-normal transition-[height,opacity] duration-500 ease-spring ${
+        state === "active"
+          ? "h-7 opacity-100"
+          : state === "unread"
+            ? "h-[7px] opacity-100"
+            : "h-[7px] opacity-0 group-hover:h-4 group-hover:opacity-60"
+      }`}
+    />
+  );
+}
+
+/// Shows where a dragged server will land, sitting in the gap between two
 /// rail items. It is absolutely positioned on purpose: a border on the row
 /// would resize that row mid-drag, so every icon below it would shift by 2px
 /// each time the target changed.
@@ -144,12 +162,65 @@ function DropIndicator({ edge }: { edge: "before" | "after" }) {
   return (
     <span
       aria-hidden
-      className={`pointer-events-none absolute left-1/2 z-10 h-[3px] w-12 -translate-x-1/2 rounded-full bg-white shadow-[0_0_8px_rgba(255,255,255,0.75)] ${
-        edge === "before" ? "-top-[5px]" : "-bottom-[5px]"
+      className={`pointer-events-none absolute left-1/2 z-10 h-[3px] w-10 -translate-x-1/2 rounded-full bg-brand ${
+        edge === "before" ? "-top-[6px]" : "-bottom-[6px]"
       }`}
     />
   );
 }
+
+/** A space's icon: its image, or its initials on a tinted squircle. */
+function SpaceTile({ server, size = 44, className = "" }: { server: Server; size?: number; className?: string }) {
+  const src = safeImageUrl(server.icon_url);
+  const radius = Math.round(size * 0.27);
+  if (src) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt=""
+        draggable={false}
+        className={`squircle shrink-0 object-cover ${className}`}
+        style={{ width: size, height: size, borderRadius: radius }}
+      />
+    );
+  }
+  return (
+    <span
+      className={`squircle flex shrink-0 items-center justify-center font-rounded font-semibold text-white ${className}`}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: radius,
+        fontSize: Math.max(8, Math.round(size * 0.34)),
+        background: spaceTint(server.id),
+      }}
+    >
+      {serverInitials(server.name)}
+    </span>
+  );
+}
+
+// Initial-only spaces get one of a few quiet system tints, picked from the
+// id so a space keeps its colour everywhere it appears.
+const SPACE_TINTS = [
+  "linear-gradient(180deg, #5e9cff 0%, #2f6fe0 100%)",
+  "linear-gradient(180deg, #7d7aff 0%, #5451d6 100%)",
+  "linear-gradient(180deg, #ff7a93 0%, #e2455f 100%)",
+  "linear-gradient(180deg, #ffb147 0%, #f08a0b 100%)",
+  "linear-gradient(180deg, #4fd88b 0%, #22a95b 100%)",
+  "linear-gradient(180deg, #4fd0e6 0%, #1f9fb8 100%)",
+  "linear-gradient(180deg, #c07cff 0%, #9a4fe0 100%)",
+  "linear-gradient(180deg, #9a9aa3 0%, #6f6f78 100%)",
+];
+
+export function spaceTint(id: string): string {
+  let h = 0;
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return SPACE_TINTS[h % SPACE_TINTS.length]!;
+}
+
+export { SpaceTile };
 
 // Hover member counts, cached per server id for the session. A request in
 // flight is marked with PENDING_COUNTS so rapid re-hovers share it.
@@ -222,16 +293,16 @@ function ServerButton({
       onDragOver={onDragOver}
       onDrop={onDrop}
       onMouseEnter={ensureCounts}
-      className="relative flex w-full justify-center rounded-lg"
+      className="relative flex w-full justify-center"
     >
       {dropBefore && <DropIndicator edge="before" />}
       {dropAfter && <DropIndicator edge="after" />}
       <Tooltip
         label={
           <span className="flex flex-col items-start gap-0.5">
-            <span>{server.name}</span>
+            <span className="font-semibold">{server.name}</span>
             {counts && (
-              <span className="text-xs font-medium">
+              <span className="text-[11.5px] font-medium">
                 <span className="text-text-muted">{counts.total} member{counts.total === 1 ? "" : "s"}</span>
                 <span className="text-text-muted"> · </span>
                 <span className="text-status-online">{counts.online} online</span>
@@ -252,41 +323,22 @@ function ServerButton({
           draggable={draggable}
           onDragStart={onDragStart}
           onDragEnd={onDragEnd}
-          className="group relative flex h-12 w-12 cursor-grab items-center justify-center active:cursor-grabbing"
+          className="group relative flex h-11 w-11 items-center justify-center"
         >
+          <RailIndicator state={active ? "active" : hasUnread ? "unread" : "none"} />
           <span
-            className={`absolute -left-1 top-1/2 h-2 -translate-y-1/2 rounded-r-full bg-white transition-all duration-150 ease-in-out ${
-              active ? "h-10 w-1" : hasUnread ? "h-2 w-1" : "w-0 group-hover:h-5 group-hover:w-1"
+            className={`relative block transition-[transform,box-shadow] duration-500 ease-spring group-hover:scale-[1.06] group-active:scale-95 ${
+              active ? "shadow-elev-2" : ""
             }`}
-          />
-          <div className="relative">
-            {safeImageUrl(server.icon_url) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={safeImageUrl(server.icon_url)!}
-                alt=""
-                draggable={false}
-                className={`h-12 w-12 object-cover transition-all duration-150 ease-in-out group-hover:rounded-[30%] ${
-                  active ? "rounded-[30%]" : "rounded-[50%]"
-                }`}
-              />
-            ) : (
-              <span
-                className={`flex h-12 w-12 items-center justify-center bg-brand text-[15px] font-semibold text-white transition-all duration-150 ease-in-out group-hover:rounded-[30%] ${
-                  active ? "rounded-[30%]" : "rounded-[50%]"
-                }`}
-              >
-                {serverInitials(server.name)}
-              </span>
-            )}
+            style={{ borderRadius: 12 }}
+          >
+            <SpaceTile server={server} />
             {server.verified && (
-              <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full ring-2 ring-bg-tertiary">
-                <Tooltip label="This space is officially verified by Disband">
-                  <IconVerified size={12} className="shrink-0 text-sky-400" />
-                </Tooltip>
+              <span className="absolute -bottom-1 -right-1 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-canvas">
+                <IconVerified size={14} className="shrink-0 text-sys-blue" />
               </span>
             )}
-          </div>
+          </span>
         </button>
       </Tooltip>
     </div>
@@ -411,34 +463,30 @@ export function ServerList({
       // `justify-content: center`) leaves a gap above the home button whenever
       // the rail is shorter than the window, and pushes the first servers out
       // of reach above the scroll origin once it is taller.
-      className="flex w-[72px] shrink-0 flex-col items-center overflow-y-auto bg-bg-tertiary py-3"
+      className="no-scrollbar flex w-[68px] shrink-0 flex-col items-center overflow-y-auto py-2"
     >
-      <div className="flex w-full flex-col items-center gap-2">
-      <Tooltip label="Direct Messages">
+      <div className="flex w-full flex-col items-center gap-2.5">
+      <Tooltip label="Messages">
         <button
           type="button"
-          aria-label="Direct Messages"
+          aria-label="Messages"
           aria-current={homeActive ? "true" : undefined}
           onClick={onSelectHome}
-          className="group relative flex h-12 w-12 items-center justify-center"
+          className="group relative flex h-11 w-11 items-center justify-center"
         >
+          <RailIndicator state={homeActive ? "active" : "none"} />
           <span
-            className={`absolute -left-3 top-1/2 h-2 -translate-y-1/2 rounded-r-full bg-white transition-all duration-150 ease-in-out ${
-              homeActive ? "h-10 w-1" : "w-0 group-hover:h-5 group-hover:w-1"
-            }`}
-          />
-          <span
-            className={`flex h-12 w-12 items-center justify-center text-white transition-all duration-150 ease-in-out group-hover:rounded-[30%] ${
-              homeActive ? "rounded-[30%] bg-brand" : "rounded-[50%] bg-brand/90"
+            className={`squircle flex h-11 w-11 items-center justify-center rounded-[12px] transition-[transform,background-color,color] duration-500 ease-spring group-hover:scale-[1.06] group-active:scale-95 ${
+              homeActive ? "bg-brand text-brand-foreground shadow-elev-2" : "bg-fill-secondary text-text-normal"
             }`}
           >
-            <IconHome size={22} />
+            <IconMessage size={21} strokeWidth={2} />
           </span>
         </button>
       </Tooltip>
 
       {visibleDmUnreads.length > 0 && (
-        <div className="flex w-full flex-col items-center gap-2 transition-all duration-300 ease-out">
+        <div className="flex w-full flex-col items-center gap-2.5">
           {visibleDmUnreads.map((entry) => {
             const active = viewMode === "dm" && activeDmThreadId === entry.threadId;
             return (
@@ -447,23 +495,13 @@ export function ServerList({
                   type="button"
                   aria-label={`${entry.count} unread messages from ${displayName(entry.friend)}`}
                   onClick={() => onSelectDmThread(entry.threadId)}
-                  className="group relative flex h-12 w-12 animate-in fade-in slide-in-from-top-2 items-center justify-center duration-300"
+                  className="avatar-pop group relative flex h-11 w-11 items-center justify-center"
                 >
-                  <span
-                    className={`absolute -left-3 top-1/2 h-2 -translate-y-1/2 rounded-r-full bg-white transition-all duration-150 ease-in-out ${
-                      active ? "h-10 w-1" : "w-0 group-hover:h-5 group-hover:w-1"
-                    }`}
-                  />
-                  <div className="relative">
-                    <Avatar
-                      profile={entry.friend}
-                      size="md"
-                      className={`h-12 w-12 transition-all duration-150 ease-in-out group-hover:rounded-[30%] ${
-                        active ? "rounded-[30%] ring-2 ring-brand" : "rounded-[50%]"
-                      }`}
-                    />
+                  <RailIndicator state={active ? "active" : "unread"} />
+                  <span className="relative transition-transform duration-500 ease-spring group-hover:scale-[1.06] group-active:scale-95">
+                    <Avatar profile={entry.friend} size="md" className="h-11 w-11" />
                     <UnreadCountBadge count={entry.count} />
-                  </div>
+                  </span>
                 </button>
               </Tooltip>
             );
@@ -471,17 +509,17 @@ export function ServerList({
         </div>
       )}
 
-      <div className="h-0.5 w-8 rounded bg-divider transition-all duration-300" />
+      <div className="h-px w-7 shrink-0 rounded-full bg-divider" />
 
       <div
-        className="flex w-full flex-col items-center gap-2"
+        className="flex w-full flex-col items-center gap-2.5"
         onDragOver={(e) => {
           if (!dragRef.current) return;
           e.preventDefault();
           // Only events from the list's own padding and the gaps between rows
           // reach here, since each row stops its own. Claim "drop at the end"
-          // just for the area past the last row — otherwise crossing an 8px
-          // gap would flick the line down to the bottom of the rail.
+          // just for the area past the last row — otherwise crossing a gap
+          // would flick the line down to the bottom of the rail.
           const last = e.currentTarget.lastElementChild;
           const below = !last || e.clientY > last.getBoundingClientRect().bottom;
           if (below) setDropTarget({ kind: "top-end" });
@@ -512,12 +550,16 @@ export function ServerList({
                 setDropTarget({ kind: "folder", id: folder.id });
               }}
               onDrop={(e) => dropOnFolder(e, folder.id, false)}
-              className={`flex w-full flex-col items-center gap-2 rounded-lg py-1 transition-colors ${isDrop ? "bg-white/10 ring-1 ring-white" : ""}`}
+              className={`flex w-[54px] flex-col items-center gap-2.5 rounded-[16px] transition-[background-color,padding,box-shadow] duration-500 ease-spring ${
+                isOpen ? "py-[5px]" : ""
+              } ${isDrop ? "ring-2 ring-brand" : ""}`}
+              style={isOpen ? { backgroundColor: `color-mix(in srgb, ${folder.color} 16%, transparent)` } : undefined}
             >
               <Tooltip label={folder.name}>
                 <button
                   type="button"
                   aria-label={`Folder ${folder.name}`}
+                  aria-expanded={isOpen}
                   onClick={() => setExpanded((prev) => {
                     const next = new Set(prev);
                     if (next.has(folder.id)) next.delete(folder.id);
@@ -531,29 +573,25 @@ export function ServerList({
                   draggable
                   onDragStart={(e) => startFolderDrag(e, folder.id)}
                   onDragEnd={endDrag}
-                  className="group relative flex h-12 w-12 cursor-grab items-center justify-center active:cursor-grabbing"
+                  className="group relative flex h-11 w-11 items-center justify-center"
                 >
+                  {!isOpen && <RailIndicator state={hasActive ? "active" : hasUnread ? "unread" : "none"} />}
+                  {/* iOS home-screen folder: a frosted tile holding up to
+                      four miniature icons, or a chevron once it's open. */}
                   <span
-                    className={`absolute -left-1 top-1/2 h-2 -translate-y-1/2 rounded-r-full bg-white transition-all ${
-                      hasActive ? "h-10 w-1" : hasUnread ? "h-2 w-1" : "w-0 group-hover:h-5 group-hover:w-1"
-                    }`}
-                  />
-                  <span
-                    className="flex h-12 w-12 flex-col items-center justify-center rounded-[30%] text-white"
-                    style={{ backgroundColor: `${folder.color}55` }}
+                    className="squircle grid h-11 w-11 grid-cols-2 place-items-center gap-[3px] rounded-[12px] p-[6px] transition-transform duration-500 ease-spring group-hover:scale-[1.06] group-active:scale-95"
+                    style={{ backgroundColor: `color-mix(in srgb, ${folder.color} 30%, var(--fill-secondary))` }}
                   >
-                    <span className="text-[15px] font-bold leading-none" style={{ color: folder.color }}>
-                      {folder.name.slice(0, 2).toUpperCase()}
-                    </span>
-                    <span className="mt-0.5 flex items-center gap-0.5 text-[10px] font-semibold text-text-muted">
-                      {members.length}
-                      <IconChevron size={10} className={`transition-transform ${isOpen ? "" : "-rotate-90"}`} />
-                    </span>
+                    {isOpen ? (
+                      <IconChevron size={18} className="col-span-2 row-span-2 text-text-normal" />
+                    ) : (
+                      members.slice(0, 4).map((m) => <SpaceTile key={m.id} server={m} size={14} />)
+                    )}
                   </span>
                 </button>
               </Tooltip>
               {isOpen && (
-                <div className="flex w-full flex-col items-center gap-2 border-l-2 pl-1" style={{ borderColor: `${folder.color}88` }}>
+                <div className="flex w-full flex-col items-center gap-2.5">
                   {members.map((server) => renderServerButton(server))}
                   {members.length === 0 && (
                     <p className="px-1 text-center text-[10px] leading-tight text-text-muted">Drop spaces here</p>
@@ -565,14 +603,16 @@ export function ServerList({
         })}
       </div>
 
-      <Tooltip label="Add a Space">
+      <Tooltip label="Create a space">
         <button
           type="button"
           aria-label="Create space"
           onClick={onCreateServer}
-          className="group flex h-12 w-12 items-center justify-center rounded-[50%] bg-bg-primary text-status-online transition-all duration-150 ease-in-out hover:rounded-[30%] hover:bg-status-online hover:text-white"
+          className="group flex h-11 w-11 items-center justify-center"
         >
-          <IconPlus size={24} />
+          <span className="squircle flex h-11 w-11 items-center justify-center rounded-[12px] bg-fill-tertiary text-sys-green transition-[transform,background-color,color] duration-500 ease-spring group-hover:scale-[1.06] group-hover:bg-sys-green group-hover:text-white group-active:scale-95">
+            <IconPlus size={22} strokeWidth={2.2} />
+          </span>
         </button>
       </Tooltip>
 
@@ -581,14 +621,21 @@ export function ServerList({
           type="button"
           aria-label="Discover spaces"
           onClick={onDiscover}
-          className="group flex h-12 w-12 items-center justify-center rounded-[50%] bg-bg-primary text-text-muted transition-all duration-150 ease-in-out hover:rounded-[30%] hover:bg-brand hover:text-white"
+          className="group relative flex h-11 w-11 items-center justify-center"
         >
-          <IconCompass size={22} />
+          <RailIndicator state={viewMode === "discover" ? "active" : "none"} />
+          <span
+            className={`squircle flex h-11 w-11 items-center justify-center rounded-[12px] transition-[transform,background-color,color] duration-500 ease-spring group-hover:scale-[1.06] group-active:scale-95 ${
+              viewMode === "discover" ? "bg-brand text-brand-foreground" : "bg-fill-tertiary text-text-muted group-hover:text-text-normal"
+            }`}
+          >
+            <IconCompass size={21} />
+          </span>
         </button>
       </Tooltip>
       <div
         aria-hidden
-        className={`h-[3px] w-12 rounded-full bg-white transition-opacity ${dropTarget?.kind === "top-end" ? "opacity-100 shadow-[0_0_8px_rgba(255,255,255,0.75)]" : "opacity-0"}`}
+        className={`h-[3px] w-10 rounded-full bg-brand transition-opacity ${dropTarget?.kind === "top-end" ? "opacity-100" : "opacity-0"}`}
       />
       </div>
     </nav>

@@ -130,7 +130,7 @@ export function MfaSettingsPanel() {
             return (
             <div
               key={factor.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-divider bg-bg-secondary px-4 py-3"
+              className="rounded-[14px] bg-fill-tertiary flex items-center justify-between gap-3 px-4 py-3"
             >
               <div>
                 <p className="text-sm font-medium text-text-normal">{factorLabel(factor)}</p>
@@ -164,7 +164,7 @@ export function MfaSettingsPanel() {
                     type="button"
                     disabled={busy}
                     onClick={() => void removeFactor(factor.id)}
-                    className="shrink-0 rounded bg-status-dnd px-2.5 py-1 text-sm font-medium text-white disabled:opacity-50"
+                    className="btn btn-danger btn-sm shrink-0"
                   >
                     Confirm remove
                   </button>
@@ -192,7 +192,7 @@ export function MfaSettingsPanel() {
               type="button"
               disabled={busy}
               onClick={() => void beginTotpSetup()}
-              className="rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+              className="btn btn-filled"
             >
               Add authenticator app
             </button>
@@ -208,26 +208,26 @@ export function MfaSettingsPanel() {
             <img src={totpQrSrc(totpSetup.qrCode)} alt="Authenticator QR code" className="h-44 w-44" />
           </div>
           <label className="block">
-            <span className="text-xs font-bold uppercase text-text-muted">Manual entry key</span>
+            <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Manual entry key</span>
             <span className="mt-1 flex items-center gap-2">
               <input
                 readOnly
                 value={totpSetup.secret}
                 aria-label="Manual entry key"
                 onFocus={(e) => e.target.select()}
-                className="min-w-0 flex-1 rounded bg-bg-accent px-3 py-2 font-mono text-xs outline-none"
+                className="field min-w-0 flex-1 font-mono text-[14px]"
               />
               <button
                 type="button"
                 onClick={() => void copyManualKey()}
-                className="shrink-0 rounded bg-interactive-hover px-3 py-2 text-xs font-semibold text-text-normal transition-colors hover:bg-interactive-selected"
+                className="btn btn-gray btn-sm shrink-0"
               >
                 {copiedKey ? "Copied" : "Copy"}
               </button>
             </span>
           </label>
           <label className="block">
-            <span className="text-xs font-bold uppercase text-text-muted">Verification code</span>
+            <span className="text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Verification code</span>
             <input
               required
               inputMode="numeric"
@@ -236,7 +236,7 @@ export function MfaSettingsPanel() {
               maxLength={6}
               value={totpCode}
               onChange={(e) => setTotpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              className="mt-1 w-full rounded bg-bg-accent px-3 py-2 text-center text-lg tracking-[0.35em] outline-none focus:ring-2 focus:ring-brand"
+              className="field mt-1 w-full text-center text-lg tracking-[0.35em]"
               placeholder="000000"
             />
           </label>
@@ -244,7 +244,7 @@ export function MfaSettingsPanel() {
             <button
               type="submit"
               disabled={busy || totpCode.length !== 6}
-              className="rounded bg-brand px-4 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+              className="btn btn-filled"
             >
               Confirm app
             </button>

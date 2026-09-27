@@ -1,0 +1,774 @@
+/* Base element styles and the shared control vocabulary.
+
+   Component classes live in @layer components so a Tailwind utility on the
+   same element still wins (a `.btn` with `rounded-lg` gets the radius it
+   asked for). The two contrast guards at the bottom are unlayered on purpose
+   and must stay that way. */
+
+@layer base {
+  html {
+    height: 100%;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    overflow-x: hidden;
+    background-color: var(--canvas);
+    color: var(--text-normal);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.4;
+    letter-spacing: -0.006em;
+    font-optical-sizing: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.015em;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--brand) 28%, transparent);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  input,
+  textarea {
+    caret-color: var(--brand);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--label-tertiary);
+  }
+
+  /* Thin, overlay-style scrollbars in the manner of macOS. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--text-muted) 38%, transparent) transparent;
+  }
+}
+
+/* Safari (no scrollbar-color yet) still reads the WebKit pseudo-elements. */
+@supports not (scrollbar-color: red blue) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--text-muted) 38%, transparent);
+    border-radius: 999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--text-muted) 60%, transparent);
+  }
+}
+
+@layer components {
+  /* --- Materials -------------------------------------------------------- */
+
+  .glass {
+    background-color: var(--glass);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow:
+      inset 0 0.5px 0 var(--glass-highlight),
+      0 0 0 0.5px var(--glass-border);
+  }
+
+  .glass-thick {
+    background-color: var(--glass-thick);
+    -webkit-backdrop-filter: blur(40px) saturate(190%);
+    backdrop-filter: blur(40px) saturate(190%);
+    box-shadow:
+      inset 0 0.5px 0 var(--glass-highlight),
+      0 0 0 0.5px var(--glass-border),
+      var(--elev-3);
+  }
+
+  /* A floating panel on the canvas. */
+  .panel {
+    background-color: var(--bg-primary);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 0 0 1px var(--panel-border), var(--elev-1);
+  }
+
+  .panel-sidebar {
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-panel);
+    box-shadow: 0 0 0 1px var(--panel-border), var(--elev-1);
+  }
+
+  /* --- Buttons ---------------------------------------------------------- */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    height: 36px;
+    padding-inline: 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    user-select: none;
+    transition:
+      transform 0.45s var(--spring-snappy),
+      background-color 0.18s ease,
+      color 0.18s ease,
+      opacity 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+  .btn:active:not(:disabled) {
+    transform: scale(0.96);
+  }
+  .btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .btn-sm { height: 30px; padding-inline: 12px; font-size: 13px; }
+  .btn-lg { height: 46px; padding-inline: 22px; font-size: 16px; }
+  .btn-block { width: 100%; }
+  .btn-icon { width: 36px; padding-inline: 0; }
+  .btn-sm.btn-icon { width: 30px; }
+
+  .btn-filled {
+    background-color: var(--brand);
+    color: var(--brand-foreground, #fff);
+  }
+  .btn-filled:hover:not(:disabled) {
+    background-color: var(--brand-hover);
+  }
+
+  .btn-tinted {
+    background-color: color-mix(in srgb, var(--brand) 15%, transparent);
+    color: var(--brand);
+  }
+  .btn-tinted:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--brand) 22%, transparent);
+  }
+
+  .btn-gray {
+    background-color: var(--fill-secondary);
+    color: var(--text-normal);
+  }
+  .btn-gray:hover:not(:disabled) {
+    background-color: var(--fill);
+  }
+
+  .btn-plain {
+    background-color: transparent;
+    color: var(--brand);
+  }
+  .btn-plain:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--brand) 10%, transparent);
+  }
+
+  .btn-destructive {
+    background-color: color-mix(in srgb, var(--status-dnd) 14%, transparent);
+    color: var(--status-dnd);
+  }
+  .btn-destructive:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--status-dnd) 22%, transparent);
+  }
+
+  .btn-danger {
+    background-color: var(--status-dnd);
+    color: #fff;
+  }
+  .btn-danger:hover:not(:disabled) {
+    background-color: color-mix(in srgb, var(--status-dnd) 86%, #000);
+  }
+
+  /* Round toolbar button, as in a navigation bar. */
+  .tool-btn {
+    display: inline-flex;
+    height: 32px;
+    width: 32px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    color: var(--text-muted);
+    transition:
+      transform 0.45s var(--spring-snappy),
+      background-color 0.15s ease,
+      color 0.15s ease;
+  }
+  .tool-btn:hover {
+    background-color: var(--fill-tertiary);
+    color: var(--text-normal);
+  }
+  .tool-btn:active {
+    transform: scale(0.9);
+  }
+  .tool-btn[aria-pressed="true"],
+  .tool-btn[data-active="true"] {
+    color: var(--brand);
+    background-color: color-mix(in srgb, var(--brand) 14%, transparent);
+  }
+
+  /* Anything tappable that should give way under a press. */
+  .press {
+    transition: transform 0.45s var(--spring-snappy);
+  }
+  .press:active {
+    transform: scale(0.96);
+  }
+
+  /* --- Fields ----------------------------------------------------------- */
+
+  .field {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 11px;
+    background-color: var(--bg-accent);
+    padding: 9px 13px;
+    font-size: 15px;
+    color: var(--text-normal);
+    outline: none;
+    border: 1px solid transparent;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  .field:focus,
+  .field:focus-within {
+    border-color: color-mix(in srgb, var(--brand) 60%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 18%, transparent);
+  }
+  .field:disabled {
+    opacity: 0.55;
+  }
+
+  /* Search field: grey capsule with an inset magnifier. */
+  .search-field {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 34px;
+    border-radius: 10px;
+    background-color: var(--fill-tertiary);
+    padding-inline: 10px;
+    color: var(--text-muted);
+    transition: box-shadow 0.2s ease;
+  }
+  .search-field:focus-within {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 22%, transparent);
+  }
+  .search-field input {
+    min-width: 0;
+    flex: 1;
+    background: transparent;
+    font-size: 14px;
+    color: var(--text-normal);
+    outline: none;
+  }
+
+  /* --- Grouped lists (iOS Settings) --------------------------------------- */
+
+  .section-label {
+    padding-inline: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-muted);
+  }
+
+  .list-group {
+    overflow: hidden;
+    border-radius: 14px;
+    background-color: var(--bg-secondary);
+    box-shadow: 0 0 0 1px var(--panel-border);
+  }
+
+  .list-row {
+    position: relative;
+    display: flex;
+    min-height: 46px;
+    width: 100%;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    text-align: left;
+    transition: background-color 0.15s ease;
+  }
+  /* Inset hairline between rows, starting after the leading icon column
+     (--row-inset), the way UITableView draws it. */
+  .list-row + .list-row::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: var(--row-inset, 16px);
+    height: 1px;
+    background-color: var(--hairline);
+    transform: scaleY(0.5);
+    transform-origin: top;
+  }
+  button.list-row:hover,
+  a.list-row:hover {
+    background-color: var(--interactive-hover);
+  }
+  button.list-row:active,
+  a.list-row:active {
+    background-color: var(--interactive-selected);
+  }
+
+  /* Coloured glyph tile in front of a settings row. */
+  .icon-tile {
+    display: inline-flex;
+    height: 28px;
+    width: 28px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    color: #fff;
+    box-shadow: inset 0 0.5px 0 rgb(255 255 255 / 0.25);
+  }
+
+  /* Sidebar navigation row (iPadOS sidebar). */
+  .nav-row {
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+    border-radius: 10px;
+    padding: 6px 10px;
+    text-align: left;
+    color: var(--text-normal);
+    transition:
+      background-color 0.16s ease,
+      color 0.16s ease,
+      transform 0.45s var(--spring-snappy);
+  }
+  .nav-row:hover {
+    background-color: var(--interactive-hover);
+  }
+  .nav-row:active {
+    transform: scale(0.985);
+  }
+  .nav-row[aria-current="true"],
+  .nav-row[data-active="true"] {
+    background-color: var(--interactive-selected);
+  }
+
+  /* --- Typography ------------------------------------------------------- */
+
+  .large-title {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.024em;
+  }
+
+  .title-2 {
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+
+  .nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- Badges & indicators ------------------------------------------------ */
+
+  .count-badge {
+    display: inline-flex;
+    height: 18px;
+    min-width: 18px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background-color: var(--status-dnd);
+    padding-inline: 5px;
+    font-family: var(--font-rounded);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border-radius: 999px;
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .kbd {
+    display: inline-flex;
+    min-width: 20px;
+    height: 20px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background-color: var(--fill-tertiary);
+    box-shadow: inset 0 -1px 0 var(--hairline);
+    padding-inline: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+
+  /* Dynamic-Island style notice: always near-black, whatever the theme. */
+  .island {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 999px;
+    background-color: #0b0b0c;
+    padding: 9px 14px 9px 12px;
+    color: #f5f5f7;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow:
+      0 0 0 0.5px rgb(255 255 255 / 0.08),
+      0 12px 32px rgb(0 0 0 / 0.35);
+  }
+
+  /* --- Loading ---------------------------------------------------------- */
+
+  .skeleton {
+    background-image: linear-gradient(
+      90deg,
+      var(--fill-tertiary) 0%,
+      var(--fill-secondary) 40%,
+      var(--fill-tertiary) 80%
+    );
+    background-size: 220% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+
+  /* UIActivityIndicatorView: eight spokes stepping round. */
+  .activity-spinner {
+    display: inline-block;
+    animation-name: spinner-spin;
+    animation-duration: 0.9s;
+    animation-timing-function: steps(8, end);
+    animation-iteration-count: infinite;
+  }
+
+  .typing-dot {
+    display: inline-block;
+    height: 7px;
+    width: 7px;
+    border-radius: 999px;
+    background-color: currentColor;
+    animation: typing-dot 1.3s ease-in-out infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.16s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.32s; }
+
+  /* --- Misc --------------------------------------------------------------- */
+
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hairline-b {
+    box-shadow: inset 0 -0.5px 0 var(--hairline);
+  }
+  .hairline-t {
+    box-shadow: inset 0 0.5px 0 var(--hairline);
+  }
+}
+
+/* True continuous corners where the browser can draw them. The radius has to
+   grow to compensate: a squircle at the same radius looks far squarer. */
+@supports (corner-shape: squircle) {
+  .squircle {
+    corner-shape: squircle;
+  }
+}
+
+img.twemoji {
+  height: 1.2em;
+  width: 1.2em;
+  margin: 0 0.05em 0 0.1em;
+  vertical-align: -0.2em;
+  display: inline-block;
+}
+
+:root[data-appearance="light"] .logo-adaptive {
+  filter: brightness(0);
+}
+
+/* Unlayered contrast guards. hover:bg-brand + hover:text-white (context
+   menus) and file: variant buttons never get a rule of their own, so without
+   these they stay white-on-brand and fail contrast on pastel accents. */
+.bg-brand.text-white { color: var(--brand-foreground, #fff); }
+.hover\:bg-brand:hover.hover\:text-white:hover { color: var(--brand-foreground, #fff); }
+.file\:bg-brand.file\:text-white::file-selector-button { color: var(--brand-foreground, #fff); }
+
+/* ---------------------------------------------------------------------------
+   Chat
+   --------------------------------------------------------------------------- */
+
+@layer components {
+  /* Inline markdown. Colours come from context so the same markup reads on a
+     plain row, a grey bubble, or a brand-coloured outgoing bubble. */
+  .md-chip {
+    border-radius: 6px;
+    padding: 0 3px;
+    font-weight: 600;
+    color: var(--brand);
+    background-color: color-mix(in srgb, var(--brand) 14%, transparent);
+    transition: background-color 0.15s ease;
+  }
+  button.md-chip:hover {
+    background-color: color-mix(in srgb, var(--brand) 24%, transparent);
+  }
+  .md-link {
+    color: var(--text-link);
+    overflow-wrap: anywhere;
+  }
+  .md-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .md-code {
+    border-radius: 6px;
+    padding: 1px 5px;
+    font-family: var(--font-mono);
+    font-size: 0.86em;
+    background-color: color-mix(in srgb, currentColor 11%, transparent);
+  }
+
+  /* Message bubbles. */
+  .bubble {
+    position: relative;
+    max-width: 100%;
+    border-radius: 19px;
+    padding: 7px 13px 8px;
+    font-size: 15px;
+    line-height: 1.38;
+    overflow-wrap: anywhere;
+    transition: border-radius 0.3s var(--spring-snappy), opacity 0.2s ease;
+  }
+  .bubble-in {
+    --bubble-bg: var(--bubble-in);
+    background-color: var(--bubble-bg);
+    color: var(--bubble-in-text);
+  }
+  .bubble-out {
+    --bubble-bg: var(--bubble-out);
+    background-color: var(--bubble-bg);
+    color: var(--bubble-out-text);
+  }
+  /* Code inside an outgoing bubble: a darkened well, and the bubble's own
+     text colour, since no syntax theme is legible on every accent. */
+  .bubble-out .code-block pre {
+    background: rgb(0 0 0 / 0.2) !important;
+    color: inherit !important;
+  }
+  .bubble-out .code-block pre * {
+    color: inherit !important;
+  }
+  .bubble .code-block {
+    margin-inline: -5px;
+  }
+  .bubble-out .md-chip {
+    color: inherit;
+    background-color: rgb(255 255 255 / 0.22);
+  }
+  .bubble-out .md-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Runs of messages stack with tighter inner corners, the way Messages
+     draws a burst of bubbles from one person. */
+  .bubble-in[data-stack~="above"] { border-top-left-radius: 6px; }
+  .bubble-in[data-stack~="below"] { border-bottom-left-radius: 6px; }
+  .bubble-out[data-stack~="above"] { border-top-right-radius: 6px; }
+  .bubble-out[data-stack~="below"] { border-bottom-right-radius: 6px; }
+
+  /* The tail on the last bubble of a run: a filled square with one curved
+     corner, trimmed by a mask in the chat background colour. Anything that
+     puts bubbles on another surface sets --tail-mask to that surface. */
+  .bubble[data-tail]::before,
+  .bubble[data-tail]::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    height: 18px;
+  }
+  .bubble-out[data-tail]::before {
+    right: -7px;
+    width: 20px;
+    background-color: var(--bubble-bg);
+    border-bottom-left-radius: 15px 13px;
+  }
+  .bubble-out[data-tail]::after {
+    right: -10px;
+    width: 10px;
+    background-color: var(--tail-mask, var(--bg-primary));
+    border-bottom-left-radius: 10px;
+  }
+  .bubble-in[data-tail]::before {
+    left: -7px;
+    width: 20px;
+    background-color: var(--bubble-bg);
+    border-bottom-right-radius: 15px 13px;
+  }
+  .bubble-in[data-tail]::after {
+    left: -10px;
+    width: 10px;
+    background-color: var(--tail-mask, var(--bg-primary));
+    border-bottom-right-radius: 10px;
+  }
+
+  /* A ping for you: the bubble picks up a warm tint. */
+  .bubble-in[data-ping] {
+    --bubble-bg: color-mix(in srgb, var(--sys-orange) 20%, var(--bubble-in));
+  }
+
+  /* Jumped-to message: the bubble swells once, like a tapback landing. */
+  .bubble-flash {
+    animation: bubble-flash 1.2s var(--ease-ios);
+  }
+
+  /* Centred timestamps between bursts, as Messages shows them. */
+  .chat-stamp {
+    display: flex;
+    justify-content: center;
+    padding: 14px 16px 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+    color: var(--text-muted);
+  }
+  .chat-stamp b {
+    font-weight: 600;
+  }
+}
+
+@keyframes bubble-flash {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--brand) 60%, transparent); transform: scale(1); }
+  25% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--brand) 35%, transparent); transform: scale(1.03); }
+  100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
+}
+
+@layer components {
+  /* Navigation/tool bar material: glass with only a bottom hairline. */
+  .bar-material {
+    background-color: var(--glass);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: inset 0 -0.5px 0 var(--hairline);
+  }
+}
+
+@layer components {
+  /* UISlider: thin filled track, round white knob. --range-pct is set inline
+     so the filled part tracks the value in every engine. */
+  .ios-range {
+    appearance: none;
+    height: 4px;
+    border-radius: 999px;
+    background: linear-gradient(to right, var(--brand) var(--range-pct, 50%), var(--fill) var(--range-pct, 50%));
+    cursor: pointer;
+  }
+  .ios-range::-webkit-slider-thumb {
+    appearance: none;
+    height: 26px;
+    width: 26px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.18), 0 0 0 0.5px rgb(0 0 0 / 0.06);
+    transition: transform 0.4s var(--spring-snappy);
+  }
+  .ios-range:active::-webkit-slider-thumb {
+    transform: scale(1.1);
+  }
+  .ios-range::-moz-range-thumb {
+    height: 26px;
+    width: 26px;
+    border: 0;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.18), 0 0 0 0.5px rgb(0 0 0 / 0.06);
+  }
+}
+
+@layer base {
+  /* Checkboxes and radios as iOS selection circles (Mail's edit mode):
+     an empty ring, filled with the accent and a check once chosen. */
+  input[type="checkbox"]:not(.native),
+  input[type="radio"]:not(.native) {
+    appearance: none;
+    display: inline-grid;
+    place-content: center;
+    height: 20px;
+    width: 20px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    box-shadow: inset 0 0 0 1.5px var(--divider);
+    background-color: transparent;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease,
+      transform 0.4s var(--spring-bouncy);
+  }
+  input[type="checkbox"]:not(.native):checked,
+  input[type="radio"]:not(.native):checked {
+    background-color: var(--brand);
+    box-shadow: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5.5 10.5l3 3 6-6.5'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+  }
+  input[type="checkbox"]:not(.native):active,
+  input[type="radio"]:not(.native):active {
+    transform: scale(0.88);
+  }
+  input[type="checkbox"]:not(.native):disabled,
+  input[type="radio"]:not(.native):disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+@layer components {
+  /* Disabled filled buttons go grey, as UIButton does, instead of showing a
+     washed-out accent. */
+  .btn-filled:disabled,
+  .btn-danger:disabled {
+    background-color: var(--fill-secondary);
+    color: var(--label-tertiary);
+    opacity: 1;
+  }
+}

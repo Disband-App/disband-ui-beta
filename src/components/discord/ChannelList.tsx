@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { NotificationBell } from "./NotificationBell";
 import { CallIndicator } from "./CallIndicator";
 import { Tooltip } from "./Tooltip";
+import { Segmented } from "@/components/ui/Segmented";
 import {
   IconChevron,
   IconClose,
@@ -321,26 +322,18 @@ export function ChannelList({
   };
 
   const renderAddChannelComposer = () => (
-    <div className="mb-1 rounded-md bg-bg-accent/50 px-1.5 py-1.5">
-      <div className="mb-1 flex items-center gap-1">
-        {(["text", "voice"] as const).map((t) => (
-          <button
-            key={t}
-            type="button"
-            onClick={() => setAddChannelType(t)}
-            title={t === "text" ? "Text channel" : "Voice channel"}
-            className={`flex items-center gap-1 rounded px-2 py-1 text-[11px] font-semibold transition-colors ${
-              addChannelType === t
-                ? "bg-interactive-selected text-text-normal"
-                : "text-text-muted hover:text-text-normal"
-            }`}
-          >
-            {t === "text" ? <IconHash size={12} /> : <IconSpeaker size={12} />}
-            {t === "text" ? "Text" : "Voice"}
-          </button>
-        ))}
-      </div>
-      <div className="flex items-center gap-1">
+    <div className="popover-pop mx-1 mb-1.5 mt-0.5 rounded-[12px] bg-bg-primary p-2 shadow-elev-2 ring-1 ring-glass-border">
+      <Segmented
+        size="sm"
+        ariaLabel="Channel type"
+        value={addChannelType}
+        onChange={setAddChannelType}
+        options={[
+          { id: "text", label: <><IconHash size={13} /> Text</> },
+          { id: "voice", label: <><IconSpeaker size={13} /> Voice</> },
+        ]}
+      />
+      <div className="mt-2 flex items-center gap-1.5">
         <input
           autoFocus
           value={addChannelName}
@@ -349,16 +342,16 @@ export function ChannelList({
             if (e.key === "Enter") void submitAddChannel();
             if (e.key === "Escape") setAddChannelTarget(null);
           }}
-          placeholder={addChannelType === "text" ? "New channel" : "New voice channel"}
-          className="min-w-0 flex-1 rounded bg-bg-accent px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand"
+          placeholder={addChannelType === "text" ? "new-channel" : "Voice room"}
+          className="field min-h-0 flex-1 px-2.5 py-1.5 text-[13px]"
         />
         <button
           type="button"
           onClick={() => void submitAddChannel()}
-          disabled={busy}
-          className="shrink-0 text-xs font-medium text-brand hover:underline"
+          disabled={busy || !addChannelName.trim()}
+          className="btn btn-filled btn-sm"
         >
-          Create
+          Add
         </button>
       </div>
     </div>
@@ -375,17 +368,11 @@ export function ChannelList({
     const mentions = active ? 0 : getMentionCount?.(ch.id) ?? 0;
     return (
       <div key={ch.id} className="relative">
-        {overChannelId === ch.id && <div className="absolute inset-x-1 -top-0.5 h-0.5 rounded bg-brand" />}
-        {}
-        {unread && (
-          <span
-            aria-hidden
-            className="absolute -left-2 top-1/2 h-2 w-1 -translate-y-1/2 rounded-r-full bg-text-normal"
-          />
-        )}
+        {overChannelId === ch.id && <div className="absolute inset-x-2 -top-px h-0.5 rounded-full bg-brand" />}
         <button
           type="button"
           data-channel-id={ch.id}
+          aria-current={active ? "true" : undefined}
           onClick={(e) => {
             if (consumeSuppressed(e.currentTarget)) return;
             onSelectChannel(ch.id);
@@ -399,29 +386,31 @@ export function ChannelList({
           onPointerUp={releaseDrag}
           onPointerCancel={cancelDrag}
           style={canManageChannels ? { touchAction: "none" } : undefined}
-          className={`group/drag mb-0.5 flex w-full items-center gap-1.5 rounded px-1 py-[6px] text-[15px] transition-all duration-150 ease-in-out ${
+          className={`group/drag mb-px flex h-[34px] w-full items-center gap-2 rounded-[10px] px-2.5 text-[14.5px] transition-[background-color,color,transform] duration-150 active:scale-[0.985] ${
             active
-              ? "bg-interactive-selected text-text-normal"
+              ? "bg-brand/14 font-semibold text-text-normal"
               : unread
                 ? "font-semibold text-text-normal hover:bg-interactive-hover"
                 : "text-text-muted hover:bg-interactive-hover hover:text-text-normal"
           } ${canManageChannels ? "cursor-grab active:cursor-grabbing" : ""}`}
         >
-          {ch.type === "text" ? <IconHash size={20} /> : <IconSpeaker size={20} />}
+          <span className={`flex w-[18px] shrink-0 justify-center ${active ? "text-brand" : ""}`}>
+            {ch.type === "text" ? <IconHash size={17} strokeWidth={2} /> : <IconSpeaker size={17} strokeWidth={2} />}
+          </span>
           <span className="min-w-0 flex-1 truncate text-left">{ch.name}</span>
-          {}
-          {mentions > 0 && (
-            <span className="ml-1 shrink-0 rounded-full bg-status-dnd px-[6px] py-[1px] text-[11px] font-bold leading-[16px] text-white">
+          {mentions > 0 ? (
+            <span key={mentions} className="count-badge badge-pop">
               {mentions > 99 ? "99+" : mentions}
             </span>
-          )}
+          ) : unread ? (
+            <span aria-label="Unread" className="h-2 w-2 shrink-0 rounded-full bg-brand" />
+          ) : null}
           {ch.type === "voice" && participants.length > 0 && (
             <>
-              <span className="shrink-0 text-[11px] font-semibold text-text-muted">{participants.length}</span>
               {(() => {
                 const start = voiceStartTimes.get(ch.id);
                 return start !== undefined ? (
-                  <span className="shrink-0 rounded-[5px] bg-status-online/10 px-[4px] py-[1px] text-[10px] font-bold tabular-nums leading-[13px] text-status-online">
+                  <span className="nums shrink-0 rounded-full bg-status-online/14 px-1.5 py-px text-[10.5px] font-semibold text-status-online">
                     {formatCallDuration(now - start)}
                   </span>
                 ) : null;
@@ -430,13 +419,13 @@ export function ChannelList({
           )}
         </button>
         {ch.type === "voice" && participants.length > 0 && (
-          <div className="mb-1 flex flex-col gap-0.5 pb-1 pl-8">
+          <div className="mb-1 ml-[22px] flex flex-col gap-px border-l border-hairline pb-1 pl-3">
             {participants.map((vp) => (
-              <span key={vp.user_id} className="flex items-center gap-1.5 text-[12px] text-text-muted">
+              <span key={vp.user_id} className="avatar-pop flex h-7 items-center gap-2 rounded-[8px] px-1.5 text-[13px] text-text-muted">
                 <MiniAvatar profile={vp.profile} />
                 <span className="min-w-0 flex-1 truncate">{vp.profile ? displayName(vp.profile) : "Unknown"}</span>
-                {vp.muted && <IconMicOff size={12} className="shrink-0 text-status-dnd" />}
-                {vp.deafened && <IconHeadphonesOff size={12} className="shrink-0 text-status-dnd" />}
+                {vp.muted && <IconMicOff size={13} className="shrink-0 text-status-dnd" />}
+                {vp.deafened && <IconHeadphonesOff size={13} className="shrink-0 text-status-dnd" />}
               </span>
             ))}
           </div>
@@ -448,10 +437,11 @@ export function ChannelList({
   const renderCategoryHeader = (cat: ChannelCategory) => {
     const open = !collapsed[cat.id];
     return (
-      <div className="group/cat group/drag relative flex items-center" data-category-id={cat.id}>
-        {overCatId === cat.id && <div className="absolute inset-x-1 -top-0.5 h-0.5 rounded bg-brand" />}
+      <div className="group/cat group/drag relative mt-3 flex items-center first:mt-1" data-category-id={cat.id}>
+        {overCatId === cat.id && <div className="absolute inset-x-2 -top-px h-0.5 rounded-full bg-brand" />}
         <button
           type="button"
+          aria-expanded={open}
           onClick={(e) => {
             if (consumeSuppressed(e.currentTarget)) return;
             toggleCollapsed(cat.id);
@@ -466,21 +456,26 @@ export function ChannelList({
           onPointerUp={releaseDrag}
           onPointerCancel={cancelDrag}
           style={canManageChannels ? { touchAction: "none" } : undefined}
-          className={`flex min-w-0 flex-1 items-center gap-0.5 px-0.5 py-1 text-[11px] font-bold uppercase tracking-wide transition-all duration-150 ${
+          className={`flex h-7 min-w-0 flex-1 items-center gap-1 rounded-[8px] px-2.5 text-[12.5px] font-semibold tracking-[-0.005em] transition-colors duration-150 ${
             overCatId === cat.id ? "text-brand" : "text-text-muted hover:text-text-normal"
           } ${canManageChannels ? "cursor-grab active:cursor-grabbing" : ""}`}
         >
-          <IconChevron size={12} className={`shrink-0 transition-transform duration-150 ${open ? "" : "-rotate-90"}`} />
           <span className="truncate">{cat.name}</span>
+          {/* iPadOS sidebar disclosure: a trailing chevron that turns. */}
+          <IconChevron
+            size={13}
+            strokeWidth={2.4}
+            className={`ml-auto shrink-0 opacity-0 transition-[transform,opacity] duration-300 ease-spring group-hover/cat:opacity-100 ${open ? "" : "-rotate-90 opacity-100"}`}
+          />
         </button>
         {canManageChannels && (
           <button
             type="button"
             onClick={() => startAddChannel(cat.id)}
             aria-label={`Add channel to ${cat.name}`}
-            className="shrink-0 rounded p-0.5 text-text-muted opacity-0 transition-opacity hover:text-text-normal group-hover/cat:opacity-100 focus-visible:opacity-100"
+            className="tool-btn h-6 w-6 opacity-0 group-hover/cat:opacity-100 focus-visible:opacity-100"
           >
-            <IconPlus size={12} />
+            <IconPlus size={14} strokeWidth={2.2} />
           </button>
         )}
       </div>
@@ -488,10 +483,10 @@ export function ChannelList({
   };
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col bg-bg-secondary">
+    <aside className="flex min-h-0 min-w-0 flex-1 flex-col">
       {showServerHeader && (
         bannerUrl && safeImageUrl(bannerUrl) ? (
-          <div className="relative h-24 shrink-0 overflow-hidden">
+          <div className="relative m-2 mb-0 h-28 shrink-0 overflow-hidden rounded-[14px]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={safeImageUrl(bannerUrl)!}
@@ -499,68 +494,60 @@ export function ChannelList({
               draggable={false}
               className="absolute inset-0 h-full w-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-bg-secondary" />
-            <div className="absolute right-2 top-2 flex items-center gap-1">
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            <div className="absolute right-1.5 top-1.5 flex items-center gap-0.5 rounded-full bg-black/30 p-0.5 backdrop-blur-md [&_button]:text-white/90">
               {canManageChannels && (
                 <button
                   type="button"
                   onClick={() => setAddingCategory((v) => !v)}
                   aria-label="Create category"
-                  className="rounded bg-black/40 p-1 text-white/80 transition-colors hover:text-white"
+                  className="tool-btn h-7 w-7 hover:bg-white/15"
                 >
                   <IconPlus size={16} />
                 </button>
               )}
-              <span className="[&_button]:text-white/80">
-                <NotificationBell />
-              </span>
+              <NotificationBell />
             </div>
             <button
               type="button"
               onClick={onOpenServerSettings}
-              className="absolute inset-x-0 bottom-0 flex min-w-0 items-center justify-between px-4 pb-2 pt-6 text-left"
+              className="press absolute inset-x-0 bottom-0 flex min-w-0 items-center gap-1 px-3.5 pb-2.5 pt-6 text-left"
             >
-              <span className="flex min-w-0 items-center gap-1">
-                <span className="truncate text-[15px] font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">{title}</span>
-                {verified && (
-                  <Tooltip label="This space is officially verified by Disband">
-                    <IconVerified size={15} className="shrink-0 text-sky-400" />
-                  </Tooltip>
-                )}
-              </span>
-              <IconChevron size={18} className="shrink-0 text-white/70" />
+              <span className="truncate text-[18px] font-bold tracking-[-0.02em] text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]">{title}</span>
+              {verified && (
+                <Tooltip label="This space is officially verified by Disband">
+                  <IconVerified size={16} className="shrink-0 text-white" />
+                </Tooltip>
+              )}
+              <IconChevron size={16} strokeWidth={2.4} className="shrink-0 text-white/75" />
             </button>
           </div>
         ) : (
-        <div className="flex h-12 shrink-0 items-center border-b border-black/20 px-4 shadow-sm">
+        <div className="flex h-[56px] shrink-0 items-center gap-1 px-2.5 pt-1">
           <button
             type="button"
             onClick={onOpenServerSettings}
-            className="flex min-w-0 flex-1 items-center justify-between py-2 text-left transition-all duration-150 ease-in-out hover:text-text-normal"
+            className="press flex min-w-0 flex-1 items-center gap-1 rounded-[10px] px-1.5 py-1.5 text-left transition-colors hover:bg-interactive-hover"
           >
-            <span className="flex min-w-0 items-center gap-1">
-              <span className="truncate text-[15px] font-semibold">{title}</span>
-              {verified && (
-                <Tooltip label="This space is officially verified by Disband">
-                  <IconVerified size={15} className="shrink-0 text-sky-400" />
-                </Tooltip>
-              )}
-            </span>
-            <IconChevron size={18} className="shrink-0 text-text-muted" />
+            <span className="truncate text-[18px] font-bold tracking-[-0.02em] text-text-normal">{title}</span>
+            {verified && (
+              <Tooltip label="This space is officially verified by Disband">
+                <IconVerified size={16} className="shrink-0 text-sys-blue" />
+              </Tooltip>
+            )}
+            <IconChevron size={16} strokeWidth={2.4} className="shrink-0 text-text-muted" />
           </button>
           {canManageChannels && (
             <button
               type="button"
               onClick={() => setAddingCategory((v) => !v)}
               aria-label="Create category"
-              className="ml-1 shrink-0 rounded p-1 text-text-muted transition-colors hover:text-text-normal"
+              className="tool-btn"
             >
-              <IconPlus size={16} />
+              <IconPlus size={18} />
             </button>
           )}
-          <span className="ml-1">
-            <NotificationBell />
-          </span>
+          <NotificationBell />
         </div>
         )
       )}
@@ -569,21 +556,23 @@ export function ChannelList({
           type="button"
           onClick={onOpenCatalysts}
           title="View space Catalysts"
-          className="mx-2 mt-2 flex shrink-0 items-center gap-2 rounded-lg border border-brand/25 bg-brand/[0.06] px-2.5 py-1.5 text-left transition-colors hover:bg-brand/[0.12]"
+          className="press mx-2.5 mt-2 flex shrink-0 items-center gap-2.5 rounded-[12px] bg-fill-tertiary px-2.5 py-2 text-left transition-colors hover:bg-fill-secondary"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-brand">
-            <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
-          </svg>
-          <span className="min-w-0 flex-1 truncate text-xs font-semibold text-text-normal">
+          <span className="icon-tile h-6 w-6 rounded-[6px] bg-gradient-to-b from-[#b986ff] to-[#8a5cf5]">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+              <path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z" />
+            </svg>
+          </span>
+          <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text-normal">
             {catalystCount ?? 0} {(catalystCount ?? 0) === 1 ? "Catalyst" : "Catalysts"}
           </span>
-          <span className="shrink-0 text-[11px] font-bold text-brand">Boost</span>
+          <span className="shrink-0 text-[12.5px] font-semibold text-brand">Boost</span>
         </button>
       )}
 
-      <div className="flex-1 overflow-y-auto px-2 py-2">
+      <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-3 pt-1">
         {addingCategory && (
-          <div className="mb-1 flex items-center gap-1">
+          <div className="popover-pop mx-1 mb-2 mt-1 flex items-center gap-1.5 rounded-[12px] bg-bg-primary p-2 shadow-elev-2 ring-1 ring-glass-border">
             <input
               autoFocus
               value={newCategoryName}
@@ -596,12 +585,12 @@ export function ChannelList({
                 }
               }}
               placeholder="Category name"
-              className="min-w-0 flex-1 rounded bg-bg-accent px-2 py-1 text-xs outline-none focus:ring-1 focus:ring-brand"
+              className="field min-h-0 flex-1 px-2.5 py-1.5 text-[13px]"
             />
-            <button type="button" onClick={() => void submitAddCategory()} disabled={busy} className="text-xs text-brand">
+            <button type="button" onClick={() => void submitAddCategory()} disabled={busy || !newCategoryName.trim()} className="btn btn-filled btn-sm">
               Add
             </button>
-            <button type="button" onClick={() => setAddingCategory(false)} className="text-text-muted">
+            <button type="button" onClick={() => setAddingCategory(false)} aria-label="Cancel" className="tool-btn h-7 w-7">
               <IconClose size={14} />
             </button>
           </div>
@@ -611,7 +600,7 @@ export function ChannelList({
           const items = byCategory(cat.id);
           const open = !collapsed[cat.id];
           return (
-            <div key={cat.id} className="mb-1">
+            <div key={cat.id}>
               {renderCategoryHeader(cat)}
               {open && items.map((ch) => renderChannel(ch))}
               {open && canManageChannels && addChannelTarget?.categoryId === cat.id && renderAddChannelComposer()}
@@ -620,37 +609,39 @@ export function ChannelList({
         })}
 
         {(uncategorized.length > 0 || canManageChannels) && (
-          <div className="mb-1">
-            <div className="group/cat relative flex items-center">
-              {overCatId === "uncategorized" && <div className="absolute inset-x-1 -top-0.5 h-0.5 rounded bg-brand" />}
+          <div>
+            <div className="group/cat relative mt-3 flex items-center">
+              {overCatId === "uncategorized" && <div className="absolute inset-x-2 -top-px h-0.5 rounded-full bg-brand" />}
               <button
                 type="button"
                 data-drop-uncategorized="true"
+                aria-expanded={!collapsed[UNCATEGORIZED_KEY]}
                 onClick={() => toggleCollapsed(UNCATEGORIZED_KEY)}
                 onContextMenu={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                 }}
-                className={`flex min-w-0 flex-1 items-center gap-0.5 px-0.5 py-1 text-[11px] font-bold uppercase tracking-wide transition-all duration-150 ${
+                className={`flex h-7 min-w-0 flex-1 items-center gap-1 rounded-[8px] px-2.5 text-[12.5px] font-semibold transition-colors duration-150 ${
                   overCatId === "uncategorized" ? "text-brand" : "text-text-muted hover:text-text-normal"
                 }`}
               >
+                <span className="truncate">Other</span>
                 <IconChevron
-                  size={12}
-                  className={`shrink-0 transition-transform duration-150 ${
-                    collapsed[UNCATEGORIZED_KEY] ? "-rotate-90" : ""
+                  size={13}
+                  strokeWidth={2.4}
+                  className={`ml-auto shrink-0 opacity-0 transition-[transform,opacity] duration-300 ease-spring group-hover/cat:opacity-100 ${
+                    collapsed[UNCATEGORIZED_KEY] ? "-rotate-90 opacity-100" : ""
                   }`}
                 />
-                <span className="truncate">Uncategorized</span>
               </button>
               {canManageChannels && (
                 <button
                   type="button"
                   onClick={() => startAddChannel(null)}
                   aria-label="Add uncategorized channel"
-                  className="shrink-0 rounded p-0.5 text-text-muted opacity-0 transition-opacity hover:text-text-normal group-hover/cat:opacity-100 focus-visible:opacity-100"
+                  className="tool-btn h-6 w-6 opacity-0 group-hover/cat:opacity-100 focus-visible:opacity-100"
                 >
-                  <IconPlus size={12} />
+                  <IconPlus size={14} strokeWidth={2.2} />
                 </button>
               )}
             </div>
@@ -667,7 +658,7 @@ export function ChannelList({
       {dragGhost && (
         <div
           aria-hidden
-          className="pointer-events-none fixed z-50 flex translate-x-2 translate-y-2 items-center gap-1.5 whitespace-nowrap rounded border border-divider bg-bg-tertiary px-3 py-1.5 text-sm font-medium text-text-normal shadow-lg"
+          className="glass-thick pointer-events-none fixed z-50 flex translate-x-2 translate-y-2 scale-105 items-center gap-1.5 whitespace-nowrap rounded-[10px] px-3 py-1.5 text-[13.5px] font-semibold text-text-normal"
           style={{ left: dragGhost.x, top: dragGhost.y }}
         >
           {dragGhost.kind === "category" ? (

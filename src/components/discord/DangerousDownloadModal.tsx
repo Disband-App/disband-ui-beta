@@ -26,7 +26,7 @@ export function DangerousDownloadModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="download-warning-title"
-        className="modal-pop relative w-full max-w-md rounded-lg bg-bg-secondary p-6 shadow-2xl"
+        className="modal-pop relative w-full max-w-md rounded-[22px] bg-overlay-panel p-6 shadow-elev-4 ring-1 ring-glass-border"
       >
         <h2 id="download-warning-title" className="text-lg font-semibold text-text-normal">
           Potentially dangerous download
@@ -47,7 +47,7 @@ export function DangerousDownloadModal({
           <button
             type="button"
             onClick={onContinue}
-            className="rounded bg-brand px-4 py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+            className="btn btn-filled"
           >
             Continue
           </button>

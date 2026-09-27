@@ -42,7 +42,7 @@ export function SkinLapsedNotice() {
       <div
         role="dialog"
         aria-labelledby="skin-lapsed-title"
-        className="relative w-full max-w-md overflow-hidden rounded-xl bg-bg-secondary shadow-2xl ring-1 ring-divider"
+        className="modal-pop relative w-full max-w-md overflow-hidden rounded-[22px] bg-overlay-panel shadow-elev-4 ring-1 ring-glass-border"
       >
         <div className="border-b border-divider px-6 py-5">
           <h2 id="skin-lapsed-title" className="text-lg font-bold text-text-normal">
@@ -69,14 +69,14 @@ export function SkinLapsedNotice() {
           <a
             href="/app?settings=subscriptions"
             onClick={acknowledge}
-            className="flex-1 rounded-md bg-brand py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand-hover"
+            className="btn btn-filled flex-1"
           >
             Update payment method
           </a>
           <button
             type="button"
             onClick={acknowledge}
-            className="flex-1 rounded-md border border-divider py-2.5 text-sm font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+            className="btn btn-gray flex-1"
           >
             Not now
           </button>

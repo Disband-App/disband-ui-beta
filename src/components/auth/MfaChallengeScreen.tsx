@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "@/contexts/AppContext";
-import { Logo } from "@/components/ui/Logo";
+import { AppIcon } from "@/components/ui/AppIcon";
 import {
   factorLabel,
   listVerifiedMfaFactors,
@@ -74,7 +74,7 @@ export function MfaChallengeScreen() {
 
   if (loadingFactors) {
     return (
-      <div className="flex h-screen items-center justify-center bg-bg-tertiary text-text-muted">
+      <div className="flex h-screen items-center justify-center bg-canvas text-text-muted">
         Loading your security methods…
       </div>
     );
@@ -82,14 +82,14 @@ export function MfaChallengeScreen() {
 
   if (loadError) {
     return (
-      <div className="flex h-screen items-center justify-center bg-bg-tertiary p-6">
-        <div className="w-full max-w-sm rounded-lg bg-bg-secondary p-8 text-center shadow-xl">
-          <h1 className="text-xl font-bold text-text-normal">Something went wrong</h1>
+      <div className="flex h-screen items-center justify-center bg-canvas p-6">
+        <div className="view-enter w-full max-w-sm rounded-[24px] bg-bg-secondary p-8 text-center shadow-elev-3 ring-1 ring-glass-border">
+          <h1 className="title-2 text-text-normal">Something went wrong</h1>
           <p className="mt-2 text-sm text-text-muted">{loadError}</p>
           <button
             type="button"
             onClick={() => setAttempt((a) => a + 1)}
-            className="mt-4 w-full rounded bg-brand py-2.5 text-sm font-semibold text-white hover:bg-brand-hover"
+            className="btn btn-filled mt-4 w-full"
           >
             Try again
           </button>
@@ -106,13 +106,13 @@ export function MfaChallengeScreen() {
   }
 
   return (
-    <div className="flex h-screen items-center justify-center bg-bg-tertiary p-6">
-      <div className="w-full max-w-sm rounded-lg bg-bg-secondary p-8 shadow-xl">
+    <div className="flex h-screen items-center justify-center bg-canvas p-6">
+      <div className="view-enter w-full max-w-sm rounded-[24px] bg-bg-secondary p-8 shadow-elev-3 ring-1 ring-glass-border">
         <div className="mb-6 text-center">
           <div className="mx-auto mb-3 flex justify-center">
-            <Logo adaptive size={56} className="h-14 w-14" priority />
+            <AppIcon size={64} />
           </div>
-          <h1 className="text-2xl font-bold text-text-normal">Two-factor authentication</h1>
+          <h1 className="title-2 text-text-normal">Two-factor authentication</h1>
           <p className="mt-1 text-sm text-text-muted">
             Verify it&apos;s you with your authenticator app or passkey.
           </p>
@@ -122,11 +122,11 @@ export function MfaChallengeScreen() {
           <form onSubmit={submitTotp} className="space-y-4">
             {totpFactors.length > 1 && (
               <label className="block">
-                <span className="mb-1 block text-xs font-bold uppercase text-text-muted">Authenticator</span>
+                <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Authenticator</span>
                 <select
                   value={selectedFactorId}
                   onChange={(e) => setSelectedFactorId(e.target.value)}
-                  className="w-full rounded bg-bg-accent px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand"
+                  className="field w-full text-[14px]"
                 >
                   {totpFactors.map((factor) => (
                     <option key={factor.id} value={factor.id}>
@@ -137,7 +137,7 @@ export function MfaChallengeScreen() {
               </label>
             )}
             <label className="block">
-              <span className="mb-1 block text-xs font-bold uppercase text-text-muted">Authentication code</span>
+              <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Authentication code</span>
               <input
                 required
                 inputMode="numeric"
@@ -146,14 +146,14 @@ export function MfaChallengeScreen() {
                 maxLength={6}
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                className="w-full rounded bg-bg-accent px-3 py-2.5 text-center text-lg tracking-[0.35em] outline-none focus:ring-2 focus:ring-brand"
+                className="field w-full text-center text-lg tracking-[0.35em]"
                 placeholder="000000"
               />
             </label>
             <button
               type="submit"
               disabled={loading || code.length !== 6}
-              className="w-full rounded bg-brand py-2.5 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+              className="btn btn-filled w-full"
             >
               {loading ? "Verifying…" : "Verify code"}
             </button>
@@ -171,7 +171,7 @@ export function MfaChallengeScreen() {
                 type="button"
                 disabled={loading}
                 onClick={() => void usePasskey(factor.id)}
-                className="w-full rounded border border-divider bg-bg-accent py-2.5 text-sm font-semibold text-text-normal hover:bg-interactive-hover disabled:opacity-50"
+                className="btn btn-gray w-full"
               >
                 {loading ? "Verifying…" : `Use ${factorLabel(factor)}`}
               </button>

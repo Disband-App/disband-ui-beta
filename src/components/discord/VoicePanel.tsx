@@ -7,7 +7,7 @@ import { CallTile, CallGrid } from "./CallTile";
 import { CallControls } from "./CallUI";
 import { displayName } from "@/lib/utils";
 import { requestNotificationPermissionFromGesture } from "@/lib/notifications";
-import { IconSpeaker } from "@/components/icons";
+import { IconSpeaker, IconWaveform } from "@/components/icons";
 
 interface VoicePanelProps {
   channelId: string;
@@ -100,12 +100,14 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
   }, [inThisChannel, channelId]);
 
   return (
-    <main className="call-enter flex min-w-0 flex-1 flex-col bg-gradient-to-b from-status-online/[0.06] to-bg-primary">
-      <header className="flex h-12 items-center gap-2 border-b border-black/20 px-4 shadow-sm">
-        <IconSpeaker className={voice.joined ? "text-status-online" : "text-text-muted"} />
-        <h1 className="font-semibold">{channelName}</h1>
+    <main className="view-enter flex min-w-0 flex-1 flex-col bg-bg-primary">
+      <header className="flex h-[58px] shrink-0 items-center gap-2.5 px-4 hairline-b">
+        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${voice.joined ? "bg-status-online/15 text-status-online" : "bg-fill-tertiary text-text-muted"}`}>
+          <IconSpeaker size={18} strokeWidth={2} />
+        </span>
+        <h1 className="text-[16px] font-semibold tracking-[-0.012em]">{channelName}</h1>
         {voice.joined && (
-          <span className="ml-2 flex items-center gap-1.5 rounded-full bg-status-online/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wide text-status-online">
+          <span className="pill ml-1 bg-status-online/15 text-status-online">
             <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-status-online" />
             Connected
           </span>
@@ -115,14 +117,14 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
       <div className="flex min-h-0 flex-1 flex-col items-center gap-4 overflow-hidden px-6 pt-4 pb-4">
         <div className="text-center">
           <div
-            className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${
-              voice.joined ? "bg-status-online/15 text-status-online" : "bg-bg-tertiary text-text-muted"
+            className={`mx-auto flex h-20 w-20 items-center justify-center rounded-[24px] ${
+              voice.joined ? "speaking-ring bg-status-online/15 text-status-online" : "bg-fill-tertiary text-text-muted"
             }`}
           >
-            <IconSpeaker size={40} strokeWidth={1.5} />
+            <IconWaveform size={36} strokeWidth={1.75} />
           </div>
-          <h2 className="mt-4 text-xl font-semibold">{voice.joined ? channelName : "Voice Channel"}</h2>
-          <p className="mt-1 text-sm text-text-muted">
+          <h2 className="large-title mt-4 text-[26px]">{channelName}</h2>
+          <p className="mt-1 text-[14px] text-text-muted">
             {voice.joined
               ? `${voice.participants.length} connected`
               : `${voice.participants.length} connected — join to talk`}
@@ -131,7 +133,7 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
 
         <CallGrid>
           {tiles.length === 0 ? (
-            <p className="px-6 py-10 text-center text-sm text-text-muted">
+            <p className="px-6 py-10 text-center text-[13.5px] text-text-muted">
               No one is here yet.
               <br />
               Join to start the conversation.
@@ -152,7 +154,7 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
         </CallGrid>
 
         {(voice.error || actionError) && (
-          <p role="alert" className="max-w-md rounded-lg border border-status-dnd/30 bg-status-dnd/10 px-3 py-2 text-center text-sm text-status-dnd">
+          <p role="alert" className="max-w-md rounded-[14px] bg-status-dnd/12 px-4 py-2.5 text-center text-[13px] text-status-dnd">
             {actionError ?? voice.error}
           </p>
         )}
@@ -168,9 +170,9 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
                 void requestNotificationPermissionFromGesture();
                 void voice.join();
               }}
-              className="rounded-full bg-status-online px-8 py-3 text-sm font-semibold text-white shadow-lg shadow-status-online/25 transition-all hover:scale-[1.03] hover:opacity-90 disabled:cursor-wait disabled:opacity-60 disabled:hover:scale-100"
+              className="btn btn-lg bg-sys-green px-10 text-white shadow-elev-2 hover:brightness-110 disabled:cursor-wait"
             >
-              {joining ? "Joining…" : "Join Voice"}
+              {joining ? "Joining…" : "Join voice"}
             </button>
           ) : (
             <>
@@ -193,11 +195,7 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
                     setActionError(null);
                     void session.toggleCamera().catch(() => setActionError("Couldn't access the camera."));
                   }}
-                  className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${
-                    session.cameraEnabled
-                      ? "bg-status-online text-white"
-                      : "bg-bg-accent text-text-normal hover:bg-interactive-hover"
-                  }`}
+                  className={`btn btn-sm ${session.cameraEnabled ? "bg-sys-green text-white" : "btn-gray"}`}
                 >
                   {session.cameraEnabled ? "Stop video" : "Turn on camera"}
                 </button>
@@ -207,11 +205,7 @@ export function VoicePanel({ channelId, channelName, onOpenSettings }: VoicePane
                     setActionError(null);
                     void session.toggleScreenShare().catch(() => setActionError("Couldn't start screen sharing."));
                   }}
-                  className={`rounded-full px-4 py-2 text-[13px] font-semibold transition-colors ${
-                    session.screenEnabled
-                      ? "bg-status-online text-white"
-                      : "bg-bg-accent text-text-normal hover:bg-interactive-hover"
-                  }`}
+                  className={`btn btn-sm ${session.screenEnabled ? "bg-sys-green text-white" : "btn-gray"}`}
                 >
                   {session.screenEnabled ? "Stop sharing" : "Share screen"}
                 </button>

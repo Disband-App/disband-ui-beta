@@ -50,7 +50,7 @@ export function CreateGroupChatModal({ open, onClose }: CreateGroupChatModalProp
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center bg-overlay-scrim overlay-fade p-4">
-      <form onSubmit={submit} role="dialog" aria-modal="true" aria-label="Create a group chat" className="modal-pop w-full max-w-md rounded-lg bg-bg-secondary p-6 shadow-2xl">
+      <form onSubmit={submit} role="dialog" aria-modal="true" aria-label="Create a group chat" className="modal-pop w-full max-w-md rounded-[22px] bg-overlay-panel p-6 shadow-elev-4 ring-1 ring-glass-border">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-bold text-text-normal">Create Group Chat</h2>
           <button type="button" onClick={onClose} className="text-text-muted hover:text-text-normal">
@@ -59,17 +59,17 @@ export function CreateGroupChatModal({ open, onClose }: CreateGroupChatModalProp
         </div>
 
         <label className="mb-4 block">
-          <span className="mb-1 block text-xs font-bold uppercase text-text-muted">Group name</span>
+          <span className="mb-1 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Group name</span>
           <input
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={64}
-            className="w-full rounded bg-bg-accent px-3 py-2 text-sm text-text-normal outline-none focus:ring-2 focus:ring-brand"
+            className="field w-full text-[14px]"
           />
         </label>
 
-        <p className="mb-2 text-xs font-bold uppercase text-text-muted">
+        <p className="mb-2 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">
           Add friends ({selected.size}/9) — 10 members max
         </p>
         <div className="mb-4 max-h-48 space-y-1 overflow-y-auto rounded border border-divider p-2">
@@ -94,7 +94,7 @@ export function CreateGroupChatModal({ open, onClose }: CreateGroupChatModalProp
         <button
           type="submit"
           disabled={loading || selected.size === 0 || !name.trim()}
-          className="w-full rounded bg-brand py-2.5 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-50"
+          className="btn btn-filled w-full"
         >
           {loading ? "Creating…" : "Create Group"}
         </button>

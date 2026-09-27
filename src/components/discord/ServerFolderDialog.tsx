@@ -57,11 +57,11 @@ export function ServerFolderDialog({ title, initialName = "", initialColor = FOL
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="modal-pop w-full max-w-xs rounded-xl bg-bg-secondary p-5 shadow-2xl"
+        className="modal-pop w-full max-w-xs rounded-[22px] bg-overlay-panel p-5 shadow-elev-4 ring-1 ring-glass-border"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-base font-bold text-text-normal">{title}</h2>
-        <label className="mt-4 block text-xs font-bold uppercase tracking-wide text-text-muted">
+        <label className="mt-4 block text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">
           Folder name
           <input
             autoFocus
@@ -72,10 +72,10 @@ export function ServerFolderDialog({ title, initialName = "", initialColor = FOL
             }}
             maxLength={32}
             placeholder="My folder"
-            className="mt-1.5 w-full rounded-md border border-divider bg-bg-tertiary px-3 py-2 text-sm font-normal normal-case tracking-normal text-text-normal outline-none placeholder:text-text-muted focus:border-brand"
+            className="field mt-1.5 w-full normal-case tracking-normal placeholder:text-text-muted text-[14px]"
           />
         </label>
-        <p className="mb-1.5 mt-4 text-xs font-bold uppercase tracking-wide text-text-muted">Folder color</p>
+        <p className="mb-1.5 mt-4 text-xs uppercase font-semibold tracking-[0.04em] text-text-muted">Folder color</p>
         <div className="flex flex-wrap gap-2">
           {FOLDER_COLORS.map((c) => (
             <button
@@ -95,7 +95,7 @@ export function ServerFolderDialog({ title, initialName = "", initialColor = FOL
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 rounded-md border border-divider py-2 text-sm font-medium text-text-normal transition-colors hover:bg-interactive-hover"
+            className="btn btn-gray flex-1"
           >
             Cancel
           </button>
@@ -103,7 +103,7 @@ export function ServerFolderDialog({ title, initialName = "", initialColor = FOL
             type="button"
             disabled={saving}
             onClick={() => void save()}
-            className="flex-1 rounded-md bg-brand py-2 text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+            className="btn btn-filled flex-1"
           >
             {saving ? "Saving…" : "Save"}
           </button>

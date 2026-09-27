@@ -87,9 +87,9 @@ export function MaintenanceNotice() {
   return (
     <div
       role="status"
-      className="relative z-[60] flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-[#f0b232]/30 bg-[#f0b232]/12 px-4 py-2.5"
+      className="relative z-[60] flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-status-idle/30 bg-status-idle/12 px-4 py-2.5"
     >
-      <span className="shrink-0 text-[#f0b232]" aria-hidden>
+      <span className="shrink-0 text-status-idle" aria-hidden>
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
           strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />

@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { SplitLogoLoader } from "@/components/ui/SplitLogoLoader";
+import { AppIcon } from "@/components/ui/AppIcon";
+import { ActivityIndicator } from "@/components/ui/ActivityIndicator";
 
+// Launch screen: the app icon settles in, a system spinner sits under it.
+// Nothing else competes for attention on a start that is usually quick.
 export function LoadingScreen({ label = "Loading Disband" }: { label?: string }) {
   const [showStatus, setShowStatus] = useState(false);
 
@@ -15,21 +18,22 @@ export function LoadingScreen({ label = "Loading Disband" }: { label?: string })
     <div
       role="status"
       aria-live="polite"
-      className="flex h-screen w-screen flex-col items-center justify-center bg-bg-tertiary"
+      aria-label={label}
+      className="flex h-screen w-screen flex-col items-center justify-center bg-canvas"
     >
-      {/* Sized down from 64: at that size it dominated the screen on a
-          short load, which made a fast start feel slower than it was. */}
-      <SplitLogoLoader size={44} className="logo-adaptive" />
-      <p className="mt-1 text-sm font-medium text-text-muted">{label}</p>
+      <div className="badge-pop">
+        <AppIcon size={76} />
+      </div>
+      <ActivityIndicator size={22} className="mt-9" />
 
       {showStatus && (
-        <p className="absolute bottom-8 animate-[tooltip-enter_0.3s_ease-out_forwards] text-center text-xs text-text-muted">
-          Connection issues?{" "}
+        <p className="island-in absolute bottom-10 text-center text-[13px] text-text-muted">
+          Taking longer than usual?{" "}
           <a
             href="/status"
-            className="text-brand underline underline-offset-2 transition-colors hover:text-brand-light"
+            className="font-medium text-text-link hover:underline"
           >
-            Check our status
+            Check service status
           </a>
         </p>
       )}

@@ -11,27 +11,27 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#1e1f22] text-[#dbdee1]">
+    <div className="min-h-screen bg-canvas text-text-normal">
       <MarketingNav />
       <main className="mx-auto max-w-3xl px-6 pb-16 pt-24">
-        <h1 className="text-3xl font-bold text-white">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-[#949ba4]">Last updated: June 2025</p>
+        <h1 className="large-title text-[34px] sm:text-[40px]">Privacy Policy</h1>
+        <p className="mt-2 text-sm text-text-muted">Last updated: June 2025</p>
 
-        <div className="prose-disband mt-8 space-y-6 text-[15px] leading-relaxed text-[#b5bac1]">
+        <div className="prose-disband mt-8 space-y-6 text-[15px] leading-relaxed text-text-muted">
           <p>
             Disband is built around privacy. We collect only what we need to operate the service —
             account credentials, profile information you choose to share, and the data required to
             deliver messages and calls to their intended recipients.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">End-to-end encryption</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">End-to-end encryption</h2>
           <p>
             Messages and media on Disband are protected with end-to-end encryption (E2EE). Content is
             encrypted on your device before it is transmitted and can only be decrypted by participants
             in a conversation. Disband cannot read the contents of your encrypted chats.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">Law enforcement & legal requests</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">Law enforcement & legal requests</h2>
           <p>
             Because user communications are end-to-end encrypted, Disband does not possess readable
             copies of message content. We do not accept subpoenas or other legal demands seeking access
@@ -44,24 +44,24 @@ export default function PrivacyPage() {
             address or account creation date). We will notify users when permitted by law.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">Data retention</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">Data retention</h2>
           <p>
             Account data is retained while your account is active. You may delete your account at any
             time through settings or by contacting support. Encrypted message payloads are not stored
             in decryptable form on our spaces.
           </p>
 
-          <h2 className="text-lg font-semibold text-white">Contact</h2>
+          <h2 className="-mb-3 pt-3 text-[20px] font-semibold tracking-[-0.015em] text-text-normal">Contact</h2>
           <p>
             Questions about this policy? Reach us at{" "}
-            <a href="mailto:privacy@disband.dev" className="text-[#00a8fc] hover:underline">
+            <a href="mailto:privacy@disband.dev" className="text-text-link hover:underline">
               privacy@disband.dev
             </a>
             .
           </p>
         </div>
 
-        <Link href="/home" className="mt-10 inline-block text-sm text-brand hover:underline">
+        <Link href="/home" className="mt-10 inline-flex items-center gap-1 text-[15px] text-text-link hover:underline">
           ← Back to home
         </Link>
       </main>

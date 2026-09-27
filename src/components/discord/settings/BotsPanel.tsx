@@ -189,7 +189,7 @@ export function BotsPanel() {
           <button
             type="button"
             onClick={() => setCreatedToken(null)}
-            className="rounded-md bg-brand px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-hover"
+            className="btn btn-filled btn-sm"
           >
             New bot
           </button>
@@ -210,7 +210,7 @@ export function BotsPanel() {
               <button
                 type="button"
                 onClick={() => void copyText(createdToken.token, setTokenCopied)}
-                className="shrink-0 rounded-md border border-divider px-3 py-2 text-[13px] font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+                className="btn btn-gray btn-sm shrink-0"
               >
                 {tokenCopied ? "Copied" : "Copy"}
               </button>
@@ -243,7 +243,7 @@ export function BotsPanel() {
                   type="button"
                   onClick={() => void createBot()}
                   disabled={creating}
-                  className="shrink-0 rounded-md bg-brand px-4 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-60"
+                  className="btn btn-filled btn-sm shrink-0"
                 >
                   {creating ? "Creating…" : "Create"}
                 </button>
@@ -296,14 +296,14 @@ export function BotsPanel() {
                     <button
                       type="button"
                       onClick={() => openInvite(bot)}
-                      className="rounded-md border border-divider px-2.5 py-1 text-[12.5px] font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+                      className="btn btn-gray btn-sm"
                     >
                       Invite
                     </button>
                     <button
                       type="button"
                       onClick={() => void revokeBot(bot)}
-                      className="rounded-md border border-status-dnd/40 px-2.5 py-1 text-[12.5px] font-semibold text-status-dnd transition-colors hover:bg-status-dnd/10"
+                      className="btn btn-destructive btn-sm"
                     >
                       Revoke
                     </button>
@@ -316,7 +316,7 @@ export function BotsPanel() {
             ))}
             {revokedBots.length > 0 && (
               <div className="px-4 py-2">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-text-muted">
+                <p className="text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
                   Revoked
                 </p>
                 {revokedBots.map((bot) => (
@@ -346,7 +346,7 @@ export function BotsPanel() {
             className="absolute inset-0 bg-overlay-scrim overlay-fade"
             onClick={() => setInvitingBot(null)}
           />
-          <div className="modal-pop relative w-full max-w-md rounded-xl bg-bg-primary p-5 shadow-2xl">
+          <div className="modal-pop relative w-full max-w-md rounded-[22px] bg-overlay-panel p-5 shadow-elev-4 ring-1 ring-glass-border">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-[16px] font-semibold text-text-normal">
@@ -430,7 +430,7 @@ export function BotsPanel() {
                     <button
                       type="button"
                       onClick={() => void copyText(inviteUrl, setInviteCopied)}
-                      className="flex shrink-0 items-center gap-1.5 rounded-md border border-divider px-3 py-2 text-[12.5px] font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+                      className="btn btn-gray btn-sm shrink-0"
                     >
                       <IconCopy size={14} />
                       {inviteCopied ? "Copied" : "Copy"}
@@ -448,7 +448,7 @@ export function BotsPanel() {
                 <button
                   type="button"
                   onClick={() => setInvitingBot(null)}
-                  className="rounded-md border border-divider px-3 py-1.5 text-[13px] font-semibold text-text-normal transition-colors hover:bg-interactive-hover"
+                  className="btn btn-gray btn-sm"
                 >
                   Close
                 </button>
@@ -457,7 +457,7 @@ export function BotsPanel() {
                     type="button"
                     onClick={() => void generateInvite()}
                     disabled={inviteLoading}
-                    className="rounded-md bg-brand px-3 py-1.5 text-[13px] font-semibold text-white transition-colors hover:bg-brand-hover disabled:opacity-60"
+                    className="btn btn-filled btn-sm"
                   >
                     {inviteLoading ? "Generating…" : "Generate invite link"}
                   </button>

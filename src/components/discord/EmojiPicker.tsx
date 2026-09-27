@@ -6,6 +6,7 @@ import { EMOJI_CATEGORIES } from "@/lib/emoji";
 import { searchEmojis } from "@/lib/emoji-shortcodes";
 import { twemojiUrl } from "@/components/ui/Twemoji";
 import { safeImageUrl } from "@/lib/safe-url";
+import { IconSearch, IconSmile } from "@/components/icons";
 
 interface EmojiPickerProps {
   onSelect: (emoji: string) => void;
@@ -96,28 +97,32 @@ export function EmojiPicker({ onSelect, serverId }: EmojiPickerProps) {
         aria-label="Insert emoji"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="flex h-8 w-8 items-center justify-center rounded-full transition-all duration-150 hover:bg-interactive-hover hover:text-text-normal"
+        data-active={open ? "true" : undefined}
+        className="tool-btn h-8 w-8"
       >
-        <EmojiImg emoji="😀" />
+        <IconSmile size={20} />
       </button>
 
       {mounted && open
         && createPortal(
           <div
             id="emoji-picker-panel"
-            className="fixed z-[120] max-h-80 overflow-hidden rounded-lg border border-divider bg-bg-secondary shadow-2xl"
-            style={{ left: panelPos.left, bottom: panelPos.bottom, width: panelPos.width }}
+            className="glass-thick popover-pop fixed z-[120] max-h-80 overflow-hidden rounded-[18px]"
+            style={{ left: panelPos.left, bottom: panelPos.bottom, width: panelPos.width, ["--popover-origin" as string]: "bottom right" }}
           >
             <div className="max-h-80 overflow-y-auto p-2">
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search emoji…"
-                className="mb-2 w-full rounded-md border border-black/20 bg-bg-accent px-2.5 py-1.5 text-sm text-text-normal placeholder:text-text-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/40"
-              />
+              <label className="search-field mb-2">
+                <IconSearch size={15} className="shrink-0" />
+                <input
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search emoji"
+                  autoFocus
+                />
+              </label>
               {q && (
                 <div className="mb-2">
-                  <p className="mb-1 px-1 text-[11px] font-bold uppercase text-text-muted">Results</p>
+                  <p className="section-label mb-1 px-1 text-[11px]">Results</p>
                   <div className="grid grid-cols-8 gap-0.5">
                     {searched.map((m) => (
                       <button
@@ -128,7 +133,7 @@ export function EmojiPicker({ onSelect, serverId }: EmojiPickerProps) {
                           setOpen(false);
                           setSearch("");
                         }}
-                        className="flex h-9 w-9 items-center justify-center rounded hover:bg-interactive-hover"
+                        className="flex h-9 w-9 items-center justify-center rounded-[10px] transition-transform duration-300 ease-spring hover:scale-125 hover:bg-interactive-hover"
                         title={`:${m.shortcode}:`}
                       >
                         <EmojiImg emoji={m.emoji} />
@@ -142,7 +147,7 @@ export function EmojiPicker({ onSelect, serverId }: EmojiPickerProps) {
               )}
               {!q && customEmoji.length > 0 && (
                 <div className="mb-2">
-                  <p className="mb-1 px-1 text-[11px] font-bold uppercase text-text-muted">Space Emoji</p>
+                  <p className="section-label mb-1 px-1 text-[11px]">Space Emoji</p>
                   <div className="grid grid-cols-8 gap-0.5">
                     {customEmoji.map((e) => (
                       <button
@@ -152,7 +157,7 @@ export function EmojiPicker({ onSelect, serverId }: EmojiPickerProps) {
                           onSelect(`:${e.name}:`);
                           setOpen(false);
                         }}
-                        className="flex h-9 w-9 items-center justify-center rounded hover:bg-interactive-hover"
+                        className="flex h-9 w-9 items-center justify-center rounded-[10px] transition-transform duration-300 ease-spring hover:scale-125 hover:bg-interactive-hover"
                         title={`:${e.name}:`}
                       >
                         <img src={safeImageUrl(e.url) ?? ""} alt={e.name} className="h-5 w-5 object-contain" />
@@ -163,7 +168,7 @@ export function EmojiPicker({ onSelect, serverId }: EmojiPickerProps) {
               )}
               {!q && EMOJI_CATEGORIES.map((cat) => (
                 <div key={cat.name} className="mb-2">
-                  <p className="mb-1 px-1 text-[11px] font-bold uppercase text-text-muted">{cat.name}</p>
+                  <p className="section-label mb-1 px-1 text-[11px]">{cat.name}</p>
                   <div className="grid grid-cols-8 gap-0.5">
                     {cat.emojis.map((emoji) => (
                       <button
@@ -173,7 +178,7 @@ export function EmojiPicker({ onSelect, serverId }: EmojiPickerProps) {
                           onSelect(emoji);
                           setOpen(false);
                         }}
-                        className="flex h-9 w-9 items-center justify-center rounded hover:bg-interactive-hover"
+                        className="flex h-9 w-9 items-center justify-center rounded-[10px] transition-transform duration-300 ease-spring hover:scale-125 hover:bg-interactive-hover"
                         title={emoji}
                       >
                         <EmojiImg emoji={emoji} />

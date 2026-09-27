@@ -71,17 +71,17 @@ export function GiftCard({ code, onLoad }: { code: string; onLoad?: () => void }
   // still-loading. Show a skeleton, then an honest invalid state.
   if (loading) {
     return (
-      <div aria-label="Loading gift" className="mt-1.5 max-w-[420px] animate-pulse overflow-hidden rounded-lg border-l-4 border-divider bg-bg-secondary p-4">
-        <div className="h-4 w-1/2 rounded bg-bg-accent" />
-        <div className="mt-2 h-5 w-3/4 rounded bg-bg-accent" />
-        <div className="mt-3 h-10 w-full rounded-lg bg-bg-accent" />
+      <div aria-label="Loading gift" className="mt-1.5 max-w-[420px] animate-pulse overflow-hidden rounded-[18px] bg-bubble-in p-4">
+        <div className="h-4 w-1/2 rounded-full bg-fill-tertiary" />
+        <div className="mt-2 h-5 w-3/4 rounded-full bg-fill-tertiary" />
+        <div className="mt-3 h-10 w-full rounded-[10px] bg-fill-tertiary" />
       </div>
     );
   }
 
   if (!gift) {
     return (
-      <div className="mt-1.5 max-w-[420px] rounded-lg border border-divider bg-bg-secondary px-4 py-3">
+      <div className="mt-1.5 max-w-[420px] rounded-[18px] bg-bubble-in px-4 py-3">
         <p className="text-[13px] text-text-muted">
           This gift link is invalid or has expired.
         </p>
@@ -128,8 +128,8 @@ export function GiftCard({ code, onLoad }: { code: string; onLoad?: () => void }
   return (
     <>
       <div
-        className="mt-1.5 max-w-[420px] overflow-hidden rounded-lg border-l-4 bg-bg-secondary"
-        style={{ borderColor: gone && !claimedByMe ? "var(--color-divider)" : accent }}
+        className="mt-1.5 max-w-[420px] overflow-hidden rounded-[18px] bg-bubble-in"
+        style={{ boxShadow: `inset 0 0 0 1.5px ${gone && !claimedByMe ? "var(--divider)" : `color-mix(in srgb, ${accent} 55%, transparent)`}` }}
       >
         <div className="flex items-center gap-3 px-4 pt-4">
           <span
@@ -144,7 +144,7 @@ export function GiftCard({ code, onLoad }: { code: string; onLoad?: () => void }
             </svg>
           </span>
           <div className="min-w-0">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-text-muted">
+            <p className="text-[11px] uppercase font-semibold tracking-[0.04em] text-text-muted">
               {mine ? "Your gift" : `A gift from ${buyerName}`}
             </p>
             <p className="truncate text-[15px] font-semibold text-text-normal">

@@ -7,12 +7,12 @@ export function PlatformBanScreen() {
   const { platformBan, signOut } = useApp();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-tertiary p-6">
-      <div className="w-full max-w-md rounded-xl border border-status-danger/40 bg-bg-secondary p-8 text-center shadow-2xl">
+    <div className="flex min-h-screen items-center justify-center bg-canvas p-6">
+      <div className="view-enter w-full max-w-md rounded-[24px] bg-bg-secondary p-8 text-center shadow-elev-3 ring-1 ring-status-dnd/30">
         <div className="mb-4 flex justify-center">
           <Logo adaptive size={48} />
         </div>
-        <h1 className="text-xl font-bold text-status-danger">You have been banned from Disband</h1>
+        <h1 className="title-2 text-status-danger">You have been banned from Disband</h1>
         <p className="mt-3 text-sm text-text-muted">
           {platformBan?.reason ?? "Your account no longer has access to Disband."}
         </p>

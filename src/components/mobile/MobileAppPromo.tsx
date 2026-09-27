@@ -43,7 +43,7 @@ export function MobileAppPromo() {
       onClick={dismiss}
     >
       <div
-        className="modal-pop w-full max-w-sm rounded-2xl bg-bg-secondary p-6 text-center shadow-2xl"
+        className="modal-pop w-full max-w-sm rounded-[22px] bg-overlay-panel p-6 text-center shadow-elev-4 ring-1 ring-glass-border"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mx-auto mb-4 flex justify-center">
@@ -58,7 +58,7 @@ export function MobileAppPromo() {
 
         <a
           href={APP_STORE_URL}
-          className="mt-5 flex w-full items-center justify-center gap-2.5 rounded-xl bg-brand py-3.5 text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
+          className="btn btn-filled mt-5 w-full"
         >
           <AppleLogo />
           Get it on the App Store

@@ -72,7 +72,7 @@ export function AuditLogPanel({ serverId, members }: { serverId: string; members
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold text-text-normal">Audit Log</h2>
+        <h2 className="title-2 text-text-normal">Audit Log</h2>
         <p className="mt-1 text-sm text-text-muted">The last 100 moderation actions on this space.</p>
       </div>
       {rows.length === 0 ? (
@@ -82,7 +82,7 @@ export function AuditLogPanel({ serverId, members }: { serverId: string; members
       ) : (
         <ul className="space-y-1.5">
           {rows.map((row) => (
-            <li key={row.id} className="flex items-start gap-3 rounded-lg border border-divider bg-bg-secondary px-3 py-2.5">
+            <li key={row.id} className="rounded-[14px] bg-fill-tertiary flex items-start gap-3 px-3 py-2.5">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-text-normal">
                   {ACTION_LABELS[row.action] ?? row.action}
